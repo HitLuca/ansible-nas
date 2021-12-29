@@ -4,9 +4,11 @@
   pre_tasks:
     - import_tasks: tasks/users.yml
       tags: users
+    - name: update apt packages
+      apt:
+        update_cache: true
 
   roles:
-
     ###
     ### Requirements
     ###
@@ -25,7 +27,6 @@
         - docker
         - skip_ansible_lint
 
-
     ###
     ### Ansible-NAS Roles
     ###
@@ -38,7 +39,6 @@
       tags:
         - ansible-nas-docker
         - ansible-nas
-
 
     ###
     ### Applications

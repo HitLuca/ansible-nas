@@ -6,6 +6,11 @@ site
 inventories
 .cache
 
+# External roles
+roles/geerlingguy.nfs/
+roles/geerlingguy.docker/
+roles/bertvv.samba/
+
 # Vim
 [._]sw[a-p]
 
@@ -14,3 +19,4 @@ Session.vim
 
 # IntelliJ
 /.idea/
+.vscode/
