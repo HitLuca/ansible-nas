@@ -393,3 +393,8 @@ vd_users:
     password: "topsecret"
     sudo: "Y"
 vd_rdp_port: 3389
+
+###
+### Scrutiny
+###
+scrutiny_config_directory: "{{ docker_home }}/scrutiny"

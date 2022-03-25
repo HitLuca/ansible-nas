@@ -103,6 +103,11 @@
         - firefly
       when: (firefly_enabled | default(False))
 
+    - role: flaresolverr
+      tags:
+        - flaresolverr
+      when: (flaresolverr_enabled | default(False))
+
     - role: get_iplayer
       tags:
         - get_iplayer
@@ -232,6 +237,11 @@
       tags:
         - radarr
       when: (radarr_enabled | default(False))
+
+    - role: scrutiny
+      tags:
+        - scrutiny
+      when: (scrutiny_enabled | default(False))
 
     - role: sickchill
       tags:

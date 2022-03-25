@@ -1,0 +1,11 @@
+---
+# enable or disable the application
+flaresolverr_enabled: false
+flaresolverr_available_externally: "false"
+
+# network
+flaresolverr_hostname: "flaresolverr"
+flaresolverr_port: "8191"
+
+# specs
+flaresolverr_memory: 1g
