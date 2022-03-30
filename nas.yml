@@ -153,6 +153,11 @@
         - jackett
       when: (jackett_enabled | default(False))
 
+    - role: komga
+      tags:
+        - komga
+      when: (komga_enabled | default(False))
+
     - role: lidarr
       tags:
         - lidarr
@@ -207,6 +212,11 @@
       tags:
         - organizr
       when: (organizr_enabled | default(False))
+
+    - role: paperless_ng
+      tags:
+        - paperless_ng
+      when: (paperless_ng_enabled | default(False))
 
     - role: portainer
       tags:
