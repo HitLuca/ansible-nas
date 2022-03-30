@@ -3,9 +3,10 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
   with_items:
     - "{{ bitwarden_data_directory }}"
+    - "{{ bitwarden_backup_directory }}"
 
 - name: Bitwarden Docker Container
   docker_container:
@@ -49,4 +50,6 @@
     pull: true
     restart_policy: unless-stopped
     volumes_from: bitwarden
+    volumes:
+      - "{{ bitwarden_backup_directory }}:/backup:rw"
     memory: "{{ bitwarden_backup_memory }}"
