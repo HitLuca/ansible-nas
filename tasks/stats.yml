@@ -25,7 +25,7 @@
 - name: InfluxDB
   docker_container:
     name: influxdb
-    image: influxdb
+    image: influxdb:1.8
     pull: true
     volumes:
       - "{{ influxdb_data_directory }}:/var/lib/influxdb:rw"
@@ -34,6 +34,9 @@
     restart_policy: unless-stopped
     env:
       INFLUXDB_LOGGING_LEVEL: "error"
+      TZ: "{{ ansible_nas_timezone }}"
+    labels:
+      com.centurylinklabs.watchtower.enable: "{{ influxdb_watchtower_update_enabled }}"
     memory: 1g
 
 - name: hddtemp

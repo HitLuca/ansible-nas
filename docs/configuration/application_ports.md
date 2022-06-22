@@ -62,6 +62,7 @@ By default, applications can be found on the ports listed below.
 | Paperless_ng    | 16922   | Bridge  | HTTP           |
 | Piwigo          | 16923   | Bridge  | HTTP           |
 | Plex            | 32400   | Bridge  | HTTP           |
+| Portainer       | 8000    | Bridge  | HTTPS           |
 | Portainer       | 9000    | Bridge  | HTTP           |
 | Prowlarr        | 9696    | Bridge  | HTTP           |
 | pyload          | 8000    | Bridge  | HTTP           |

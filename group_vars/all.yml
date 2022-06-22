@@ -201,7 +201,7 @@ samba_shares:
     path: "{{ comics_root }}"
 
   - name: documents
-    comment: 'Documents'
+    comment: "Documents"
     guest_ok: yes
     public: yes
     writable: yes
@@ -281,6 +281,7 @@ openvpn_config_directory: "{{ docker_home }}/openvpn"
 grafana_available_externally: "false"
 telegraf_data_directory: "{{ docker_home }}/telegraf"
 influxdb_data_directory: "{{ docker_home }}/influxdb"
+influxdb_watchtower_update_enabled: "false"
 grafana_data_directory: "{{ docker_home }}/grafana"
 stat_collection_interval: 15s
 grafana_influxdb_port: "8086"

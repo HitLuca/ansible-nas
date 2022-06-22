@@ -6,7 +6,8 @@ portainer_available_externally: "false"
 portainer_data_directory: "{{ docker_home }}/portainer/config"
 
 # network
-portainer_port: "9000"
+portainer_port_1: "9000"
+portainer_port_2: "8000"
 portainer_hostname: "portainer"
 
 # specs
