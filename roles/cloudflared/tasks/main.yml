@@ -1,0 +1,15 @@
+---
+- name: Cloudflared Docker Container
+  docker_container:
+    name: cloudflared
+    image: cloudflare/cloudflared
+    pull: true
+    volumes:
+      - "{{ cloudflared_config_directory }}:/home/nonroot"
+    env:
+      TZ: "{{ ansible_nas_timezone }}"
+    restart_policy: unless-stopped
+    command: "tunnel run {{ cloudflared_tunnel_name }}"
+    network_mode: "host"
+    labels:
+      com.centurylinklabs.watchtower.enable: "{{ cloudflared_watchtower_update_enabled }}"

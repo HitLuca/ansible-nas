@@ -73,6 +73,11 @@
         - cloudflare_ddns
       when: (cloudflare_ddns_enabled | default(False))
 
+    - role: cloudflared
+      tags:
+        - cloudflared
+      when: (cloudflared_enabled | default(False))
+
     - role: couchpotato
       tags:
         - couchpotato
@@ -356,6 +361,11 @@
       tags:
         - traefik
       when: (traefik_enabled | default(False))
+
+    - role: vscode
+      tags:
+        - vscode
+      when: (vscode_enabled | default(False))
 
     - role: youtubedlmaterial
       tags:

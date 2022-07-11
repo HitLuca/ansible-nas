@@ -1,0 +1,8 @@
+---
+cloudflared_enabled: false
+cloudflared_watchtower_update_enabled: "false"
+
+# directories
+cloudflared_config_directory: "{{ docker_home }}/cloudflared"
+
+cloudflared_tunnel_name: ""
