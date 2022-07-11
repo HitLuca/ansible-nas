@@ -27,3 +27,5 @@
     restart_policy: unless-stopped
     memory: "{{ traefik_memory }}"
     recreate: "{{ template_config is changed }}"
+    labels:
+      com.centurylinklabs.watchtower.enable: "{{ traefik_watchtower_update_enabled }}"
