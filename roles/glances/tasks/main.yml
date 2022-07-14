@@ -1,5 +1,5 @@
 ---
-- name: Create Glances Docker Container
+- name: Glances Docker Container
   docker_container:
     name: glances
     image: nicolargo/glances

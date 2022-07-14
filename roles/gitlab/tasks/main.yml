@@ -37,7 +37,7 @@
     - "{{ gitlab_data_directory }}/log"
     - "{{ gitlab_data_directory }}/data"
 
-- name: Create Gitlab Docker Container
+- name: Gitlab Docker Container
   docker_container:
     name: gitlab
     image: gitlab/gitlab-ce:latest

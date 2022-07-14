@@ -1,4 +1,4 @@
-- name: Create Flaresolverr Docker Container
+- name: Flaresolverr Docker Container
   docker_container:
     name: flaresolverr
     image: ghcr.io/flaresolverr/flaresolverr

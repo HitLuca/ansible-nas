@@ -7,7 +7,7 @@
   with_items:
     - "{{ scrutiny_config_directory }}"
 
-- name: Create Scrutiny Docker Container
+- name: Scrutiny Docker Container
   docker_container:
     name: scrutiny
     image: analogj/scrutiny

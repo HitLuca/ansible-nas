@@ -19,7 +19,7 @@
     restart_policy: unless-stopped
     memory: "{{ miniflux_postgres_memory }}"
 
-- name: Create Miniflux Docker Container
+- name: Miniflux Docker Container
   docker_container:
     name: miniflux
     image: miniflux/miniflux:latest
