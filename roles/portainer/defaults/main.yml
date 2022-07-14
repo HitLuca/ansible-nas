@@ -1,7 +1,8 @@
 ---
 portainer_enabled: false
-portainer_available_externally: "false"
-portainer_watchtower_update_enabled: "false"
+portainer_available_externally: false
+portainer_watchtower_update_enabled: false
+portainer_authelia_enabled: true
 
 # directories
 portainer_data_directory: "{{ docker_home }}/portainer/config"

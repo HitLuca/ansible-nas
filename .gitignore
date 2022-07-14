@@ -7,11 +7,13 @@ inventories
 .cache
 roles/bertvv.samba
 roles/geerlingguy.docker
+roles/geerlingguy.docker_arm
 roles/geerlingguy.nfs
 
 # External roles
 roles/geerlingguy.nfs/
 roles/geerlingguy.docker/
+roles/geerlingguy.docker_arm/
 roles/bertvv.samba/
 
 # Vim

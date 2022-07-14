@@ -9,7 +9,7 @@
     env:
       TZ: "{{ ansible_nas_timezone }}"
       WATCHTOWER_CLEANUP: "1"
-      WATCHTOWER_LABEL_ENABLE: "1"
+      WATCHTOWER_LABEL_ENABLE: "{{ watchtower_label_enable | ternary('1', '0') }}"
     command: "{{ watchtower_command }}"
     restart_policy: unless-stopped
     memory: "{{ watchtower_memory }}"

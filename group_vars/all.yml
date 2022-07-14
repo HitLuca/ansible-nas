@@ -12,6 +12,9 @@
 ### Add your customisations to inventories/<your_inventory>/group_vars/nas.yml
 ###
 
+enable_universe_repository: true
+x86_architecture: true
+
 ###
 ### Ansible-NAS Applications
 ###
@@ -236,7 +239,7 @@ samba_netbios_name: "{{ ansible_nas_hostname }}"
 ### Joomla
 ###
 joomla_data_directory: "{{ docker_home }}/joomla"
-joomla_available_externally: "false"
+joomla_available_externally: false
 joomla_database_password: top_secret
 joomla_port: "8181"
 
@@ -248,10 +251,10 @@ openvpn_config_directory: "{{ docker_home }}/openvpn"
 ###
 ### Stats
 ###
-grafana_available_externally: "false"
+grafana_available_externally: false
 telegraf_data_directory: "{{ docker_home }}/telegraf"
 influxdb_data_directory: "{{ docker_home }}/influxdb"
-influxdb_watchtower_update_enabled: "false"
+influxdb_watchtower_update_enabled: false
 grafana_data_directory: "{{ docker_home }}/grafana"
 stat_collection_interval: 15s
 grafana_influxdb_port: "8086"
@@ -260,14 +263,14 @@ grafana_port: "3000"
 ###
 ### Guacamole
 ###
-guacamole_available_externally: "false"
+guacamole_available_externally: false
 guacamole_data_directory: "{{ docker_home }}/guacamole"
 guacamole_port: "8090"
 
 ###
 ### Krusader
 ###
-krusader_available_externally: "false"
+krusader_available_externally: false
 krusader_config_directory: "{{ docker_home }}/krusader/config"
 krusader_browse_directory: "/"
 krusader_user_id: "0"
@@ -290,7 +293,7 @@ timemachine_port: "10445"
 ###
 ### The Lounge
 ###
-thelounge_available_externally: "false"
+thelounge_available_externally: false
 thelounge_data_directory: "{{ docker_home }}/thelounge"
 thelounge_port_one: "113"
 thelounge_port_two: "9002"
@@ -298,14 +301,14 @@ thelounge_port_two: "9002"
 ###
 ### Wallabag
 ###
-wallabag_available_externally: "false"
+wallabag_available_externally: false
 wallabag_data_directory: "{{ docker_home }}/wallabag"
 wallabag_port: "7780"
 
 ###
 ### Calibre-web
 ###
-calibre_available_externally: "false"
+calibre_available_externally: false
 calibre_data_directory: "{{ docker_home }}/calibre"
 calibre_user_id: "0"
 calibre_group_id: "0"
@@ -317,7 +320,7 @@ calibre_ebook_conversion: "linuxserver/calibre-web:calibre"
 ###
 ### openHAB
 ###
-openhab_available_externally: "false"
+openhab_available_externally: false
 openhab_docker_image: openhab/openhab:latest
 openhab_data_directory: "{{ docker_home }}/openhab"
 openhab_port_http: "7777"
@@ -326,7 +329,7 @@ openhab_port_https: "7778"
 ###
 ### Ubooquity
 ###
-ubooquity_available_externally: "false"
+ubooquity_available_externally: false
 ubooquity_data_directory: "{{ docker_home }}/ubooquity"
 ubooquity_user_id: "0"
 ubooquity_group_id: "0"

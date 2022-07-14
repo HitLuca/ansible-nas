@@ -1,8 +1,8 @@
 ---
 # enable or disable the application
 jackett_enabled: false
-jackett_available_externally: "false"
-jackett_watchtower_update_enabled: "false"
+jackett_available_externally: false
+jackett_watchtower_update_enabled: false
 
 # directories
 jackett_data_directory: "{{ docker_home }}/jackett"

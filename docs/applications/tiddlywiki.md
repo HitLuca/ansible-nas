@@ -8,7 +8,7 @@ TiddlyWiki is a unique non-linear notebook for capturing, organizing, and sharin
 
 Set `tiddlywiki_enabled: true` in your `inventories/<your_inventory>/nas.yml` file.
 
-If you want to access TiddlyWiki externally, set `tiddlywiki_available_externally: "true"` in your `inventories/<your_inventory>/nas.yml` file.
+If you want to access TiddlyWiki externally, set `tiddlywiki_available_externally: true` in your `inventories/<your_inventory>/nas.yml` file.
 
 The TiddlyWiki web interface can be found at http://ansible_nas_host_or_ip:8092.
 
@@ -19,7 +19,7 @@ The TiddlyWiki role has several configuration parameters. All parameters are opt
 ### Data and Networking
 
 | Parameter                 | Description                   |
-|---------------------------|-------------------------------|
+| ------------------------- | ----------------------------- |
 | tiddlywiki_data_directory | Host location to store data   |
 | tiddlywiki_port           | Host port for internal access |
 | tiddlywiki_hostname       | Subdomain for external access |
@@ -27,7 +27,7 @@ The TiddlyWiki role has several configuration parameters. All parameters are opt
 ### Server Configuration
 
 | Parameter              | Description              |
-|------------------------|--------------------------|
+| ---------------------- | ------------------------ |
 | tiddlywiki_username    | Basic Auth username      |
 | tiddlywiki_password    | Basic Auth password      |
 | tiddlywiki_node_memory | NodeJS memory allocation |

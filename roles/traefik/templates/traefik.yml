@@ -1,0 +1,47 @@
+entryPoints:
+  http:
+    address: ":80"
+
+    http:
+      redirections:
+        entryPoint:
+          to: "https"
+
+  https:
+    address: ":{{ traefik_port_https }}"
+
+    http:
+      tls:
+        certResolver: "letsencrypt"
+
+        domains:
+          - main: "{{ ansible_nas_domain }}"
+            sans: ["*.{{ ansible_nas_domain }}"]
+
+  traefik:
+    address: ":{{ traefik_port_ui }}"
+
+providers:
+  providersThrottleDuration: 2
+  docker:
+    exposedbydefault: false
+
+api:
+  insecure: true
+  dashboard: true
+
+log:
+  level: "{{ traefik_log_level }}"
+
+ping:
+  terminatingStatusCode: 0
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "{{ ansible_nas_email }}"
+      storage: "/letsencrypt/acme.json"
+      caserver: "{{ traefik_acme_server }}"
+
+      dnsChallenge:
+        provider: "{{ traefik_dns_provider }}"

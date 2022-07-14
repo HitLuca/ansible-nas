@@ -15,9 +15,10 @@
     restart_policy: unless-stopped
     memory: "{{ vscode_memory }}"
     labels:
-      traefik.enable: "{{ vscode_available_externally }}"
+      traefik.enable: "{{ vscode_available_externally | string }}"
       traefik.http.routers.vscode.rule: "Host(`{{ vscode_hostname }}.{{ ansible_nas_domain }}`)"
       traefik.http.routers.vscode.tls.certresolver: "letsencrypt"
       traefik.http.routers.vscode.tls.domains[0].main: "{{ ansible_nas_domain }}"
       traefik.http.routers.vscode.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
       traefik.http.services.vscode.loadbalancer.server.port: "8080"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(vscode_watchtower_update_enabled, omit) | string }}"

@@ -36,7 +36,7 @@
       INFLUXDB_LOGGING_LEVEL: "error"
       TZ: "{{ ansible_nas_timezone }}"
     labels:
-      com.centurylinklabs.watchtower.enable: "{{ influxdb_watchtower_update_enabled }}"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(influxdb_watchtower_update_enabled, omit) | string }}"
     memory: 1g
 
 - name: hddtemp
@@ -112,7 +112,7 @@
     restart_policy: unless-stopped
     memory: 1g
     labels:
-      traefik.enable: "{{ grafana_available_externally }}"
+      traefik.enable: "{{ grafana_available_externally | string }}"
       traefik.http.routers.grafana.rule: "Host(`grafana.{{ ansible_nas_domain }}`) "
       traefik.http.routers.grafana.tls.certresolver: "letsencrypt"
       traefik.http.routers.grafana.tls.domains[0].main: "{{ ansible_nas_domain }}"

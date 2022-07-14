@@ -1,7 +1,7 @@
 ---
 # enable or disable the application
 scrutiny_enabled: false
-scrutiny_available_externally: "false"
+scrutiny_available_externally: false
 
 # network
 scrutiny_hostname: "scrutiny"

@@ -11,5 +11,6 @@
     restart_policy: unless-stopped
     command: "tunnel run {{ cloudflared_tunnel_name }}"
     network_mode: "host"
+    recreate: true
     labels:
-      com.centurylinklabs.watchtower.enable: "{{ cloudflared_watchtower_update_enabled }}"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary((cloudflared_watchtower_update_enabled), omit) | string }}"

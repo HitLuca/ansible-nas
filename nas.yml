@@ -26,6 +26,13 @@
       tags:
         - docker
         - skip_ansible_lint
+      when: (x86_architecture | default(True))
+
+    - role: geerlingguy.docker_arm
+      tags:
+        - docker_arm
+        - skip_ansible_lint
+      when: (not x86_architecture | default(False))
 
     ###
     ### Ansible-NAS Roles

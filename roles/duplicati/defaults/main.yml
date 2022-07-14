@@ -1,7 +1,7 @@
 ---
 duplicati_enabled: false
-duplicati_available_externally: "false"
-duplicati_watchtower_update_enabled: "false"
+duplicati_available_externally: false
+duplicati_watchtower_update_enabled: false
 
 # directories
 duplicati_data_directory: "{{ docker_home }}/duplicati/config"
