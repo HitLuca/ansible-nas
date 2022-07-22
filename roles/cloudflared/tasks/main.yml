@@ -4,12 +4,10 @@
     name: cloudflared
     image: cloudflare/cloudflared
     pull: true
-    volumes:
-      - "{{ cloudflared_config_directory }}:/home/nonroot"
     env:
       TZ: "{{ ansible_nas_timezone }}"
     restart_policy: unless-stopped
-    command: "tunnel run {{ cloudflared_tunnel_name }}"
+    command: "tunnel --no-autoupdate run --token {{ cloudflared_token }}"
     network_mode: "host"
     recreate: true
     labels:
