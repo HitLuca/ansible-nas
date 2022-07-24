@@ -260,6 +260,11 @@
         - nzbget
       when: (nzbget_enabled | default(False))
 
+    - role: octoprint
+      tags:
+        - octoprint
+      when: (octoprint_enabled | default(False))
+
     - role: organizr
       tags:
         - organizr
