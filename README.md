@@ -110,6 +110,8 @@ Ansible NAS doesn't set up your disk partitions, primarily because getting it wr
 
 See [Installation](https://davestephens.github.io/ansible-nas/installation/).
 
+Now Ansible NAS can be deployed on arm64 architectures!
+
 ## Upgrading
 
 **The way Ansible-NAS configuration is structured has changed!** See [Upgrading](https://davestephens.github.io/ansible-nas/upgrading/) for more information. See the **Getting Help** section if you get stuck.
