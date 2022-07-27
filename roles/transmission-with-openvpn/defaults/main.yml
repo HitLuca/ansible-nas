@@ -12,7 +12,7 @@ transmission_openvpn_user_id: "0"
 transmission_openvpn_group_id: "0"
 
 # transmission config
-transmission_openvpn_ratio_limit_enabled: "true"
+transmission_openvpn_ratio_limit_enabled: true
 transmission_openvpn_ratio_limit: "2"
 transmission_openvpn_local_network: "192.168.1.0/24"
 
