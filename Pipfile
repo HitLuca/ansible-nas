@@ -9,6 +9,7 @@ ansible = "*"
 [dev-packages]
 black = "*"
 ansible-lint = "*"
+yamllint = "*"
 
 [requires]
 python_version = "3.8"
