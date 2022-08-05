@@ -220,11 +220,6 @@
         - komga
       when: (komga_enabled | default(False))
 
-    - role: krusader
-      tags:
-        - krusader
-      when: (krusader_enabled | default(False))
-
     - role: lidarr
       tags:
         - lidarr
