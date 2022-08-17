@@ -7,23 +7,25 @@
     - "{{ traefik_data_directory }}"
     - "{{ traefik_data_directory }}/letsencrypt"
 
-- name: Template Traefik config.toml
+- name: Template Traefik config.yml
   template:
-    src: traefik.toml
-    dest: "{{ traefik_data_directory }}/traefik.toml"
+    src: traefik.yml
+    dest: "{{ traefik_data_directory }}/traefik.yml"
   register: template_config
 
 - name: Traefik Docker Container
   docker_container:
     name: traefik
-    image: "{{ traefik_docker_image }}"
+    image: traefik:latest
     pull: true
     network_mode: host
     volumes:
-      - "{{ traefik_data_directory }}/traefik.toml:/etc/traefik/traefik.toml:ro"
+      - "{{ traefik_data_directory }}/traefik.yml:/etc/traefik/traefik.yml:ro"
       - "{{ traefik_data_directory }}/letsencrypt:/letsencrypt:rw"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     env: "{{ traefik_environment_variables }}"
     restart_policy: unless-stopped
     memory: "{{ traefik_memory }}"
     recreate: "{{ template_config is changed }}"
+    labels:
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(traefik_watchtower_update_enabled, omit) | string }}"

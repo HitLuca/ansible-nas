@@ -31,6 +31,7 @@
       - nextcloud-mysql:mysql
     volumes:
       - "{{ nextcloud_data_directory }}/nextcloud:/var/www/html:rw"
+      - "{{ nextcloud_user_data_directory }}:/var/www/html/data:rw"
     ports:
       - "{{ nextcloud_port }}:80"
     env:
@@ -48,3 +49,4 @@
       traefik.http.routers.nextcloud.tls.domains[0].main: "{{ ansible_nas_domain }}"
       traefik.http.routers.nextcloud.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
       traefik.http.services.nextcloud.loadbalancer.server.port: "80"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(nextcloud_watchtower_update_enabled, omit) | string }}"

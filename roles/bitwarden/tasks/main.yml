@@ -6,6 +6,7 @@
     mode: "0755"
   with_items:
     - "{{ bitwarden_data_directory }}"
+    - "{{ bitwarden_backup_directory }}"
 
 - name: Bitwarden Docker Container
   docker_container:
@@ -18,7 +19,7 @@
     volumes:
       - "{{ bitwarden_data_directory }}:/data:rw"
     env:
-      SIGNUPS_ALLOWED: "{{ bitwarden_allow_signups }}"
+      SIGNUPS_ALLOWED: "{{ bitwarden_allow_signups | string}}"
       ADMIN_TOKEN: "{{ bitwarden_admin_token }}"
       LOG_FILE: "/data/bitwarden.log"
       WEBSOCKET_ENABLED: "true"
@@ -39,8 +40,10 @@
       traefik.http.routers.bitwarden-ws.middlewares: "bitwarden-ipwhitelist@docker"
       traefik.http.services.bitwarden-ws.loadbalancer.server.port: "3012"
       traefik.http.middlewares.bitwarden-ipwhitelist.ipwhitelist.sourcerange: "{{ bitwarden_ip_whitelist }}"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary((bitwarden_watchtower_update_enabled), omit) | string }}"
     memory: "{{ bitwarden_memory }}"
     restart_policy: unless-stopped
+    recreate: true
 
 - name: Bitwarden Backup Container
   docker_container:
@@ -49,4 +52,6 @@
     pull: true
     restart_policy: unless-stopped
     volumes_from: bitwarden
+    volumes:
+      - "{{ bitwarden_backup_directory }}:/backup:rw"
     memory: "{{ bitwarden_backup_memory }}"

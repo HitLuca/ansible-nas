@@ -2,6 +2,7 @@
 # enable or disable the application
 glances_enabled: false
 glances_available_externally: false
+glances_watchtower_update_enabled: false
 
 # network
 glances_hostname: "glances"

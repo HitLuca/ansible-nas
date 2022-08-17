@@ -1,0 +1,14 @@
+---
+# enable or disable the application
+scrutiny_enabled: false
+scrutiny_available_externally: false
+
+# network
+scrutiny_hostname: "scrutiny"
+scrutiny_port: "8081"
+
+# devices
+scrutiny_devices: []
+
+# specs
+scrutiny_memory: 1g

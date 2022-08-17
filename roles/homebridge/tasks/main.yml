@@ -7,7 +7,7 @@
   with_items:
     - "{{ homebridge_config_directory }}"
 
-- name: Create Homebridge Docker Container
+- name: Homebridge Docker Container
   docker_container:
     name: homebridge
     image: oznu/homebridge

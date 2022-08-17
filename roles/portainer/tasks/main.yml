@@ -16,9 +16,11 @@
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/etc/timezone:/etc/timezone:ro"
     ports:
-      - "{{ portainer_port }}:9000"
+      - "{{ portainer_port_1 }}:9000"
+      - "{{ portainer_port_2 }}:8000"
     restart_policy: unless-stopped
     memory: "{{ portainer_memory }}"
+    recreate: true
     labels:
       traefik.enable: "{{ portainer_available_externally | string }}"
       traefik.http.routers.portainer.rule: "Host(`{{ portainer_hostname }}.{{ ansible_nas_domain }}`)"
@@ -26,3 +28,4 @@
       traefik.http.routers.portainer.tls.domains[0].main: "{{ ansible_nas_domain }}"
       traefik.http.routers.portainer.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
       traefik.http.services.portainer.loadbalancer.server.port: "9000"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(portainer_watchtower_update_enabled, omit) | string }}"

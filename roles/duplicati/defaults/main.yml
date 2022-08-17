@@ -1,12 +1,13 @@
 ---
 duplicati_enabled: false
 duplicati_available_externally: false
+duplicati_watchtower_update_enabled: false
 
 # directories
 duplicati_data_directory: "{{ docker_home }}/duplicati/config"
 
 # permissions
-duplicati_data_permissions: "ro" # set this to rw to enable the ability to restore data
+duplicati_data_permissions: "rw" # set this to rw to enable the ability to restore data
 
 # uid / gid
 duplicati_user_id: "0"

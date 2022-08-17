@@ -19,7 +19,7 @@ The TiddlyWiki role has several configuration parameters. All parameters are opt
 ### Data and Networking
 
 | Parameter                 | Description                   |
-|---------------------------|-------------------------------|
+| ------------------------- | ----------------------------- |
 | tiddlywiki_data_directory | Host location to store data   |
 | tiddlywiki_port           | Host port for internal access |
 | tiddlywiki_hostname       | Subdomain for external access |
@@ -27,7 +27,7 @@ The TiddlyWiki role has several configuration parameters. All parameters are opt
 ### Server Configuration
 
 | Parameter              | Description              |
-|------------------------|--------------------------|
+| ---------------------- | ------------------------ |
 | tiddlywiki_username    | Basic Auth username      |
 | tiddlywiki_password    | Basic Auth password      |
 | tiddlywiki_node_memory | NodeJS memory allocation |
