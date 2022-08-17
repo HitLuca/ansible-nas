@@ -9,6 +9,8 @@
 - name: Create Overleaf network
   docker_network:
     name: overleaf
+    driver_options:
+      com.docker.network.bridge.name: overleaf
 
 - name: mongo
   docker_container:
@@ -39,7 +41,8 @@
 - name: overleaf
   docker_container:
     name: overleaf
-    image: sharelatex/sharelatex
+    # image: sharelatex/sharelatex
+    image: tuetenk0pp/sharelatex-full
     pull: true
     volumes:
       - "{{ overleaf_config_directory }}/sharelatex:/var/lib/sharelatex"
