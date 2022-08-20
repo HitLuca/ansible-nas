@@ -1,6 +1,5 @@
 ---
 watchtower_enabled: false
-watchtower_label_enable: false
 
 # Sets the 6 field cron schedule to use for checks and updates. This will check at 5am daily.
 watchtower_cron_schedule: 0 0 5 * * *

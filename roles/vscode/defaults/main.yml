@@ -1,7 +1,6 @@
 ---
 vscode_enabled: false
 vscode_available_externally: false
-vscode_watchtower_update_enabled: false
 
 # directories
 vscode_config_directory: "{{ docker_home }}/vscode"

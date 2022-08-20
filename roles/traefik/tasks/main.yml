@@ -28,4 +28,3 @@
     memory: "{{ traefik_memory }}"
     recreate: "{{ template_config is changed }}"
     labels:
-      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(traefik_watchtower_update_enabled, omit) | string }}"

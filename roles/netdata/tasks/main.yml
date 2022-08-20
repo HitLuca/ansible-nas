@@ -32,4 +32,3 @@
       traefik.http.routers.netdata.tls.domains[0].main: "{{ ansible_nas_domain }}"
       traefik.http.routers.netdata.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
       traefik.http.services.netdata.loadbalancer.server.port: "19999"
-      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(netdata_watchtower_update_enabled, omit) | string }}"

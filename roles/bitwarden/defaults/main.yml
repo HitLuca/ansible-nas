@@ -1,7 +1,6 @@
 ---
 bitwarden_enabled: false
 bitwarden_available_externally: false
-bitwarden_watchtower_update_enabled: false
 
 bitwarden_data_directory: "{{ docker_home }}/bitwarden"
 bitwarden_backup_directory: "{{ bitwarden_data_directory }}/backup"

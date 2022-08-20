@@ -38,4 +38,3 @@
       traefik.http.routers.plex.tls.domains[0].main: "{{ ansible_nas_domain }}"
       traefik.http.routers.plex.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
       traefik.http.services.plex.loadbalancer.server.port: "32400"
-      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(plex_watchtower_update_enabled, omit) | string }}"
