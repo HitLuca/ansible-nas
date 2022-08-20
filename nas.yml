@@ -4,9 +4,6 @@
   pre_tasks:
     - import_tasks: tasks/users.yml
       tags: users
-    - name: update apt packages
-      apt:
-        update_cache: true
 
   roles:
     ###
@@ -79,11 +76,6 @@
       tags:
         - cloudcmd
       when: (cloudcmd_enabled | default(False))
-
-    - role: cloudflared
-      tags:
-        - cloudflared
-      when: (cloudflared_enabled | default(False))
 
     - role: cloudflare_ddns
       tags:
@@ -262,7 +254,7 @@
 
     - role: n8n
       tags:
-        - n8n_enabled
+        - n8n
       when: (n8n_enabled | default(False))
 
     - role: navidrome
@@ -374,6 +366,7 @@
       tags:
         - scrutiny
       when: (scrutiny_enabled | default(False))
+
     - role: sabnzbd
       tags:
         - sabnzbd
@@ -469,7 +462,7 @@
         - vscode
       when: (vscode_enabled | default(False))
 
-    - role: youtubedlmaterial
+    - role: wallabag
       tags:
         - wallabag
       when: (wallabag_enabled | default(False))
@@ -478,6 +471,11 @@
       tags:
         - watchtower
       when: (watchtower_enabled | default(False))
+
+    - role: wireshark
+      tags:
+        - wireshark
+      when: (wireshark_enabled | default(False))
 
     - role: youtubedlmaterial
       tags:
