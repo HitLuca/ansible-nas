@@ -1,0 +1,5 @@
+---
+cloudflared_enabled: false
+cloudflared_watchtower_update_enabled: false
+
+cloudflared_token: ""

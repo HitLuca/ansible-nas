@@ -1,5 +1,5 @@
 ---
-- name: Create Glances Docker Container
+- name: Glances Docker Container
   docker_container:
     name: glances
     image: nicolargo/glances
@@ -17,9 +17,10 @@
     security_opts: "{{ glances_security_options }}"
     memory: "{{ glances_memory }}"
     labels:
-      traefik.enable: "{{ glances_available_externally }}"
+      traefik.enable: "{{ glances_available_externally | string }}"
       traefik.http.routers.glances.rule: "Host(`{{ glances_hostname }}.{{ ansible_nas_domain }}`)"
       traefik.http.routers.glances.tls.certresolver: "letsencrypt"
       traefik.http.routers.glances.tls.domains[0].main: "{{ ansible_nas_domain }}"
       traefik.http.routers.glances.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
       traefik.http.services.glances.loadbalancer.server.port: "61208"
+      com.centurylinklabs.watchtower.enable: "{{ (watchtower_enabled and watchtower_label_enable) | ternary(glances_watchtower_update_enabled, omit) | string }}"

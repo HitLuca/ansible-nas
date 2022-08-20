@@ -1,6 +1,7 @@
 ---
 netdata_enabled: false
-netdata_available_externally: "false"
+netdata_available_externally: false
+netdata_watchtower_update_enabled: false
 
 # network
 netdata_hostname: "netdata"

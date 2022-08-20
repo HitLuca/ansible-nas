@@ -1,0 +1,30 @@
+---
+- name: Create Scrutiny Directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    # mode: 0755
+  with_items:
+    - "{{ scrutiny_config_directory }}"
+
+- name: Scrutiny Docker Container
+  docker_container:
+    name: scrutiny
+    image: analogj/scrutiny
+    pull: true
+    capabilities:
+      - SYS_RAWIO
+    devices: "{{ scrutiny_devices }}"
+    volumes:
+      - "{{ deluge_config_directory }}/run/udev:/run/udev:ro"
+    ports:
+      - "{{ scrutiny_port }}:8080"
+    restart_policy: unless-stopped
+    memory: "{{ scrutiny_memory }}"
+    labels:
+      traefik.enable: "{{ scrutiny_available_externally | string }}"
+      traefik.http.routers.scrutiny.rule: "Host(`{{ scrutiny_hostname }}.{{ ansible_nas_domain }}`)"
+      traefik.http.routers.scrutiny.tls.certresolver: "letsencrypt"
+      traefik.http.routers.scrutiny.tls.domains[0].main: "{{ ansible_nas_domain }}"
+      traefik.http.routers.scrutiny.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+      traefik.http.services.scrutiny.loadbalancer.server.port: "{{ scrutiny_port }}"

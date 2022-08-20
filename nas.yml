@@ -23,6 +23,13 @@
       tags:
         - docker
         - skip_ansible_lint
+      when: ansible_architecture == "x86_64"
+
+    - role: geerlingguy.docker_arm
+      tags:
+        - docker_arm
+        - skip_ansible_lint
+      when: ansible_architecture == "aarch64"
 
     ###
     ### Ansible-NAS Roles
@@ -60,6 +67,11 @@
         - booksonic
       when: (booksonic_enabled | default(False))
 
+    - role: calibre
+      tags:
+        - calibre
+      when: (calibre_enabled | default(False))
+
     - role: cloudcmd
       tags:
         - cloudcmd
@@ -69,6 +81,11 @@
       tags:
         - cloudflare_ddns
       when: (cloudflare_ddns_enabled | default(False))
+
+    - role: cloudflared
+      tags:
+        - cloudflared
+      when: (cloudflared_enabled | default(False))
 
     - role: couchpotato
       tags:
@@ -115,6 +132,11 @@
         - firefly
       when: (firefly_enabled | default(False))
 
+    - role: flaresolverr
+      tags:
+        - flaresolverr
+      when: (flaresolverr_enabled | default(False))
+
     - role: freshrss
       tags:
         - freshrss
@@ -145,6 +167,11 @@
         - gotify
       when: (gotify_enabled | default(False))
 
+    - role: guacamole
+      tags:
+        - guacamole
+      when: (guacamole_enabled | default(False))
+
     - role: healthchecks.io
       tags:
         - healthchecks.io
@@ -160,10 +187,30 @@
         - homeassistant
       when: (homeassistant_enabled | default(False))
 
+    - role: homebridge
+      tags:
+        - homebridge
+      when: (homebridge_enabled | default(False))
+
+    - role: jackett
+      tags:
+        - jackett
+      when: (jackett_enabled | default(False))
+
     - role: jellyfin
       tags:
         - jellyfin
       when: (jellyfin_enabled | default(False))
+
+    - role: joomla
+      tags:
+        - joomla
+      when: (joomla_enabled | default(False))
+
+    - role: komga
+      tags:
+        - komga
+      when: (komga_enabled | default(False))
 
     - role: lidarr
       tags:
@@ -207,7 +254,7 @@
 
     - role: n8n
       tags:
-        - n8n_enabled
+        - n8n
       when: (n8n_enabled | default(False))
 
     - role: navidrome
@@ -240,10 +287,25 @@
         - octoprint
       when: (octoprint_enabled | default(False))
 
+    - role: ombi
+      tags:
+        - ombi
+      when: (ombi_enabled | default(False))
+
+    - role: openhab
+      tags:
+        - openhab
+      when: (openhab_enabled | default(False))
+
     - role: organizr
       tags:
         - organizr
       when: (organizr_enabled | default(False))
+
+    - role: overleaf
+      tags:
+        - overleaf
+      when: (overleaf_enabled | default(False))
 
     - role: overseerr
       tags:
@@ -260,10 +322,20 @@
         - piwigo
       when: (piwigo_enabled | default(False))
 
+    - role: plex
+      tags:
+        - plex
+      when: (plex_enabled | default(False))
+
     - role: portainer
       tags:
         - portainer
       when: (portainer_enabled | default(False))
+
+    - role: postfix-gmail-relay
+      tags:
+        - postfix-gmail-relay
+      when: (postfix_gmail_relay_enabled | default(False))
 
     - role: prowlarr
       tags:
@@ -274,16 +346,6 @@
       tags:
         - pyload
       when: (pyload_enabled | default(False))
-
-    - role: ombi
-      tags:
-        - ombi
-      when: (ombi_enabled | default(False))
-
-    - role: plex
-      tags:
-        - plex
-      when: (plex_enabled | default(False))
 
     - role: pytivo
       tags:
@@ -300,6 +362,11 @@
         - readarr
       when: (readarr_enabled | default(False))
 
+    - role: scrutiny
+      tags:
+        - scrutiny
+      when: (scrutiny_enabled | default(False))
+
     - role: sabnzbd
       tags:
         - sabnzbd
@@ -314,6 +381,11 @@
       tags:
         - rssbridge
       when: (rssbridge_enabled | default(False))
+
+    - role: sabnzbd
+      tags:
+        - sabnzbd
+      when: (sabnzbd_enabled | default(False))
 
     - role: sickchill
       tags:
@@ -340,10 +412,25 @@
         - tautulli
       when: (tautulli_enabled | default(False))
 
+    - role: thelounge
+      tags:
+        - thelounge
+      when: (thelounge_enabled | default(False))
+
     - role: tiddlywiki
       tags:
         - tiddlywiki
       when: (tiddlywiki_enabled | default(False))
+
+    - role: timemachine
+      tags:
+        - timemachine
+      when: (timemachine_enabled | default(False))
+
+    - role: traefik
+      tags:
+        - traefik
+      when: (traefik_enabled | default(False))
 
     - role: transmission
       tags:
@@ -355,68 +442,47 @@
         - transmission_with_openvpn
       when: (transmission_with_openvpn_enabled | default(False))
 
+    - role: ubooquity
+      tags:
+        - ubooquity
+      when: (ubooquity_enabled | default(False))
+
     - role: utorrent
       tags:
         - utorrent
       when: (utorrent_enabled | default(False))
 
-    - role: traefik
+    - role: virtual_desktop
       tags:
-        - traefik
-      when: (traefik_enabled | default(False))
+        - virtual_desktop
+      when: (virtual_desktop_enabled | default(False))
 
-    - role: youtubedlmaterial
+    - role: vscode
       tags:
-        - youtubedlmaterial
-      when: (youtubedlmaterial_enabled | default(False))
+        - vscode
+      when: (vscode_enabled | default(False))
+
+    - role: wallabag
+      tags:
+        - wallabag
+      when: (wallabag_enabled | default(False))
 
     - role: watchtower
       tags:
         - watchtower
       when: (watchtower_enabled | default(False))
 
+    - role: wireshark
+      tags:
+        - wireshark
+      when: (wireshark_enabled | default(False))
+
+    - role: youtubedlmaterial
+      tags:
+        - youtubedlmaterial
+      when: (youtubedlmaterial_enabled | default(False))
+
     - role: znc
       tags:
         - znc
       when: (znc_enabled | default(False))
-
-  tasks:
-    - import_tasks: tasks/thelounge.yml
-      when: (thelounge_enabled | default(False))
-      tags: thelounge
-
-    - import_tasks: tasks/timemachine.yml
-      when: (timemachine_enabled | default(False))
-      tags: timemachine
-
-    - import_tasks: tasks/guacamole.yml
-      when: (guacamole_enabled | default(False))
-      tags: guacamole
-
-    - import_tasks: tasks/joomla.yml
-      when: (joomla_enabled | default(False))
-      tags: joomla
-
-    - import_tasks: tasks/wallabag.yml
-      when: (wallabag_enabled | default(False))
-      tags: wallabag
-
-    - import_tasks: tasks/calibre.yml
-      when: (calibre_enabled | default(False))
-      tags: calibre
-
-    - import_tasks: tasks/openhab.yml
-      when: (openhab_enabled | default(False))
-      tags: openhab
-
-    - import_tasks: tasks/krusader.yml
-      when: (krusader_enabled | default(False))
-      tags: krusader
-
-    - import_tasks: tasks/ubooquity.yml
-      when: (ubooquity_enabled | default(False))
-      tags: ubooquity
-
-    - import_tasks: tasks/virtual_desktop.yml
-      when: (virtual_desktop_enabled | default(False))
-      tags: virtual_desktop
