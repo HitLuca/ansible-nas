@@ -22,9 +22,11 @@ entryPoints:
     address: ":{{ traefik_port_ui }}"
 
 providers:
-  providersThrottleDuration: 2
+  providersThrottleDuration: 2s
   docker:
     exposedbydefault: false
+  file:
+    filename: /etc/traefik/dynamic_config.yml
 
 api:
   insecure: true
