@@ -11,3 +11,6 @@ overleaf_hostname: "overleaf"
 
 # specs
 overleaf_memory: 1g
+
+# docker
+overleaf_container_name: "overleaf"

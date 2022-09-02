@@ -289,7 +289,6 @@
     - role: overleaf
       tags:
         - overleaf
-      when: (overleaf_enabled | default(False))
 
     - role: overseerr
       tags:
