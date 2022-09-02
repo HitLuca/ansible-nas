@@ -334,7 +334,6 @@
     - role: readarr
       tags:
         - readarr
-      when: (readarr_enabled | default(False))
 
     - role: route53_ddns
       tags:

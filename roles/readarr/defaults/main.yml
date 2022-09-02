@@ -17,3 +17,6 @@ readarr_hostname: "readarr"
 
 # specs
 readarr_memory: 1g
+
+# docker
+readarr_container_name: "readarr"
