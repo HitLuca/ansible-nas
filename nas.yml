@@ -286,6 +286,11 @@
         - organizr
       when: (organizr_enabled | default(False))
 
+    - role: overleaf
+      tags:
+        - overleaf
+      when: (overleaf_enabled | default(False))
+
     - role: overseerr
       tags:
         - overseerr
