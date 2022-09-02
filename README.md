@@ -20,6 +20,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Bitwarden_rs](https://github.com/dani-garcia/bitwarden_rs) - Self-Hosting port of password manager
 * [Booksonic](https://booksonic.org/) - The selfhosted audiobook server
 * [Calibre-web](https://github.com/janeczku/calibre-web) - Provides a clean interface for browsing, reading and downloading eBooks using an existing Calibre database.
+* [Code Server](https://code.visualstudio.com/) - Powerful IDE from Microsoft accessible through the browser
 * [Cloud Commander](https://cloudcmd.io/) - A dual panel file manager with integrated web console and text editor
 * [Cloudflared (Cloudflare tunnel)](https://github.com/cloudflare/cloudflared) - Create a private and secure tunnel from your NAS to the Cloudflare network, without needing a public ip. This also allows to bypass Carrier Grade NAT (CGNAT) restrictions, ensuring your applications are reachable from the internet
 * [Cloudflare DDNS](https://hub.docker.com/r/joshuaavalon/cloudflare-ddns/) - automatically update Cloudflare with your IP address
@@ -38,7 +39,8 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Gitea](https://gitea.io/en-us/) - Simple self-hosted GitHub clone
 * [GitLab](https://about.gitlab.com/features/) - Self-hosted GitHub clone of the highest order
 * [Glances](https://nicolargo.github.io/glances/) - for seeing the state of your system via a web browser
-* [Gotify](https://gotify.net/) Self-hosted server for sending push notifications
+* [Gotify](https://gotify.net/) - Self-hosted server for sending push notifications
+* [Grafana](https://grafana.com/) - Query, visualize, alert on, and understand your data no matter where it’s stored (via stats role).
 * [Guacamole](https://guacamole.apache.org/) - Web based remote desktop gateway, supports VNC, RDP and SSH
 * [healthchecks.io](https://healthchecks.io/) - Ensure your NAS is online and get notified otherwise
 * [Heimdall](https://heimdall.site/) - Home server dashboard
@@ -72,6 +74,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Piwigo](https://piwigo.org/) - Photo Gallery Software
 * [Plex](https://www.plex.tv/) - Plex Media Server
 * [Portainer](https://portainer.io/) - for managing Docker and running custom images
+* [Prometheus](https://prometheus.io/) - Time series database and monitoring system (via stats role).
 * [Postfix Gmail relay](https://www.postfix.org/) - Setup Postfix as a Gmail relay and send emails whenever you want
 * [Prowlarr](https://github.com/Prowlarr/Prowlarr) - Indexer aggregator for Sonarr, Radarr, Lidarr, etc.
 * [pyLoad](https://pyload.net/) - A download manager with a friendly web-interface
@@ -83,6 +86,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Sickchill](https://sickchill.github.io/) - for managing TV episodes
 * [Sonarr](https://sonarr.tv/) - for downloading and managing TV episodes
 * [Speedtest-Tracker](https://github.com/henrywhitaker3/Speedtest-Tracker) - Continuously track your internet speed
+* Stats - Monitor and visualise metrics about your NAS and internet connection using Grafana, Prometheus, Telegraf and more.
 * [Syncthing](https://syncthing.net/) - sync directories with another device
 * [Tautulli](http://tautulli.com/) - Monitor Your Plex Media Server
 * [The Lounge](https://thelounge.chat) - Web based always-on IRC client
@@ -96,6 +100,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Wallabag](https://wallabag.org/) - Save and classify articles. Read them later.
 * [Watchtower](https://github.com/v2tec/watchtower) - Monitor your Docker containers and update them if a new version is available
 * [Wireshark](https://www.wireshark.org/) - the world’s foremost and widely-used network protocol analyzer.
+* [Woodpecker-CI](https://woodpecker-ci.org) - a simple CI engine with great extensibility, forked from Drone.
 * [YouTubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material) - Self-hosted YouTube downloader built on Material Design
 * [ZNC](https://wiki.znc.in/ZNC) - IRC bouncer to stay connected to favourite IRC networks and channels
 

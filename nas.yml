@@ -1,14 +1,15 @@
 ---
 - hosts: all
 
-  pre_tasks:
-    - import_tasks: tasks/users.yml
-      tags: users
-
   roles:
     ###
     ### Requirements
     ###
+    - role: ansible-nas-users
+      tags:
+        - ansible-nas-users
+        - ansible-nas
+
     - role: bertvv.samba
       tags:
         - samba
@@ -50,37 +51,34 @@
     - role: airsonic
       tags:
         - airsonic
-      when: (airsonic_enabled | default(False))
 
     - role: bazarr
       tags:
         - bazarr
-      when: (bazarr_enabled | default(False))
 
     - role: bitwarden
       tags:
         - bitwarden
-      when: (bitwarden_enabled | default(False))
 
     - role: booksonic
       tags:
         - booksonic
-      when: (booksonic_enabled | default(False))
 
     - role: calibre
       tags:
         - calibre
-      when: (calibre_enabled | default(False))
 
     - role: cloudcmd
       tags:
         - cloudcmd
-      when: (cloudcmd_enabled | default(False))
 
     - role: cloudflare_ddns
       tags:
         - cloudflare_ddns
-      when: (cloudflare_ddns_enabled | default(False))
+
+    - role: code-server
+      tags:
+        - code-server
 
     - role: cloudflared
       tags:
@@ -90,7 +88,6 @@
     - role: couchpotato
       tags:
         - couchpotato
-      when: (couchpotato_enabled | default(False))
 
     - role: dashy
       tags:
@@ -150,7 +147,6 @@
     - role: gitea
       tags:
         - gitea
-      when: (gitea_enabled | default(False))
 
     - role: gitlab
       tags:
@@ -211,6 +207,11 @@
       tags:
         - komga
       when: (komga_enabled | default(False))
+
+    - role: krusader
+      tags:
+        - krusader
+      when: (krusader_enabled | default(False))
 
     - role: lidarr
       tags:
@@ -362,16 +363,6 @@
         - readarr
       when: (readarr_enabled | default(False))
 
-    - role: scrutiny
-      tags:
-        - scrutiny
-      when: (scrutiny_enabled | default(False))
-
-    - role: sabnzbd
-      tags:
-        - sabnzbd
-      when: (sabnzbd_enabled | default(False))
-
     - role: route53_ddns
       tags:
         - route53_ddns
@@ -387,6 +378,11 @@
         - sabnzbd
       when: (sabnzbd_enabled | default(False))
 
+    - role: scrutiny
+      tags:
+        - scrutiny
+      when: (scrutiny_enabled | default(False))
+
     - role: sickchill
       tags:
         - sickchill
@@ -401,6 +397,11 @@
       tags:
         - speedtest-tracker
       when: (speedtest_tracker_enabled | default(False))
+
+    - role: stats
+      tags:
+        - stats
+      when: (stats_enabled | default(False))
 
     - role: syncthing
       tags:
@@ -457,11 +458,6 @@
         - virtual_desktop
       when: (virtual_desktop_enabled | default(False))
 
-    - role: vscode
-      tags:
-        - vscode
-      when: (vscode_enabled | default(False))
-
     - role: wallabag
       tags:
         - wallabag
@@ -476,6 +472,11 @@
       tags:
         - wireshark
       when: (wireshark_enabled | default(False))
+
+    - role: woodpecker-ci
+      tags:
+        - woodpecker_ci
+      when: (woodpecker_ci_enabled | default(False))
 
     - role: youtubedlmaterial
       tags:
