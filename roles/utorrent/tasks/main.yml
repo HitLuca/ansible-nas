@@ -14,7 +14,7 @@
     image: ekho/utorrent:latest
     pull: true
     volumes:
-      - "{{ utorrent_download_directory }}:/data:rw"
+      - "{{ utorrent_download_directory }}:/downloads:rw"
       - "{{ utorrent_config_directory }}:/utorrent/settings:rw"
       - "{{ torrents_root }}:/utorrent/torrents:rw"
     ports:

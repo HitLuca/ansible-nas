@@ -14,6 +14,7 @@
         env:
           TZ: "{{ ansible_nas_timezone }}"
           DEFAULT_WORKSPACE: "/code"
+          SUDO_PASSWORD: "{{ sudo_password }}"
           PUID: "{{ code_server_user_id }}"
           PGID: "{{ code_server_group_id }}"
         restart_policy: unless-stopped

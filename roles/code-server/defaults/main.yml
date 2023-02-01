@@ -14,6 +14,8 @@ code_server_group_id: "0"
 code_server_port: "8443"
 code_server_hostname: "code-server"
 
+sudo_password: "password"
+
 # specs
 code_server_memory: 1g
 
