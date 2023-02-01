@@ -9,3 +9,7 @@ exclude_paths:
   - roles/geerlingguy.docker
   - roles/geerlingguy.docker_arm
   - roles/geerlingguy.nfs
+
+mock_modules:
+  - docker_container
+  - docker_container_info

@@ -14,3 +14,6 @@ esphome_hostname: "esphome"
 
 # specs
 esphome_memory: 1g
+
+# docker
+esphome_container_name: esphome

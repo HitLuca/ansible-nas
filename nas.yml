@@ -92,42 +92,38 @@
     - role: dashy
       tags:
         - dashy
-      when: (dashy_enabled | default(False))
 
     - role: deluge
       tags:
         - deluge
-      when: (deluge_enabled | default(False))
 
     - role: dokuwiki
       tags:
         - dokuwiki
-      when: (dokuwiki_enabled | default(False))
+
+    - role: drone-ci
+      tags:
+        - drone_ci
 
     - role: duplicacy
       tags:
         - duplicacy
-      when: (duplicacy_enabled | default(False))
 
     - role: duplicati
       tags:
         - duplicati
-      when: (duplicati_enabled | default(False))
 
     - role: emby
       tags:
         - emby
-      when: (emby_enabled | default(False))
 
     - role: esphome
       tags:
         - esphome
-      when: (esphome_enabled | default(False))
 
     - role: firefly
       tags:
         - firefly
-      when: (firefly_enabled | default(False))
 
     - role: flaresolverr
       tags:
@@ -177,6 +173,10 @@
       tags:
         - heimdall
       when: (heimdall_enabled | default(False))
+
+    - role: hello_world
+      tags:
+        - hello_world
 
     - role: homeassistant
       tags:
@@ -277,6 +277,10 @@
       tags:
         - nextcloud
       when: (nextcloud_enabled | default(False))
+
+    - role: nomad
+      tags:
+        - nomad
 
     - role: nzbget
       tags:
