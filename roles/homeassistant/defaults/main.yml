@@ -11,3 +11,5 @@ homeassistant_hostname: "homeassistant"
 
 # specs
 homeassistant_memory: 1g
+
+homeassistant_zigbee_gateway_serial_interface: ""

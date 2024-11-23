@@ -13,6 +13,8 @@
     pull: true
     volumes:
       - "{{ homeassistant_data_directory }}/config:/config:rw"
+    devices:
+      - "{{ homeassistant_zigbee_gateway_serial_interface }}:{{ homeassistant_zigbee_gateway_serial_interface }}"
     network_mode: host
     restart_policy: unless-stopped
     env:
