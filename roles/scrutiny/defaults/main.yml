@@ -6,9 +6,12 @@ scrutiny_available_externally: false
 # network
 scrutiny_hostname: "scrutiny"
 scrutiny_port: "8081"
+scrutiny_port_2: "8086"
 
 # devices
 scrutiny_devices: []
 
 # specs
 scrutiny_memory: 1g
+
+scrutiny_config_directory: "{{ docker_home }}/scrutiny"

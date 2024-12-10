@@ -10,15 +10,19 @@
 - name: Scrutiny Docker Container
   docker_container:
     name: scrutiny
-    image: analogj/scrutiny
+    image: ghcr.io/analogj/scrutiny:master-omnibus
     pull: true
     capabilities:
       - SYS_RAWIO
+      - SYS_ADMIN
     devices: "{{ scrutiny_devices }}"
     volumes:
-      - "{{ deluge_config_directory }}/run/udev:/run/udev:ro"
+      - "/run/udev:/run/udev:ro"
+      - "{{ scrutiny_config_directory }}/config/:/opt/scrutiny/config"
+      - "{{ scrutiny_config_directory }}/influxdb:/opt/scrutiny/influxdb"
     ports:
       - "{{ scrutiny_port }}:8080"
+      - "{{ scrutiny_port_2 }}:8086"
     restart_policy: unless-stopped
     memory: "{{ scrutiny_memory }}"
     labels:
