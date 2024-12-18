@@ -5,6 +5,8 @@ duplicati_available_externally: false
 # directories
 duplicati_data_directory: "{{ docker_home }}/duplicati/config"
 
+duplicati_media_directory: "/media"
+
 # permissions
 duplicati_data_permissions: "rw" # set this to rw to enable the ability to restore data
 
