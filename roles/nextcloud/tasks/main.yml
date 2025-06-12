@@ -40,6 +40,9 @@
       MYSQL_USER: "{{ nextcloud_sql_user }}"
       MYSQL_PASSWORD: "{{ nextcloud_sql_password }}"
       NEXTCLOUD_TRUSTED_DOMAINS: "{{ nextcloud_hostname }}.{{ ansible_nas_domain }}"
+      TRUSTED_PROXIES: "{{ nextcloud_trusted_proxies }}"
+      OVERWRITEHOST: "{{ nextcloud_overwrite_host }}"
+      OVERWRITEPROTOCOL: "https"
     restart_policy: unless-stopped
     memory: "{{ nextcloud_memory }}"
     labels:

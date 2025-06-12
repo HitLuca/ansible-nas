@@ -22,3 +22,6 @@ nextcloud_sql_root_password: "nextcloud-secret"
 # specs
 nextcloud_memory: 1g
 nextcloud_mysql_memory: 1g
+
+nextcloud_trusted_proxies: "127.0.0.1"
+nextcloud_overwrite_host: "{{ nextcloud_hostname }}.{{ ansible_nas_domain }}"
