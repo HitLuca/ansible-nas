@@ -27,7 +27,7 @@ Before running anything, check out the playbook and understand what it does. ***
 
 1. Clone Ansible-NAS:
 
-    `git clone https://github.com/davestephens/ansible-nas.git && cd ansible-nas`
+    `git clone https://github.com/HitLuca/ansible-nas.git && cd ansible-nas`
 
 2. Create your own inventory and config files by copying `inventories/sample` to your own directory:
 

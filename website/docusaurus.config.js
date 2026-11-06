@@ -8,15 +8,15 @@ const darkCodeTheme = require('prism-react-renderer').themes.dracula;
 const config = {
   title: 'Ansible-NAS',
   tagline: 'Easily build a homelab or NAS replacement with an Ubuntu server and some basic hardware',
-  url: 'https://ansible-nas.io',
-  baseUrl: '/',
+  url: 'https://hitluca.github.io',
+  baseUrl: '/ansible-nas/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'davestephens', // Usually your GitHub org/user name.
+  organizationName: 'HitLuca', // Usually your GitHub org/user name.
   projectName: 'ansible-nas', // Usually your repo name.
   trailingSlash: true,
 
@@ -38,7 +38,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/davestephens/ansible-nas/tree/main/website',
+            'https://github.com/HitLuca/ansible-nas/tree/main/website',
         },
         blog: {
           showReadingTime: true,
@@ -80,7 +80,7 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://github.com/davestephens/ansible-nas',
+            href: 'https://github.com/HitLuca/ansible-nas',
             label: 'GitHub',
             position: 'right',
           },
@@ -103,15 +103,6 @@ const config = {
             ],
           },
           {
-            title: 'Community',
-            items: [
-              {
-                label: 'Gitter.im',
-                href: 'https://gitter.im/Ansible-NAS/Chat',
-              },
-            ],
-          },
-          {
             title: 'More',
             items: [
               {
@@ -120,24 +111,16 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/HitLuca/ansible-nas',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} David Stephens. Site built with Docusaurus.`,
+        copyright: `Copyright © 2017-2025 David Stephens, © ${new Date().getFullYear()} Luca Simonetto. Site built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-      },
-      announcementBar: {
-        id: 'support_us',
-        content:
-          'Enjoying Ansible NAS? Please consider supporting further development by <a target="_blank" rel="noopener noreferrer" href="https://ko-fi.com/davestephens">buying me a coffee ☕</a>',
-        backgroundColor: '#fafbfc',
-        textColor: '#091E42',
-        isCloseable: false,
       },
     }),
 };
