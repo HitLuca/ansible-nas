@@ -1,0 +1,25 @@
+---
+# Weekly, grouped update PRs. The cooldown skips releases younger than two
+# weeks, matching how versions are pinned by hand in this repo.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  # requirements-dev.txt (pre-commit, molecule)
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    groups:
+      dev-tools:
+        patterns: ["*"]
