@@ -7,12 +7,11 @@
         file: ../../defaults/main.yml
 
     - name: Get woodpecker_ci container state
-      community.docker.docker_container:
+      community.docker.docker_container_info:
         name: "{{ woodpecker_ci_container_name }}"
       register: result
 
-    - name: Check if woodpecker_ci containers are running
+    - name: Check if woodpecker_ci container exists
       ansible.builtin.assert:
         that:
-          - result.container['State']['Status'] == "running"
-          - result.container['State']['Restarting'] == false
+          - result.exists

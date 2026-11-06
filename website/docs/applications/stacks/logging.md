@@ -24,6 +24,4 @@ Once set up, all container stdout logs will be captured and stored. You'll find 
 Read more:
 
 - [Grafana](../observability/grafana.md)
-- [Loki](../system-tools/loki.md)
-- [Minio](../system-tools/minio.md)
-- [Promtail](../system-tools/promtail.md)
+- [Loki](../system-tools/loki.md)- [Promtail](../system-tools/promtail.md)

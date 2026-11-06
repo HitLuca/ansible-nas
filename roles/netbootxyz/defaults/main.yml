@@ -15,7 +15,7 @@ netbootxyz_port_tftp: "69"
 # docker
 netbootxyz_container_name: "netbootxyz"
 netbootxyz_image_name: "linuxserver/netbootxyz"
-netbootxyz_image_version: "latest"
+netbootxyz_image_version: "0.7.6"
 netbootxyz_user_id: "1000"
 netbootxyz_group_id: "1000"
 

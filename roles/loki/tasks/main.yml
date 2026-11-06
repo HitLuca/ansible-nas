@@ -1,11 +1,6 @@
 ---
 - name: Start Loki
   block:
-    - name: Check for Minio installation
-      ansible.builtin.fail:
-        msg: "Loki requires Minio enabled and running for storage, please set that up first."
-      when: minio_enabled is false
-
     - name: Check for Grafana installation
       ansible.builtin.fail:
         msg: "Loki requires Grafana (stats_enabled: true) enabled and running for visualisation, please set that up first."
@@ -20,14 +15,7 @@
         state: directory
       with_items:
         - "{{ loki_data_directory }}"
-
-    - name: Create Minio buckets for Loki
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-      with_items:
-        - "{{ minio_data_directory }}/data/loki-data"
-        - "{{ minio_data_directory }}/data/loki-ruler"
+        - "{{ loki_data_directory }}/data"
 
     - name: Template Loki config
       ansible.builtin.template:
@@ -47,6 +35,7 @@
           - 9095
         volumes:
           - "{{ loki_data_directory }}/config.yml:/etc/loki/config.yml"
+          - "{{ loki_data_directory }}/data:/loki/data"
         restart_policy: unless-stopped
         memory: "{{ loki_memory }}"
         restart: "{{ loki_config is changed }}"

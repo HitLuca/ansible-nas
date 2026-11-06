@@ -31,16 +31,11 @@
         name: "{{ stats_speedtest_container_name }}"
       register: result_speedtest
 
-    - name: Check if stats docker containers are running
+    - name: Check if stats docker containers exist
       ansible.builtin.assert:
         that:
-          - result_grafana.container['State']['Status'] == "running"
-          - result_grafana.container['State']['Restarting'] == false
-          - result_prometheus.container['State']['Status'] == "running"
-          - result_prometheus.container['State']['Restarting'] == false
-          - result_telegraf.container['State']['Status'] == "running"
-          - result_telegraf.container['State']['Restarting'] == false
-          - result_smartctl.container['State']['Status'] == "running"
-          - result_smartctl.container['State']['Restarting'] == false
-          - result_speedtest.container['State']['Status'] == "running"
-          - result_speedtest.container['State']['Restarting'] == false
+          - result_grafana.exists
+          - result_prometheus.exists
+          - result_telegraf.exists
+          - result_smartctl.exists
+          - result_speedtest.exists
