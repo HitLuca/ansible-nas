@@ -7,8 +7,12 @@ overseerr_data_directory: "{{ docker_home }}/overseerr"
 
 # docker
 overseerr_container_name: "overseerr"
-overseerr_image_name: "sctx/overseerr"
-overseerr_image_version: "latest"
+# Seerr, the maintained successor of Overseerr. It migrates an existing
+# Overseerr config automatically on first start.
+overseerr_image_name: "ghcr.io/seerr-team/seerr"
+overseerr_image_version: "v3.5.1"
+# The image runs as the node user (UID/GID 1000); the config folder is
+# chowned to these so it can read and write it.
 overseerr_user_id: "1000"
 overseerr_group_id: "1000"
 
