@@ -7,7 +7,6 @@
 # enabling e.g. minio on its own. Each role already defaults to false.
 - name: Enable logging roles
   ansible.builtin.set_fact:  # noqa: var-naming[no-role-prefix] - intentionally toggles other roles
-    minio_enabled: true
     loki_enabled: true
     promtail_enabled: true
   when: logging_stack_enabled is true
