@@ -111,7 +111,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Virtual Desktop](https://github.com/RattyDAVE/docker-ubuntu-xrdp-mate-custom) - A virtual desktop running on your NAS.
 * [Wallabag](https://wallabag.org/) - Save and classify articles. Read them later.
 * [Watchtower](https://github.com/v2tec/watchtower) - Monitor your Docker containers and update them if a new version is available
-* [Wireshark](https://www.wireshark.org/) - the world’s foremost and widely-used network protocol analyzer.
+* [Wireshark](https://www.wireshark.org/) - the world's foremost and widely-used network protocol analyzer.
 * [Woodpecker-CI](https://woodpecker-ci.org) - a simple CI engine with great extensibility, forked from Drone.
 * [YouTubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material) - Self-hosted YouTube downloader built on Material Design
 * [Zigbee2MQTT](https://www.zigbee2mqtt.io/) - Use Zigbee devices without the vendor's bridge or gateway, exposed over MQTT
