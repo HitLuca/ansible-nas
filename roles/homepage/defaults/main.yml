@@ -55,7 +55,7 @@ homepage_bookmarks_yaml:
   - Developer:
       - "Ansible-NAS":
           - abbr: AN
-            href: https://ansible-nas.io/
+            href: https://hitluca.github.io/ansible-nas/
       - Github:
           - abbr: GH
             href: https://github.com/
