@@ -13,6 +13,6 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.32.2
+    rev: v0.49.1
     hooks:
       - id: markdownlint
