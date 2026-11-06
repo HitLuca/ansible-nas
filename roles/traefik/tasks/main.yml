@@ -13,13 +13,13 @@
       ansible.builtin.template:
         src: traefik.yml
         dest: "{{ traefik_data_directory }}/traefik.yml"
-      register: template_config
+      register: traefik_template_config
 
     - name: Template Traefik dynamic_config.yml
-      template:
+      ansible.builtin.template:
         src: dynamic_config.yml
         dest: "{{ traefik_data_directory }}/dynamic_config.yml"
-      register: template_dynamic_config
+      register: traefik_template_dynamic_config
 
     - name: Traefik Docker Container
       community.docker.docker_container:
@@ -35,7 +35,7 @@
         env: "{{ traefik_environment_variables }}"
         restart_policy: unless-stopped
         memory: "{{ traefik_memory }}"
-        recreate: "{{ template_config is changed or template_dynamic_config is changed }}"
+        recreate: "{{ traefik_template_config is changed or traefik_template_dynamic_config is changed }}"
         labels:
           homepage.group: Networking
           homepage.name: Traefik
