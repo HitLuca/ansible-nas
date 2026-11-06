@@ -12,11 +12,11 @@
       ansible.builtin.template:
         src: telegraf.conf.j2
         dest: "{{ stats_telegraf_config_directory }}/telegraf.conf"
-      register: telegraf_config
+      register: stats_telegraf_config
 
     - name: Get Docker daemon uid
       ansible.builtin.command: stat -c '%g' /var/run/docker.sock
-      register: docker_uid
+      register: stats_docker_uid
       changed_when: false
 
     - name: Telegraf Docker Container
@@ -29,7 +29,7 @@
         ports:
           - "{{ stats_telegraf_influxdb_port }}:8086"
           - "{{ stats_telegraf_port }}:9273"
-        user: "telegraf:{{ docker_uid.stdout }}"
+        user: "telegraf:{{ stats_docker_uid.stdout }}"
         volumes:
           - "{{ stats_telegraf_config_directory }}:/etc/telegraf/:ro"
           - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -48,7 +48,7 @@
           HOST_MOUNT_PREFIX: "/hostfs"
         restart_policy: unless-stopped
         memory: 1g
-        restart: "{{ telegraf_config is changed }}"
+        restart: "{{ stats_telegraf_config is changed }}"
   when: stats_enabled is true
 
 - name: Stop Telegraf
