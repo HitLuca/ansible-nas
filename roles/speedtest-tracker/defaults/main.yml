@@ -13,10 +13,19 @@ speedtest_tracker_group_id: "0"
 speedtest_tracker_port: "8765"
 speedtest_tracker_hostname: "speedtest-tracker"
 
+# application
+# Required. Encrypts stored data; generate once and keep it, e.g.:
+#   echo "base64:$(openssl rand -base64 32)"
+speedtest_tracker_app_key: ""
+# URL the app is reached on, used for links it generates.
+speedtest_tracker_app_url: "http://{{ ansible_default_ipv4.address }}:{{ speedtest_tracker_port }}"
+# Cron schedule for automatic tests (every 6 hours by default).
+speedtest_tracker_schedule: "0 */6 * * *"
+
 # docker
 speedtest_container_name: "speedtest-tracker"
-speedtest_image_name: "henrywhitaker3/speedtest-tracker"
-speedtest_image_version: "latest"
+speedtest_image_name: "lscr.io/linuxserver/speedtest-tracker"
+speedtest_image_version: "v1.15.1-ls177"
 
 # specs
 speedtest_tracker_memory: 1g
