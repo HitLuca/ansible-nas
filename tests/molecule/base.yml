@@ -36,6 +36,8 @@ provisioner:
         podcasts_root: /tmp/ansible-nas/shares/podcasts
         torrents_root: /tmp/ansible-nas/shares/torrents
         tv_root: /tmp/ansible-nas/shares/tv
+        roms_root: /tmp/ansible-nas/shares/roms
+        recordings_root: /tmp/ansible-nas/shares/recordings
   playbooks:
     prepare: ../../../../tests/molecule/resources/playbooks/prepare.yml
     converge: ../../../../tests/molecule/resources/playbooks/converge.yml
