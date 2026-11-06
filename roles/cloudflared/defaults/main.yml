@@ -1,0 +1,10 @@
+---
+cloudflared_enabled: false
+
+cloudflared_token: ""
+
+# specs
+cloudflared_memory: 512MB
+
+# docker
+cloudflared_container_name: cloudflared

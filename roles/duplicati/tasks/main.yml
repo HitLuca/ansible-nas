@@ -19,11 +19,14 @@
           - "{{ duplicati_data_directory }}:/config:rw"
           - "{{ samba_shares_root }}:/source/shares:{{ duplicati_data_permissions }}"
           - "{{ docker_home }}:/source/docker:{{ duplicati_data_permissions }}"
+          - "{{ duplicati_media_directory }}:/media"
           - "/etc/timezone:/etc/timezone:ro"
         env:
           TZ: "{{ ansible_nas_timezone }}"
           PUID: "{{ duplicati_user_id }}"
           PGID: "{{ duplicati_group_id }}"
+          SETTINGS_ENCRYPTION_KEY: "{{ duplicati_settings_encryption_key }}"
+          # DUPLICATI__WEBSERVICE_PASSWORD: "1234"
         restart_policy: unless-stopped
         memory: "{{ duplicati_memory }}"
         labels:

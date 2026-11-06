@@ -9,11 +9,17 @@
         - "{{ traefik_data_directory }}"
         - "{{ traefik_data_directory }}/letsencrypt"
 
-    - name: Template Traefik config.toml
+    - name: Template Traefik config.yml
       ansible.builtin.template:
-        src: traefik.toml
-        dest: "{{ traefik_data_directory }}/traefik.toml"
+        src: traefik.yml
+        dest: "{{ traefik_data_directory }}/traefik.yml"
       register: template_config
+
+    - name: Template Traefik dynamic_config.yml
+      template:
+        src: dynamic_config.yml
+        dest: "{{ traefik_data_directory }}/dynamic_config.yml"
+      register: template_dynamic_config
 
     - name: Traefik Docker Container
       community.docker.docker_container:
@@ -22,13 +28,14 @@
         pull: true
         network_mode: host
         volumes:
-          - "{{ traefik_data_directory }}/traefik.toml:/etc/traefik/traefik.toml:ro"
+          - "{{ traefik_data_directory }}/traefik.yml:/etc/traefik/traefik.yml:ro"
+          - "{{ traefik_data_directory }}/dynamic_config.yml:/etc/traefik/dynamic_config.yml:ro"
           - "{{ traefik_data_directory }}/letsencrypt:/letsencrypt:rw"
           - "/var/run/docker.sock:/var/run/docker.sock:ro"
         env: "{{ traefik_environment_variables }}"
         restart_policy: unless-stopped
         memory: "{{ traefik_memory }}"
-        recreate: "{{ template_config is changed }}"
+        recreate: "{{ template_config is changed or template_dynamic_config is changed }}"
         labels:
           homepage.group: Networking
           homepage.name: Traefik
