@@ -22,3 +22,4 @@ apcupsd_annoy: 300
 apcupsd_annoydelay: 60
 apcupsd_nologon: "disable"
 apcupsd_killdelay: 0
+apcupsd_device: "/dev/null"

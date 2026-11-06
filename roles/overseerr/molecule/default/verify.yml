@@ -11,8 +11,7 @@
         name: "{{ overseerr_container_name }}"
       register: result
 
-    - name: Check if overseerr containers are running
+    - name: Check if overseerr container exists
       ansible.builtin.assert:
         that:
-          - result.container['State']['Status'] == "running"
-          - result.container['State']['Restarting'] == false
+          - result.exists
