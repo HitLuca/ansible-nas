@@ -1,0 +1,39 @@
+---
+- name: Start Nebula Sync
+  block:
+    - name: Check Nebula Sync primary and replicas are set
+      ansible.builtin.assert:
+        that:
+          - nebula_sync_primary | length > 0
+          - nebula_sync_replicas | length > 0
+        fail_msg: >-
+          nebula_sync_primary and nebula_sync_replicas are required, each entry
+          formatted as "<url>|<app password>".
+
+    - name: Create Nebula Sync Docker Container
+      community.docker.docker_container:
+        name: "{{ nebula_sync_container_name }}"
+        image: "{{ nebula_sync_image_name }}:{{ nebula_sync_image_version }}"
+        pull: true
+        network_mode: host
+        env: "{{ nebula_sync_base_env | combine(nebula_sync_extra_env) }}"
+        restart_policy: unless-stopped
+        memory: "{{ nebula_sync_memory }}"
+      vars:
+        nebula_sync_base_env:
+          PRIMARY: "{{ nebula_sync_primary }}"
+          REPLICAS: "{{ nebula_sync_replicas | join(',') }}"
+          FULL_SYNC: "{{ nebula_sync_full_sync | string | lower }}"
+          RUN_GRAVITY: "{{ nebula_sync_run_gravity | string | lower }}"
+          CRON: "{{ nebula_sync_cron }}"
+          CLIENT_SKIP_TLS_VERIFICATION: "{{ nebula_sync_skip_tls_verification | string | lower }}"
+          TZ: "{{ ansible_nas_timezone }}"
+  when: nebula_sync_enabled is true
+
+- name: Stop Nebula Sync
+  block:
+    - name: Stop Nebula Sync
+      community.docker.docker_container:
+        name: "{{ nebula_sync_container_name }}"
+        state: absent
+  when: nebula_sync_enabled is false
