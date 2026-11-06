@@ -15,7 +15,7 @@
       ansible.builtin.template:
         src: config.yml
         dest: "{{ cloudflare_data_directory }}/config.yml"
-      register: template_files_result
+      register: cloudflare_ddns_template_files_result
 
     - name: Cloudflare Dynamic DNS Container
       community.docker.docker_container:
@@ -26,7 +26,7 @@
           - "{{ cloudflare_data_directory }}/config.yml:/app/config.yaml"
         restart_policy: unless-stopped
         memory: "{{ cloudflare_memory }}"
-        recreate: "{{ template_files_result is changed }}"
+        recreate: "{{ cloudflare_ddns_template_files_result is changed }}"
   when: cloudflare_ddns_enabled is true
 
 - name: Stop Cloudflare DDNS
