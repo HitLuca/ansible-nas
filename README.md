@@ -16,7 +16,6 @@ If you have a spare domain name you can configure applications to be accessible 
 
 ## Available Applications
 
-* [Airsonic](https://airsonic.github.io/) - catalog and stream music
 * [Apcupsd](http://www.apcupsd.org/) - A daemon for controlling APC UPSes
 * [Bazarr](https://github.com/morpheus65535/bazarr) - companion to Radarr and Sonarr for downloading subtitles
 * [Bitwarden](https://github.com/dani-garcia/vaultwarden) - Password Manger (Technically Vaultwarden, a lightweight implementation in Rust)
@@ -26,7 +25,6 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Code Server](https://code.visualstudio.com/) - Powerful IDE from Microsoft accessible through the browser
 * [Cloud Commander](https://cloudcmd.io/) - A dual panel file manager with integrated web console and text editor
 * [Cloudflare DDNS](https://hub.docker.com/r/joshuaavalon/cloudflare-ddns/) - automatically update Cloudflare with your IP address
-* [CouchPotato](https://couchpota.to/) - for downloading and managing movies
 * [Dashy](https://dashy.to/) - A self-hosted startpage for your server. Easy to use visual editor, status checking, widgets, themes and tons more!
 * [DDNS Updater](https://github.com/qdm12/ddns-updater) - dynamic dns updater for serveral providers
 * [Deluge](https://dev.deluge-torrent.org/) - A lightweight, Free Software, cross-platform BitTorrent client.
@@ -39,7 +37,6 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Firefly III](https://firefly-iii.org/) - Free and open source personal finance manager
 * [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) - FlareSolverr is a proxy server to bypass Cloudflare and DDoS-GUARD protection
 * [Fresh RSS](https://freshrss.org/) - Self-hosted RSS feed aggregator like Leed or Kriss Feed
-* [get_iplayer](https://github.com/get-iplayer/get_iplayer) - download programmes from BBC iplayer
 * [Gitea](https://gitea.io/en-us/) - Simple self-hosted GitHub clone
 * [GitLab](https://about.gitlab.com/features/) - Self-hosted GitHub clone of the highest order
 * [Glances](https://nicolargo.github.io/glances/) - for seeing the state of your system via a web browser
@@ -50,7 +47,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [healthchecks.io](https://healthchecks.io/) - Ensure your NAS is online and get notified otherwise
 * [Heimdall](https://heimdall.site/) - Home server dashboard
 * [Home Assistant](https://www.home-assistant.io) - Open source home automation
-* [Homebridge](https://github.com/nfarina/homebridge) - Emulate the iOS HomeKit API
+* [Homebridge](https://homebridge.io) - Emulate the iOS HomeKit API
 * [iSpy Agent DVR](https://www.ispyconnect.com/) - iSpy - Agent DVR is a video surveillance software
 * [Jackett](https://github.com/Jackett/Jackett) - API Support for your favorite torrent trackers
 * [Jellyfin](https://jellyfin.github.io) - The Free Software Media System
@@ -80,7 +77,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Ombi](https://ombi.io/) - web application that automatically gives your users the ability to request content
 * [openHAB](https://www.openhab.org/) - A vendor and technology agnostic open source automation software for your home
 * [Organizr](https://organizr.app/) - ORGANIZR aims to be your one stop shop for your Servers Frontend.
-* [overseerr](https://docs.overseerr.dev) - open source software application for managing requests for your media library
+* [Seerr](https://docs.seerr.dev) - open source software application for managing requests for your media library (successor of Overseerr, deployed by the `overseerr` role)
 * [Paperless_ng](https://github.com/jonaswinkler/paperless-ng) - Scan, index and archive all your physical documents
 * [Piwigo](https://piwigo.org/) - Photo Gallery Software
 * [Plex](https://www.plex.tv/) - Plex Media Server
@@ -89,7 +86,6 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Promtail](https://grafana.com/docs/loki/latest/clients/promtail/) - Promtail is an agent which ships the contents of local logs to a private Grafana Loki instance
 * [Prowlarr](https://github.com/Prowlarr/Prowlarr) - Indexer aggregator for Sonarr, Radarr, Lidarr, etc.
 * [pyLoad](https://pyload.net/) - A download manager with a friendly web-interface
-* [PyTivo](http://pytivo.org) - An HMO and GoBack server for TiVos.
 * [Radarr](https://radarr.video/) - for organising and downloading movies
 * [Romm](https://github.com/zurdi15/romm) - A game library manager focused on retro gaming
 * [Route53 DDNS](https://crazymax.dev/ddns-route53/) - Automatically update AWS Route53 with your IP address
@@ -98,7 +94,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Sickchill](https://sickchill.github.io/) - for managing TV episodes
 * [Silverbullet](https://silverbullet.md) - Note-taking application optimized for people with a hacker mindset
 * [Sonarr](https://sonarr.tv/) - for downloading and managing TV episodes
-* [Speedtest-Tracker](https://github.com/henrywhitaker3/Speedtest-Tracker) - Continuously track your internet speed
+* [Speedtest-Tracker](https://github.com/alexjustesen/speedtest-tracker) - Continuously track your internet speed
 * Stats - Monitor and visualise metrics about your NAS and internet connection using Grafana, Prometheus, Telegraf and more.
 * [Syncthing](https://syncthing.net/) - sync directories with another device
 * [Tautulli](http://tautulli.com/) - Monitor Your Plex Media Server
@@ -109,7 +105,6 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Traefik](https://traefik.io/) - Web proxy and SSL certificate manager
 * [Transmission](https://transmissionbt.com/) - BitTorrent client (with OpenVPN if you have a supported VPN provider)
 * [Ubooquity](http://vaemendis.net/ubooquity/) - Book and comic server
-* [uTorrent](https://www.utorrent.com/) - The best torrent downloading app for beginners
 * [Valheim Server](https://github.com/mbround18/valheim-docker) - Valheim dedicated gameserver manager.
 * [Virtual Desktop](https://github.com/RattyDAVE/docker-ubuntu-xrdp-mate-custom) - A virtual desktop running on your NAS.
 * [Wallabag](https://wallabag.org/) - Save and classify articles. Read them later.

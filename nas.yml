@@ -53,10 +53,6 @@
     ###
     ### Applications
     ###
-    - role: airsonic
-      tags:
-        - airsonic
-
     - role: apcupsd
       tags:
         - apcupsd
@@ -100,10 +96,6 @@
     - role: code-server
       tags:
         - code-server
-
-    - role: couchpotato
-      tags:
-        - couchpotato
 
     - role: dashy
       tags:
@@ -152,10 +144,6 @@
     - role: freshrss
       tags:
         - freshrss
-
-    - role: get_iplayer
-      tags:
-        - get_iplayer
 
     - role: gitea
       tags:
@@ -349,10 +337,6 @@
       tags:
         - pyload
 
-    - role: pytivo
-      tags:
-        - pytivo
-
     - role: radarr
       tags:
         - radarr
@@ -432,10 +416,6 @@
     - role: ubooquity
       tags:
         - ubooquity
-
-    - role: utorrent
-      tags:
-        - utorrent
 
     - role: valheim
       tags:
