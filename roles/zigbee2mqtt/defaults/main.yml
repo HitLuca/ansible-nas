@@ -1,0 +1,24 @@
+---
+# enable or disable the application
+zigbee2mqtt_enabled: false
+zigbee2mqtt_available_externally: false
+
+# directories
+zigbee2mqtt_data_directory: "{{ docker_home }}/zigbee2mqtt"
+
+# Zigbee adapter on the host, e.g. /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_...
+# Prefer the stable /dev/serial/by-id/ path over /dev/ttyACM0 or /dev/ttyUSB0, which can change on reboot.
+# Required. Inside the container it is always mapped to /dev/ttyACM0.
+zigbee2mqtt_device_path: ""
+
+# network
+zigbee2mqtt_hostname: "zigbee2mqtt"
+zigbee2mqtt_port: "8080"
+
+# docker
+zigbee2mqtt_container_name: "zigbee2mqtt"
+zigbee2mqtt_image_name: "koenkk/zigbee2mqtt"
+zigbee2mqtt_image_version: "2.14.3"
+
+# specs
+zigbee2mqtt_memory: "512MB"

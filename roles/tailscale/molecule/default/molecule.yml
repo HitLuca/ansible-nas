@@ -1,0 +1,9 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        tailscale_enabled: true
+        # Normally comes from the ansible-nas-general role's defaults, which
+        # molecule doesn't load when testing this role on its own.
+        ansible_nas_hostname: ansible-nas
