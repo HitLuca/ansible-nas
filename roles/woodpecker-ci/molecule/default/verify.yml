@@ -7,7 +7,7 @@
         file: ../../defaults/main.yml
 
     - name: Get woodpecker_ci container state
-      community.docker.docker_container:
+      community.docker.docker_container_info:
         name: "{{ woodpecker_ci_container_name }}"
       register: result
 
