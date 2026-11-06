@@ -2,7 +2,7 @@ Vagrant.require_version ">= 2.2.2"
 
 Vagrant.configure(2) do |config|
   config.vm.define "ansible-nas-test" do
-    config.vm.box = "ubuntu/bionic64"
+    config.vm.box = "ubuntu/jammy64"
     config.vm.network "private_network", ip: "172.30.1.5"
     config.ssh.insert_key = false
 
