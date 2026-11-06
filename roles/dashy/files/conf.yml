@@ -5,9 +5,9 @@ pageInfo:
   description: Welcome to your Ansible-NAS dashboard
   navLinks:
     - title: Ansible-NAS
-      path: https://ansible-nas.io
+      path: https://hitluca.github.io/ansible-nas/
     - title: GitHub
-      path: https://github.com/davestephens/ansible-nas
+      path: https://github.com/HitLuca/ansible-nas
 
 # Optional app settings and configuration
 appConfig:
