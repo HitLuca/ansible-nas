@@ -1,0 +1,9 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        zigbee2mqtt_enabled: true
+        # No Zigbee adapter in CI. With no configuration.yml, Zigbee2MQTT starts
+        # its onboarding UI and waits there, so the container stays running.
+        zigbee2mqtt_device_path: "/dev/null"

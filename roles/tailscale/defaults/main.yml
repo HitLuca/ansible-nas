@@ -1,0 +1,32 @@
+---
+# enable or disable the application
+tailscale_enabled: false
+
+# directories
+tailscale_data_directory: "{{ docker_home }}/tailscale"
+
+# Name of this machine in your tailnet
+tailscale_hostname: "{{ ansible_nas_hostname }}"
+
+# Optional auth key from https://login.tailscale.com/admin/settings/keys.
+# Leave empty to log in through the URL printed in the container logs on first start.
+# Only used until the node is logged in; the login is then kept in tailscale_data_directory.
+tailscale_auth_key: ""
+
+# Subnets to expose to the tailnet, comma separated, e.g. "192.168.1.0/24".
+# Approve them under the machine's "Edit route settings" in the admin console.
+tailscale_routes: ""
+
+# Extra flags for `tailscale up`, e.g. "--advertise-exit-node"
+tailscale_extra_args: ""
+
+# Turn on IPv4/IPv6 forwarding on the host, needed for subnet routes and exit nodes
+tailscale_enable_ip_forwarding: "{{ tailscale_routes | length > 0 or '--advertise-exit-node' in tailscale_extra_args }}"
+
+# docker
+tailscale_container_name: "tailscale"
+tailscale_image_name: "tailscale/tailscale"
+tailscale_image_version: "v1.104.4"
+
+# specs
+tailscale_memory: "256MB"

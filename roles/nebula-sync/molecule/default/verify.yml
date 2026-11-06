@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    # The test Pi-holes are unreachable, so the first sync fails and the
+    # container may exit or restart; only check that it was created.
+    - name: Get nebula-sync container info
+      community.docker.docker_container_info:
+        name: "{{ nebula_sync_container_name }}"
+      register: result
+
+    - name: Check if nebula-sync container exists
+      ansible.builtin.assert:
+        that:
+          - result.exists
