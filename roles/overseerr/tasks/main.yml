@@ -3,25 +3,30 @@
   block:
     - name: Create Overseerr Directories
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ overseerr_data_directory }}"
         state: directory
-      with_items:
-        - "{{ overseerr_data_directory }}"
-        - "{{ overseerr_data_directory }}/config"
+
+    # Seerr runs as UID 1000; also fixes ownership of a config migrated from Overseerr.
+    - name: Create Overseerr config directory owned by the container user
+      ansible.builtin.file:
+        path: "{{ overseerr_data_directory }}/config"
+        state: directory
+        owner: "{{ overseerr_user_id }}"
+        group: "{{ overseerr_group_id }}"
+        recurse: true
 
     - name: Overseerr Docker Container
       community.docker.docker_container:
         name: "{{ overseerr_container_name }}"
         image: "{{ overseerr_image_name }}:{{ overseerr_image_version }}"
         pull: true
+        init: true
         volumes:
           - "{{ overseerr_data_directory }}/config:/app/config:rw"
         ports:
           - "{{ overseerr_webui_port }}:5055"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ overseerr_user_id }}"
-          PGID: "{{ overseerr_group_id }}"
         restart_policy: unless-stopped
         memory: "{{ overseerr_memory }}"
         labels:
@@ -32,7 +37,7 @@
           traefik.http.routers.overseerr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.overseerr.loadbalancer.server.port: "5055"
           homepage.group: Media
-          homepage.name: Overseerr
+          homepage.name: Seerr
           homepage.icon: overseerr
           homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ overseerr_webui_port }}"
           homepage.description: Media requests
