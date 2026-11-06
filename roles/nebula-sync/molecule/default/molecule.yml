@@ -1,0 +1,10 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        nebula_sync_enabled: true
+        # Unreachable test instances, only used to get the container started.
+        nebula_sync_primary: "http://127.0.0.1:1|molecule"
+        nebula_sync_replicas:
+          - "http://127.0.0.1:2|molecule"
