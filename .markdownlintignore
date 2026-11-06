@@ -1,1 +1,3 @@
 .github
+# Galaxy roles/collections downloaded by ansible-lint
+.ansible
