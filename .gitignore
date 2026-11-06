@@ -22,3 +22,5 @@ Session.vim
 
 # ansible-lint dependency cache
 .ansible
+
+.claude

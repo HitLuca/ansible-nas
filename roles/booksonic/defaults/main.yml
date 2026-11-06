@@ -20,3 +20,5 @@ booksonic_memory: 1g
 
 # docker
 booksonic_container_name: booksonic
+booksonic_image_name: linuxserver/booksonic-air
+booksonic_image_version: version-v2201.1.0

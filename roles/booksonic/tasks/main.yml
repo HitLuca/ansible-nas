@@ -13,7 +13,7 @@
     - name: Booksonic Docker Container
       community.docker.docker_container:
         name: "{{ booksonic_container_name }}"
-        image: linuxserver/booksonic-air:latest
+        image: "{{ booksonic_image_name }}:{{ booksonic_image_version }}"
         pull: true
         volumes:
           - "{{ booksonic_data_directory }}/data:/booksonic/data:rw"
