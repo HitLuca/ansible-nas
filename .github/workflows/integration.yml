@@ -1,10 +1,29 @@
 ---
 name: Integration
 
-# Controls when the action will run.
 on:
+  # Test the roles a PR changes
+  pull_request:
+    branches: [main]
+    paths:
+      - "roles/**"
+      - "tests/molecule/**"
+      - "tests/github-test-matrix.sh"
+      - ".github/workflows/integration.yml"
+
+  # Test every role weekly, to catch upstream images that break or disappear
+  schedule:
+    - cron: "0 3 * * 1"
+
+  # Test every role on demand from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate-matrix:
@@ -14,6 +33,9 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full history so the PR can be diffed against its base branch
+          fetch-depth: 0
       - name: Generate Test Matrix
         id: set-matrix
         shell: bash
@@ -22,10 +44,14 @@ jobs:
   test:
     name: "Test ${{ matrix.role }}"
     needs: generate-matrix
+    # A PR that only touches roles without molecule tests has nothing to run
+    if: needs.generate-matrix.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     strategy:
-        matrix:
-            role: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+      # Keep testing the other roles when one fails
+      fail-fast: false
+      matrix:
+        role: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v7
       - name: Molecule Test
