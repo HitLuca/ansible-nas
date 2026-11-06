@@ -14,7 +14,7 @@
       ansible.builtin.template:
         src: znc.conf.j2
         dest: "{{ znc_data_directory }}/configs/znc.conf"
-      register: template_config
+      register: znc_template_config
 
     - name: Create ZNC Docker Container
       community.docker.docker_container:

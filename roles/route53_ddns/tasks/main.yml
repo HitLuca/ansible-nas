@@ -10,7 +10,7 @@
       ansible.builtin.template:
         src: config.yml
         dest: "{{ route53_data_directory }}/ddns-route53.yml"
-      register: template_config
+      register: route53_ddns_template_config
 
     - name: AWS Route53 Dynamic DNS Container
       community.docker.docker_container:
@@ -23,7 +23,7 @@
           - "{{ route53_data_directory }}/ddns-route53.yml:/etc/ddns-route53/ddns-route53.yml"
         restart_policy: unless-stopped
         memory: "{{ route53_memory }}"
-        recreate: "{{ template_config is changed }}"
+        recreate: "{{ route53_ddns_template_config is changed }}"
   when: route53_ddns_enabled is true
 
 - name: Stop AWS Route53 Dynamic DNS
