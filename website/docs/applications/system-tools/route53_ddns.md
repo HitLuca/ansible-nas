@@ -37,6 +37,8 @@ To set up Route53 to work with the service, please review the [Prerequisites](ht
 
 ### Application
 
-| Parameter        | Description                                         | Status    |
-|------------------|-----------------------------------------------------|-----------|
-| route53_schedule | [CRON](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-CRON_Expression_Format) schedule for checking and updating DNS entry |           |
+| Parameter        | Description                                                      | Status    |
+|------------------|------------------------------------------------------------------|-----------|
+| route53_schedule | [CRON][cron-format] schedule for checking and updating DNS entry |           |
+
+[cron-format]: https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-CRON_Expression_Format

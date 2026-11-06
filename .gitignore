@@ -19,3 +19,6 @@ Session.vim
 
 # IntelliJ
 /.idea/
+
+# ansible-lint dependency cache
+.ansible

@@ -1,0 +1,3 @@
+# Public variable names predate the role-prefix rule; renaming them would break existing inventories.
+roles/cloudflare_ddns/defaults/main.yml var-naming[no-role-prefix]
+roles/route53_ddns/defaults/main.yml var-naming[no-role-prefix]

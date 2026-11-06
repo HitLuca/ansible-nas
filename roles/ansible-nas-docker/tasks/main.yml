@@ -23,7 +23,7 @@
 - name: Create Docker home directory
   ansible.builtin.file:
     path: "{{ docker_home }}"
-    mode: 0755
+    mode: "0755"
     state: directory
 
 - name: Add user account to Docker group
