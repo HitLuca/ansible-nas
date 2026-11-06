@@ -1,0 +1,55 @@
+---
+- name: Start Tailscale
+  block:
+    - name: Create Tailscale Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tailscale_data_directory }}"
+
+    - name: Enable IP forwarding for Tailscale routes
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: "1"
+        sysctl_set: true
+        state: present
+      with_items:
+        - net.ipv4.ip_forward
+        - net.ipv6.conf.all.forwarding
+      when: tailscale_enable_ip_forwarding | bool
+
+    - name: Create Tailscale Docker Container
+      community.docker.docker_container:
+        name: "{{ tailscale_container_name }}"
+        image: "{{ tailscale_image_name }}:{{ tailscale_image_version }}"
+        pull: true
+        network_mode: host
+        volumes:
+          - "{{ tailscale_data_directory }}:/var/lib/tailscale:rw"
+        devices:
+          - "/dev/net/tun:/dev/net/tun"
+        capabilities:
+          - net_admin
+          - sys_module
+        env:
+          TS_STATE_DIR: "/var/lib/tailscale"
+          # Use the kernel tun device, so the host itself can reach the tailnet
+          TS_USERSPACE: "false"
+          TS_HOSTNAME: "{{ tailscale_hostname }}"
+          TS_AUTHKEY: "{{ tailscale_auth_key }}"
+          TS_AUTH_ONCE: "true"
+          TS_ROUTES: "{{ tailscale_routes }}"
+          TS_EXTRA_ARGS: "{{ tailscale_extra_args }}"
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ tailscale_memory }}"
+  when: tailscale_enabled is true
+
+- name: Stop Tailscale
+  block:
+    - name: Stop Tailscale
+      community.docker.docker_container:
+        name: "{{ tailscale_container_name }}"
+        state: absent
+  when: tailscale_enabled is false

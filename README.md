@@ -68,6 +68,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [MyMediaForAlexa](https://www.mymediaalexa.com/) - Lets you stream your music collection to your alexa device
 * [n8n](https://n8n.io/) - Nodemation, a node based workflow and automation service like IFTTT.
 * [navidrome](https://www.navidrome.org/) - Modern Music Server and Streamer compatible with Subsonic/Airsonic
+* [Nebula Sync](https://github.com/lovelaze/nebula-sync) - Keep the configuration of multiple Pi-hole instances in sync
 * [netboot.xyz](https://netboot.xyz/) - a PXE boot server
 * [Netdata](https://my-netdata.io/) - An extremely comprehensive system monitoring solution
 * [Nextcloud](https://nextcloud.com/) - A self-hosted Dropbox alternative
@@ -97,6 +98,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Speedtest-Tracker](https://github.com/alexjustesen/speedtest-tracker) - Continuously track your internet speed
 * Stats - Monitor and visualise metrics about your NAS and internet connection using Grafana, Prometheus, Telegraf and more.
 * [Syncthing](https://syncthing.net/) - sync directories with another device
+* [Tailscale](https://tailscale.com/) - WireGuard based mesh VPN to reach your NAS and home network from anywhere
 * [Tautulli](http://tautulli.com/) - Monitor Your Plex Media Server
 * [The Lounge](https://thelounge.chat) - Web based always-on IRC client
 * [Threadfin](https://github.com/Threadfin/Threadfin) - M3U Proxy for Plex DVR and Emby/Jellyfin Live TV. Based on xTeVe.
@@ -112,6 +114,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Wireshark](https://www.wireshark.org/) - the world’s foremost and widely-used network protocol analyzer.
 * [Woodpecker-CI](https://woodpecker-ci.org) - a simple CI engine with great extensibility, forked from Drone.
 * [YouTubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material) - Self-hosted YouTube downloader built on Material Design
+* [Zigbee2MQTT](https://www.zigbee2mqtt.io/) - Use Zigbee devices without the vendor's bridge or gateway, exposed over MQTT
 * [ZNC](https://wiki.znc.in/ZNC) - IRC bouncer to stay connected to favourite IRC networks and channels
 
 ## Preconfigured Application Stacks

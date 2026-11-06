@@ -269,6 +269,10 @@
       tags:
         - navidrome
 
+    - role: nebula-sync
+      tags:
+        - nebula-sync
+
     - role: netbootxyz
       tags:
         - netbootxyz
@@ -381,6 +385,10 @@
       tags:
         - syncthing
 
+    - role: tailscale
+      tags:
+        - tailscale
+
     - role: tautulli
       tags:
         - tautulli
@@ -444,6 +452,10 @@
     - role: youtubedlmaterial
       tags:
         - youtubedlmaterial
+
+    - role: zigbee2mqtt
+      tags:
+        - zigbee2mqtt
 
     - role: znc
       tags:

@@ -1,0 +1,27 @@
+---
+# enable or disable the application
+nebula_sync_enabled: false
+
+# Pi-hole instances, each as "<url>|<app password>", e.g. "http://192.168.1.2|secret".
+# Both are required. Keep the passwords in an Ansible Vault encrypted file.
+nebula_sync_primary: ""
+nebula_sync_replicas: []
+
+# sync settings
+# true copies everything with a Teleporter export/import. false syncs only the
+# SYNC_* sections set in nebula_sync_extra_env.
+nebula_sync_full_sync: true
+nebula_sync_run_gravity: true
+# Empty runs a single sync and exits; set a cron expression to keep syncing.
+nebula_sync_cron: "0 0 * * *"
+nebula_sync_skip_tls_verification: true
+# Any other nebula-sync environment variable, e.g. SYNC_CONFIG_DNS: "true" or webhook settings.
+nebula_sync_extra_env: {}
+
+# docker
+nebula_sync_container_name: "nebula-sync"
+nebula_sync_image_name: "ghcr.io/lovelaze/nebula-sync"
+nebula_sync_image_version: "v0.11.3"
+
+# specs
+nebula_sync_memory: "128MB"

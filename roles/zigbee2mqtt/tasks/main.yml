@@ -1,0 +1,48 @@
+---
+- name: Start Zigbee2MQTT
+  block:
+    - name: Check Zigbee2MQTT device path is set
+      ansible.builtin.assert:
+        that: zigbee2mqtt_device_path | length > 0
+        fail_msg: >-
+          zigbee2mqtt_device_path is required. Set it to your Zigbee adapter,
+          preferably its /dev/serial/by-id/ path.
+
+    - name: Create Zigbee2MQTT Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ zigbee2mqtt_data_directory }}/data"
+
+    - name: Create Zigbee2MQTT Docker Container
+      community.docker.docker_container:
+        name: "{{ zigbee2mqtt_container_name }}"
+        image: "{{ zigbee2mqtt_image_name }}:{{ zigbee2mqtt_image_version }}"
+        pull: true
+        volumes:
+          - "{{ zigbee2mqtt_data_directory }}/data:/app/data:rw"
+        devices:
+          - "{{ zigbee2mqtt_device_path }}:/dev/ttyACM0"
+        ports:
+          - "{{ zigbee2mqtt_port }}:8080"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ zigbee2mqtt_memory }}"
+        labels:
+          traefik.enable: "{{ zigbee2mqtt_available_externally | string }}"
+          traefik.http.routers.zigbee2mqtt.rule: "Host(`{{ zigbee2mqtt_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.zigbee2mqtt.tls.certresolver: "letsencrypt"
+          traefik.http.routers.zigbee2mqtt.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.zigbee2mqtt.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.zigbee2mqtt.loadbalancer.server.port: "8080"
+  when: zigbee2mqtt_enabled is true
+
+- name: Stop Zigbee2MQTT
+  block:
+    - name: Stop Zigbee2MQTT
+      community.docker.docker_container:
+        name: "{{ zigbee2mqtt_container_name }}"
+        state: absent
+  when: zigbee2mqtt_enabled is false
