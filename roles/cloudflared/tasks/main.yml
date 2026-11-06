@@ -1,0 +1,24 @@
+---
+- name: Start Cloudflared
+  block:
+    - name: Cloudflared Container
+      community.docker.docker_container:
+        name: "{{ cloudflared_container_name }}"
+        image: cloudflare/cloudflared
+        pull: true
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        command: "tunnel --no-autoupdate run --token {{ cloudflared_token }}"
+        restart_policy: unless-stopped
+        memory: "{{ cloudflared_memory }}"
+        network_mode: "host"
+        labels:
+  when: cloudflared_enabled is true
+
+- name: Stop Cloudflared
+  block:
+    - name: Stop Cloudflared
+      community.docker.docker_container:
+        name: "{{ cloudflared_container_name }}"
+        state: absent
+  when: cloudflared_enabled is false

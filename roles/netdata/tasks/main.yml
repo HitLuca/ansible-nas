@@ -20,7 +20,7 @@
           - "/sys:/host/sys:ro"
           - "/var/run/docker.sock:/var/run/docker.sock:ro"
         env:
-          PGID: "{{ docker_group.gid }}"
+          PGID: "{{ docker_group.gid | string }}"
         capabilities:
           - SYS_PTRACE
         security_opts:
