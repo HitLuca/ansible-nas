@@ -18,7 +18,7 @@ minio_console_port: "9009"
 
 # docker
 minio_container_name: "minio"
-minio_image_name: "minio/minio"
+minio_image_name: "quay.io/minio/minio"
 minio_image_version: "latest"
 
 # specs
