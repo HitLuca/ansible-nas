@@ -13,6 +13,10 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  env:
+    # The playbooks include the role under test by name; molecule no longer
+    # adds the role's parent directory to the roles path on its own.
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
   inventory:
     group_vars:
       all:

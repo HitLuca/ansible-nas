@@ -56,12 +56,26 @@ jobs:
         role: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v7
-      - name: Molecule Test
-        uses: gofrolist/molecule-action@dfbfd1af6a77523c8a937a1532f92808065a00a4
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
         with:
-          molecule_options: --base-config ../../tests/molecule/base.yml
-          molecule_command: test
-          molecule_working_dir: ${{ matrix.role }}
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      # Installed here rather than through a molecule action, whose image is a
+      # floating tag rebuilt weekly. Keep ansible-core in step with ci.yml.
+      - name: Install test dependencies
+        run: pip3 install -r requirements-dev.txt ansible-core==2.21.4
+
+      # Molecule doesn't install these: the scenarios have no requirements file
+      - name: Install Ansible roles and collections
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Molecule Test
+        working-directory: ${{ matrix.role }}
+        run: molecule --base-config ../../tests/molecule/base.yml test
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
