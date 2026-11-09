@@ -15,3 +15,7 @@ thelounge_memory: 1g
 thelounge_container_name: "thelounge"
 thelounge_image_name: "thelounge/thelounge"
 thelounge_image_version: "latest"
+# The image runs as the node user (UID/GID 1000); the data folder is chowned
+# to these so it can read and write it.
+thelounge_user_id: "1000"
+thelounge_group_id: "1000"

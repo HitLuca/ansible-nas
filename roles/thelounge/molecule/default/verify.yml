@@ -11,7 +11,8 @@
         name: "{{ thelounge_container_name }}"
       register: result
 
-    - name: Check if thelounge container exists
+    - name: Check if thelounge is running
       ansible.builtin.assert:
         that:
-          - result.exists
+          - result.container['State']['Status'] == "running"
+          - result.container['State']['Restarting'] == false
