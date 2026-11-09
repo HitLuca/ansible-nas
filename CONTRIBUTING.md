@@ -19,5 +19,30 @@ Contributing to Ansible-NAS is easy! Add your functionality, then raise a pull r
 
 So you want to add a new application. Great!
 
-* Start by looking at the `hello_world` example. Following this structure is the most likely way of getting your PR approved. Leaving out things the `hello_world` example includes (ie docs, tests) will definitely result in your PR being rejected.
-* Add to the list of Available Applications in `README.md`
+Start by looking at the `hello_world` example. Following this structure is the most likely way of getting your PR approved. Leaving out things the `hello_world` example includes (ie docs, tests) will definitely result in your PR being rejected.
+
+A new application touches these places:
+
+* `roles/<name>/` - the role itself:
+  * `defaults/main.yml`, starting with `<name>_enabled: false` (the `tests/check-enabled-vars.sh` check fails without it) and pinning `<name>_image_version` to a real release rather than `latest`.
+  * `tasks/main.yml`, with a start block gated on `when: <name>_enabled is true` and a stop block gated on `is false` that removes the container.
+  * `templates/` and `files/`, if the application needs them.
+  * `molecule/default/` - `molecule.yml`, `side_effect.yml`, `verify.yml` and `verify_stopped.yml`. Copy the layout from `hello_world` or any neighbouring role.
+* `nas.yml` - add `- role: <name>` with a matching tag, in alphabetical order.
+* `README.md` - add the application to the "Available Applications" list, in alphabetical order.
+* `website/docs/applications/<category>/<name>.md` - the documentation page, filed under the category folder that fits (see the existing folders). Start it with a `title:` frontmatter key.
+* `.ansible-lint-ignore` - only if the application's public variables genuinely cannot carry the role prefix.
+
+Nothing else needs editing. The molecule test matrix (`tests/github-test-matrix.sh`), the pytest harness (`tests/test_molecule.py`) and the docs sidebar (`website/sidebars.js`) all discover roles and pages automatically, and `group_vars/all.yml` holds no per-application settings.
+
+Before opening the PR, run the role's tests and the lint checks:
+
+```bash
+make test ROLE=<name>
+make lint
+make check-ports
+```
+
+Run `make` on its own to list all available targets.
+
+Note that molecule expands `molecule.yml` with `string.Template`, so a literal `$` in that file (a bcrypt hash, for example) must be written as `$$`.
