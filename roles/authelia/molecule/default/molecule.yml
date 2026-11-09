@@ -1,0 +1,19 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        authelia_enabled: true
+        # Test-only secrets, not real ones.
+        authelia_jwt_secret: "test-only-jwt-secret-0123456789abcdefghijklmnopqrstuvwxyz-0123456789"
+        authelia_session_secret: "test-only-session-secret-0123456789abcdefghijklmnopqrstuvwxyz-01234567"
+        authelia_storage_encryption_key: "test-only-storage-encryption-key"
+        authelia_users:
+          test:
+            displayname: Test User
+            email: test@ansible-nas.io
+            groups:
+              - admins
+            # argon2id hash of "password" from the Authelia documentation.
+            # molecule.yml is expanded with string.Template, hence the doubled dollars.
+            password: "$$argon2id$$v=19$$m=65536,t=3,p=2$$BpLnfgDsc2WD8F2q$$o/vzA4myCqZZ36bUGsDY//8mKUYNZZaR0t4MFFSs+iM"
