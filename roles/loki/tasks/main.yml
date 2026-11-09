@@ -15,7 +15,14 @@
         state: directory
       with_items:
         - "{{ loki_data_directory }}"
-        - "{{ loki_data_directory }}/data"
+
+    - name: Create Loki data directory
+      ansible.builtin.file:
+        path: "{{ loki_data_directory }}/data"
+        state: directory
+        # the loki image runs as uid/gid 10001
+        owner: "10001"
+        group: "10001"
 
     - name: Template Loki config
       ansible.builtin.template:

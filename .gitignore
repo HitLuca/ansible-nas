@@ -24,3 +24,5 @@ Session.vim
 .ansible
 
 .claude
+
+__pycache__
