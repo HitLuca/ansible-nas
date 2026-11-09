@@ -113,6 +113,10 @@
       tags:
         - dokuwiki
 
+    - role: dozzle
+      tags:
+        - dozzle
+
     - role: drone-ci
       tags:
         - drone_ci

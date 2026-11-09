@@ -1,0 +1,19 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        dozzle_enabled: true
+        dozzle_auth_provider: "simple"
+        # Test-only hash, not a secret. Molecule expands variables in this file
+        # with string.Template, so dollar signs in the bcrypt hash are doubled.
+        dozzle_users:
+          admin:
+            name: Admin
+            email: admin@example.com
+            password: "$$2a$$11$$9ho4vY2LdJ/WBopFcsAS0uORC0x2vuFHQgT/yBqZyzclhHsoaIkzK"
+          # Exercises the optional filter/roles passthrough.
+          viewer:
+            password: "$$2a$$11$$9ho4vY2LdJ/WBopFcsAS0uORC0x2vuFHQgT/yBqZyzclhHsoaIkzK"
+            filter: "name=web"
+            roles: "viewer"

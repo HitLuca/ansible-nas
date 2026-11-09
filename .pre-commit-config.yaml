@@ -16,3 +16,16 @@ repos:
     rev: v0.49.1
     hooks:
       - id: markdownlint
+  # Use the versions pinned in pyproject.toml/uv.lock instead of a separate pin.
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: uv run pylint
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
+        types: [python]
