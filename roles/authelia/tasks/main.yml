@@ -1,0 +1,81 @@
+---
+- name: Start Authelia
+  block:
+    - name: Check Authelia secrets are set
+      ansible.builtin.assert:
+        that:
+          - authelia_jwt_secret | length >= 64
+          - authelia_session_secret | length >= 64
+          - authelia_storage_encryption_key | length >= 20
+        fail_msg: >-
+          authelia_jwt_secret and authelia_session_secret must be at least 64
+          characters, and authelia_storage_encryption_key at least 20.
+          Generate each one with: openssl rand -base64 64
+
+    - name: Check Authelia users are defined
+      ansible.builtin.assert:
+        that: authelia_users | length > 0
+        fail_msg: >-
+          authelia_users is empty. Define at least one user with a password
+          hash; see the Authelia docs page for the format and how to generate it.
+
+    - name: Create Authelia Directories
+      ansible.builtin.file:
+        path: "{{ authelia_data_directory }}"
+        state: directory
+
+    - name: Template Authelia configuration.yml
+      ansible.builtin.template:
+        src: configuration.yml.j2
+        dest: "{{ authelia_data_directory }}/configuration.yml"
+        mode: "0600"
+      register: authelia_template_config
+
+    - name: Template Authelia users_database.yml
+      ansible.builtin.template:
+        src: users_database.yml.j2
+        dest: "{{ authelia_data_directory }}/users_database.yml"
+        mode: "0600"
+      register: authelia_template_users
+
+    - name: Authelia Docker Container
+      community.docker.docker_container:
+        name: "{{ authelia_container_name }}"
+        image: "{{ authelia_image_name }}:{{ authelia_image_version }}"
+        pull: true
+        volumes:
+          - "{{ authelia_data_directory }}:/config:rw"
+        ports:
+          - "{{ authelia_port }}:9091"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ authelia_memory }}"
+        recreate: "{{ authelia_template_config is changed or authelia_template_users is changed }}"
+        labels:
+          # Always registered with Traefik: the forward-auth middleware below
+          # only exists while this container is exposed to the provider, and the
+          # portal router is what login redirects point at.
+          traefik.enable: "true"
+          traefik.http.routers.authelia.rule: "Host(`{{ authelia_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.authelia.tls.certresolver: "letsencrypt"
+          traefik.http.routers.authelia.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.authelia.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.authelia.loadbalancer.server.port: "9091"
+          traefik.http.middlewares.authelia.forwardauth.address: "{{ authelia_forward_auth_address }}/api/verify?rd=https://{{ authelia_hostname }}.{{ ansible_nas_domain }}"
+          traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
+          traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+          homepage.group: System Tools
+          homepage.name: Authelia
+          homepage.icon: authelia.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ authelia_port }}"
+          homepage.description: Single sign-on and 2FA portal
+  when: authelia_enabled is true
+
+- name: Stop Authelia
+  block:
+    - name: Stop Authelia
+      community.docker.docker_container:
+        name: "{{ authelia_container_name }}"
+        state: absent
+  when: authelia_enabled is false

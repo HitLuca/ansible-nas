@@ -1,0 +1,61 @@
+---
+# Rendered by Ansible-NAS from roles/authelia/defaults/main.yml — edit the
+# variables there, not this file. See https://www.authelia.com/configuration/prologue/introduction/
+# for the full set of options.
+server:
+  address: "tcp://:9091"
+
+log:
+  level: "{{ authelia_log_level }}"
+
+theme: "{{ authelia_theme }}"
+
+identity_validation:
+  reset_password:
+    jwt_secret: "{{ authelia_jwt_secret }}"
+
+totp:
+  issuer: "{{ ansible_nas_domain }}"
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    watch: true
+    password:
+      algorithm: argon2
+      argon2:
+        variant: argon2id
+        iterations: 1
+        memory: 65536
+        parallelism: 8
+        key_length: 32
+        salt_length: 16
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: "*.{{ ansible_nas_domain }}"
+      policy: one_factor
+
+session:
+  name: authelia_session
+  secret: "{{ authelia_session_secret }}"
+  expiration: 1h
+  inactivity: 5m
+  cookies:
+    - domain: "{{ authelia_session_domain }}"
+      authelia_url: "https://{{ authelia_hostname }}.{{ ansible_nas_domain }}"
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  encryption_key: "{{ authelia_storage_encryption_key }}"
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt

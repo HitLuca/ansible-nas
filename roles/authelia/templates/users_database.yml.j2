@@ -1,0 +1,23 @@
+---
+# Rendered by Ansible-NAS from the authelia_users variable. See
+# https://www.authelia.com/reference/guides/passwords/ for the file format.
+users:
+{% for username, user in authelia_users.items() %}
+{% set groups = user.groups | default([]) %}
+  {{ username }}:
+    displayname: "{{ user.displayname | default(username) }}"
+    password: "{{ user.password }}"
+{% if user.email is defined %}
+    email: "{{ user.email }}"
+{% endif %}
+{% if groups is string %}
+    groups: ["{{ groups }}"]
+{% elif groups | length > 0 %}
+    groups:
+{% for group in groups %}
+      - "{{ group }}"
+{% endfor %}
+{% else %}
+    groups: []
+{% endif %}
+{% endfor %}

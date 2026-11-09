@@ -17,6 +17,8 @@ Enabling access to applications externally **does not** automatically secure the
 
 It is your responsibility to ensure that applications you enable external access to are secured appropriately!
 
+If you want a single login in front of all of them, see [Authelia](../applications/system-tools/authelia.md), which plugs into Traefik as a forward-auth middleware.
+
 :::
 
 ## Domain Name and DNS Configuration
