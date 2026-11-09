@@ -6,12 +6,12 @@
     - ansible.builtin.include_vars:
         file: ../../defaults/main.yml
 
-    - name: Get overseerr container state
+    - name: Get seerr container state
       community.docker.docker_container_info:
-        name: "{{ overseerr_container_name }}"
+        name: "{{ seerr_container_name }}"
       register: result
 
-    - name: Check if overseerr is running
+    - name: Check if seerr is running
       ansible.builtin.assert:
         that:
           - result.container['State']['Status'] == "running"
