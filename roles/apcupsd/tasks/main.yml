@@ -9,12 +9,6 @@
       with_items:
         - "{{ apcupsd_data_directory }}"
 
-    - name: Create Apcupsd config file placeholder
-      ansible.builtin.file:
-        path: "{{ apcupsd_data_directory }}/apcupsd.conf"
-        state: touch
-        mode: "0644"
-
     - name: "Check if Apcupsd config exists"
       ansible.builtin.stat:
         path: "{{ apcupsd_data_directory }}/apcupsd.conf"
