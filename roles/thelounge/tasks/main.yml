@@ -5,6 +5,8 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
+        owner: "{{ thelounge_user_id }}"
+        group: "{{ thelounge_group_id }}"
       with_items:
         - "{{ thelounge_data_directory }}"
         - "{{ thelounge_data_directory }}/users"
@@ -13,6 +15,8 @@
       ansible.builtin.copy:
         src: admin.json
         dest: "{{ thelounge_data_directory }}/users/admin.json"
+        owner: "{{ thelounge_user_id }}"
+        group: "{{ thelounge_group_id }}"
         mode: "0777"
 
     - name: The Lounge Docker Container

@@ -9,6 +9,7 @@ name is a *_container_name from the role's defaults. Any other new container
 (e.g. one you started yourself meanwhile) is left alone and reported.
 """
 import os
+import shutil
 import subprocess
 import sys
 import warnings
@@ -18,6 +19,8 @@ import pytest
 import yaml
 
 REPO = Path(__file__).resolve().parent.parent
+# docker_home in tests/molecule/base.yml, shared between host and instance
+SHARED = Path("/tmp/ansible-nas")
 ROLES = sorted(p.parent for p in (REPO / "roles").glob("*/molecule"))
 
 
@@ -44,6 +47,7 @@ def _container_names(role: Path) -> set[str]:
 
 @pytest.mark.parametrize("role", ROLES, ids=lambda p: p.name)
 def test_role(role: Path):
+    shutil.rmtree(SHARED, ignore_errors=True)  # no state from earlier runs
     before = set(_containers())
     # Use the tools from the interpreter running pytest (the uv environment).
     bin_dir = str(Path(sys.executable).parent)
@@ -62,6 +66,7 @@ def test_role(role: Path):
             text=True,
         )
     finally:
+        shutil.rmtree(SHARED, ignore_errors=True)
         mine = _container_names(role)
         new = {i: n for i, n in _containers().items() if i not in before}
         ours = [i for i, n in new.items() if n in mine]
