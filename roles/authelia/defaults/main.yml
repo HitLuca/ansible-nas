@@ -1,0 +1,41 @@
+---
+authelia_enabled: false
+
+# directories
+authelia_data_directory: "{{ docker_home }}/authelia"
+
+# network
+authelia_port: "9093"
+authelia_hostname: "authelia"
+
+# application
+# All three secrets are required. Generate each one separately with:
+#   docker run --rm authelia/authelia:4.39.28 authelia crypto rand --length 64
+# or: openssl rand -base64 64
+authelia_jwt_secret: ""
+authelia_session_secret: ""
+authelia_storage_encryption_key: ""
+# Root domain the session cookie is issued for. Must be a suffix of authelia_hostname.
+authelia_session_domain: "{{ ansible_nas_domain }}"
+# Where Traefik reaches Authelia's forward-auth endpoint. Traefik runs with
+# network_mode: host, so this has to be the host address, not the container name.
+authelia_forward_auth_address: "http://{{ ansible_facts.default_ipv4.address }}:{{ authelia_port }}"
+authelia_log_level: "info"
+authelia_theme: "dark"
+# Users rendered into users_database.yml, keyed by username:
+#   authelia_users:
+#     alice:
+#       displayname: Alice
+#       password: "$argon2id$..."
+#       email: alice@example.com
+#       groups: [admins]
+# See the docs page for how to generate the password hash.
+authelia_users: {}
+
+# docker
+authelia_container_name: "authelia"
+authelia_image_name: "authelia/authelia"
+authelia_image_version: "4.39.28"
+
+# specs
+authelia_memory: 1g
