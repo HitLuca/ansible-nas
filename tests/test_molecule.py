@@ -47,6 +47,7 @@ def _container_names(role: Path) -> set[str]:
 
 @pytest.mark.parametrize("role", ROLES, ids=lambda p: p.name)
 def test_role(role: Path):
+    """Run the role's molecule scenario and clean up its containers."""
     shutil.rmtree(SHARED, ignore_errors=True)  # no state from earlier runs
     before = set(_containers())
     # Use the tools from the interpreter running pytest (the uv environment).
@@ -64,6 +65,7 @@ def test_role(role: Path):
             env=env,
             capture_output=True,
             text=True,
+            check=False,
         )
     finally:
         shutil.rmtree(SHARED, ignore_errors=True)
@@ -71,7 +73,7 @@ def test_role(role: Path):
         new = {i: n for i, n in _containers().items() if i not in before}
         ours = [i for i, n in new.items() if n in mine]
         if ours:
-            subprocess.run(["docker", "rm", "-f", *ours], capture_output=True)
+            subprocess.run(["docker", "rm", "-f", *ours], capture_output=True, check=False)
         others = sorted(n for i, n in new.items() if i not in ours)
         if others:
             warnings.warn(f"left alone (not in {role.name} defaults): {others}")
