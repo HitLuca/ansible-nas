@@ -78,7 +78,6 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Ombi](https://ombi.io/) - web application that automatically gives your users the ability to request content
 * [openHAB](https://www.openhab.org/) - A vendor and technology agnostic open source automation software for your home
 * [Organizr](https://organizr.app/) - ORGANIZR aims to be your one stop shop for your Servers Frontend.
-* [Seerr](https://docs.seerr.dev) - open source software application for managing requests for your media library (successor of Overseerr, deployed by the `overseerr` role)
 * [Paperless_ng](https://github.com/jonaswinkler/paperless-ng) - Scan, index and archive all your physical documents
 * [Piwigo](https://piwigo.org/) - Photo Gallery Software
 * [Plex](https://www.plex.tv/) - Plex Media Server
@@ -92,6 +91,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Route53 DDNS](https://crazymax.dev/ddns-route53/) - Automatically update AWS Route53 with your IP address
 * [RSS-Bridge](https://rss-bridge.github.io/rss-bridge/) - The RSS feed for websites missing it
 * [Sabnzbd](https://sabnzbd.org/) - A powerful usenet downloader that FreeNAS provides
+* [Seerr](https://docs.seerr.dev) - open source software application for managing requests for your media library (successor of Overseerr)
 * [Sickchill](https://sickchill.github.io/) - for managing TV episodes
 * [Silverbullet](https://silverbullet.md) - Note-taking application optimized for people with a hacker mindset
 * [Sonarr](https://sonarr.tv/) - for downloading and managing TV episodes
