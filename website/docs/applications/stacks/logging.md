@@ -13,7 +13,6 @@ logging_stack_enabled: true
 Which is equivalent to:
 
 ```yaml
-minio_enabled: true
 loki_enabled: true
 promtail_enabled: true
 grafana_enabled: true

@@ -1,4 +1,16 @@
 ---
+# The role bind-mounts files from docker_home into a sibling container started
+# through the shared docker socket, so the host daemon must see the same files
+# the instance writes. Share that directory between host and instance.
+platforms:
+  - name: instance
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/ansible-nas:/tmp/ansible-nas
+    privileged: true
+    pre_build_image: true
 provisioner:
   inventory:
     group_vars:
