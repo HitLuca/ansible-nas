@@ -28,6 +28,8 @@ const config = {
     locales: ['en'],
   },
 
+  plugins: [require.resolve('./plugins/applications-index')],
+
   presets: [
     [
       'classic',
