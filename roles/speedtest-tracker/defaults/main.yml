@@ -18,7 +18,7 @@ speedtest_tracker_hostname: "speedtest-tracker"
 #   echo "base64:$(openssl rand -base64 32)"
 speedtest_tracker_app_key: ""
 # URL the app is reached on, used for links it generates.
-speedtest_tracker_app_url: "http://{{ ansible_default_ipv4.address }}:{{ speedtest_tracker_port }}"
+speedtest_tracker_app_url: "http://{{ ansible_facts.default_ipv4.address }}:{{ speedtest_tracker_port }}"
 # Cron schedule for automatic tests (every 6 hours by default).
 speedtest_tracker_schedule: "0 */6 * * *"
 

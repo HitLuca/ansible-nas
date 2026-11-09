@@ -1,0 +1,67 @@
+---
+- name: Start Seerr
+  block:
+    - name: Create Seerr Directories
+      ansible.builtin.file:
+        path: "{{ seerr_data_directory }}"
+        state: directory
+
+    - name: Check for an existing Seerr container
+      community.docker.docker_container_info:
+        name: "{{ seerr_container_name }}"
+      register: seerr_container
+
+    # Seerr runs as UID 1000. Only run before the first start: it fixes a config
+    # left behind by the old root-running Overseerr image, and skipping it once
+    # the container exists keeps us from chowning files the app is writing.
+    - name: Create Seerr config directory owned by the container user
+      ansible.builtin.file:
+        path: "{{ seerr_data_directory }}/config"
+        state: directory
+        owner: "{{ seerr_user_id }}"
+        group: "{{ seerr_group_id }}"
+        recurse: true
+      when: not seerr_container.exists
+
+    - name: Seerr Docker Container
+      community.docker.docker_container:
+        name: "{{ seerr_container_name }}"
+        image: "{{ seerr_image_name }}:{{ seerr_image_version }}"
+        pull: true
+        init: true
+        volumes:
+          - "{{ seerr_data_directory }}/config:/app/config:rw"
+        ports:
+          - "{{ seerr_webui_port }}:5055"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ seerr_memory }}"
+        # BusyBox wget: no --no-verbose/--tries here, those are GNU-only.
+        healthcheck:
+          test: "wget -q --spider --timeout=3 http://localhost:5055/api/v1/settings/public || exit 1"
+          start_period: 20s
+          timeout: 3s
+          interval: 15s
+          retries: 3
+        labels:
+          traefik.enable: "{{ seerr_available_externally | string }}"
+          traefik.http.routers.seerr.rule: "Host(`{{ seerr_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.seerr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.seerr.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.seerr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.seerr.loadbalancer.server.port: "5055"
+          homepage.group: Media
+          homepage.name: Seerr
+          homepage.icon: seerr
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ seerr_webui_port }}"
+          homepage.description: Media requests
+  when: seerr_enabled is true
+
+- name: Stop Seerr
+  block:
+    - name: Stop Seerr
+      community.docker.docker_container:
+        name: "{{ seerr_container_name }}"
+        state: absent
+  when: seerr_enabled is false
