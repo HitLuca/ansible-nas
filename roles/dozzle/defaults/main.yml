@@ -1,0 +1,38 @@
+---
+dozzle_enabled: false
+dozzle_available_externally: false
+
+# directories
+dozzle_data_directory: "{{ docker_home }}/dozzle"
+
+# network
+dozzle_port: "8888"
+dozzle_hostname: "dozzle"
+
+# application
+# "none" leaves Dozzle open to anyone who can reach it. Since it reads every
+# container's logs, set "simple" and define dozzle_users if others can reach it.
+dozzle_auth_provider: "none"
+# How long a login stays valid, e.g. "24h". Only s, m and h are accepted.
+dozzle_auth_ttl: "24h"
+# Login entries for dozzle_auth_provider: "simple". Each password must be a
+# bcrypt hash; generate one with (it prompts for the password, so it stays out
+# of your shell history):
+#   docker run -it --rm amir20/dozzle:v11.4.2 generate admin
+# Copy the name/email/password keys from its output. filter and roles are
+# optional comma-separated strings, as accepted by `generate --user-filter`
+# and `generate --user-roles`.
+# dozzle_users:
+#   admin:
+#     name: Admin
+#     email: me@example.com
+#     password: $2a$11$...
+dozzle_users: {}
+
+# docker
+dozzle_container_name: "dozzle"
+dozzle_image_name: "amir20/dozzle"
+dozzle_image_version: "v11.4.2"
+
+# specs
+dozzle_memory: 1g

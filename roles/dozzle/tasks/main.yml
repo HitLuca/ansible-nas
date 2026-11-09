@@ -1,0 +1,61 @@
+---
+- name: Start Dozzle
+  block:
+    - name: Check Dozzle users are defined when authentication is enabled
+      ansible.builtin.assert:
+        that: dozzle_users | length > 0
+        fail_msg: >-
+          dozzle_users must be set when dozzle_auth_provider is "simple".
+          See the Dozzle documentation for the required format.
+      when: dozzle_auth_provider == "simple"
+
+    - name: Create Dozzle Directories
+      ansible.builtin.file:
+        path: "{{ dozzle_data_directory }}"
+        state: directory
+
+    - name: Dozzle Users File
+      ansible.builtin.template:
+        src: users.yml.j2
+        dest: "{{ dozzle_data_directory }}/users.yml"
+        mode: "0600"
+      when: dozzle_auth_provider == "simple"
+
+    - name: Dozzle Docker Container
+      community.docker.docker_container:
+        name: "{{ dozzle_container_name }}"
+        image: "{{ dozzle_image_name }}:{{ dozzle_image_version }}"
+        pull: true
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          - "{{ dozzle_data_directory }}:/data:rw"
+        ports:
+          - "{{ dozzle_port }}:8080"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          DOZZLE_HOSTNAME: "{{ dozzle_hostname }}"
+          DOZZLE_AUTH_PROVIDER: "{{ dozzle_auth_provider }}"
+          DOZZLE_AUTH_TTL: "{{ dozzle_auth_ttl }}"
+        restart_policy: unless-stopped
+        memory: "{{ dozzle_memory }}"
+        labels:
+          traefik.enable: "{{ dozzle_available_externally | string }}"
+          traefik.http.routers.dozzle.rule: "Host(`{{ dozzle_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.dozzle.tls.certresolver: "letsencrypt"
+          traefik.http.routers.dozzle.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.dozzle.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.dozzle.loadbalancer.server.port: "8080"
+          homepage.group: System Tools
+          homepage.name: Dozzle
+          homepage.icon: dozzle.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ dozzle_port }}"
+          homepage.description: Container logs
+  when: dozzle_enabled is true
+
+- name: Stop Dozzle
+  block:
+    - name: Stop Dozzle
+      community.docker.docker_container:
+        name: "{{ dozzle_container_name }}"
+        state: absent
+  when: dozzle_enabled is false
