@@ -9,15 +9,21 @@
         force: true
 
     - name: Add Hashicorp apt repository
-      ansible.builtin.apt_repository:
-        repo: "deb https://apt.releases.hashicorp.com {{ ansible_facts['lsb']['codename'] }} main"
+      ansible.builtin.deb822_repository:
+        name: hashicorp
+        types: [deb]
+        uris: https://apt.releases.hashicorp.com
+        suites: "{{ ansible_facts['lsb']['codename'] }}"
+        components: [main]
+        signed_by: /etc/apt/trusted.gpg.d/hashicorp.asc
         state: present
-        filename: hashicorp
+        install_python_debian: true
 
     - name: Install Nomad
       ansible.builtin.apt:
         name: nomad
         state: present
+        update_cache: true
 
     - name: Template Nomad config
       ansible.builtin.template:

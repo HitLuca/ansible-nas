@@ -6,13 +6,13 @@
     - ansible.builtin.include_vars:
         file: ../../defaults/main.yml
 
-    - name: Try and stop and remove overseerr
+    - name: Try and stop and remove seerr
       community.docker.docker_container:
-        name: "{{ overseerr_container_name }}"
+        name: "{{ seerr_container_name }}"
         state: absent
       register: result
 
-    - name: Check if overseerr is stopped
+    - name: Check if seerr is stopped
       ansible.builtin.assert:
         that:
           - not result.changed
