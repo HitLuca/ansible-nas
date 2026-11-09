@@ -4,7 +4,7 @@
 #
 # There is deliberately no "disable" counterpart: set_fact outranks inventory
 # variables, so forcing these flags to false would silently override anyone
-# enabling e.g. minio on its own. Each role already defaults to false.
+# enabling e.g. loki on its own. Each role already defaults to false.
 - name: Enable logging roles
   ansible.builtin.set_fact:  # noqa: var-naming[no-role-prefix] - intentionally toggles other roles
     loki_enabled: true

@@ -9,6 +9,11 @@ platforms:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      # Roles start their containers through the socket above, so the containers
+      # are siblings of this instance and bind-mount paths are resolved on the
+      # host. Share docker_home with the host, or those mounts are empty,
+      # root-owned directories the container can't write to.
+      - /tmp/ansible-nas:/tmp/ansible-nas
     privileged: true
     pre_build_image: true
 provisioner:
