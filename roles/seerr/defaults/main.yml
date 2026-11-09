@@ -1,0 +1,22 @@
+---
+seerr_enabled: false
+seerr_available_externally: false
+
+# directories
+seerr_data_directory: "{{ docker_home }}/seerr"
+
+# docker
+seerr_container_name: "seerr"
+seerr_image_name: "ghcr.io/seerr-team/seerr"
+seerr_image_version: "v3.5.1"
+# The image runs as the node user (UID/GID 1000); the config folder is
+# chowned to these so it can read and write it.
+seerr_user_id: "1000"
+seerr_group_id: "1000"
+
+# network config
+seerr_webui_port: "5055"
+seerr_hostname: "seerr"
+
+# specs
+seerr_memory: 1g

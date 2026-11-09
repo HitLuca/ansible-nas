@@ -309,10 +309,6 @@
       tags:
         - organizr
 
-    - role: overseerr
-      tags:
-        - overseerr
-
     - role: paperless_ng
       tags:
         - paperless_ng
@@ -360,6 +356,10 @@
     - role: sabnzbd
       tags:
         - sabnzbd
+
+    - role: seerr
+      tags:
+        - seerr
 
     - role: sickchill
       tags:
