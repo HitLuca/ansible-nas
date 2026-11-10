@@ -12,8 +12,4 @@ Easily configured via YAML files or through docker label discovery.
 
 Set `homepage_enabled: true` in your `inventories/<your_inventory>/group_vars/nas.yml` file.
 
-The Homepage web interface can be found at [http://ansible_nas_host_or_ip:11111](http://ansible_nas_host_or_ip:10080).
-
-## Specific Configuration
-
-Heimdall defaults to port 10080 - some browsers block this port. Override `heimdall_port_http` to move it somewhere else.
+The Homepage web interface can be found at [http://ansible_nas_host_or_ip:11111](http://ansible_nas_host_or_ip:11111).

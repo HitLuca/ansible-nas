@@ -57,6 +57,11 @@
           traefik.http.services.joomla.loadbalancer.server.port: "80"
           kuma.joomla.http.name: "Joomla"
           kuma.joomla.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ joomla_port if joomla_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Joomla
+          homepage.icon: joomla.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ joomla_port }}"
+          homepage.description: Content management system
   when: joomla_enabled is true
 
 - name: Stop Joomla

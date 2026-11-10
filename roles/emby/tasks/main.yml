@@ -36,6 +36,11 @@
           traefik.http.services.emby.loadbalancer.server.port: "8096"
           kuma.emby.http.name: "Emby"
           kuma.emby.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ emby_port_http if emby_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Emby
+          homepage.icon: emby.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ emby_port_http }}"
+          homepage.description: Media server
   when: emby_enabled is true
 
 - name: Stop Emby

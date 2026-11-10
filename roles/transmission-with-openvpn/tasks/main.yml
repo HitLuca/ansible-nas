@@ -59,6 +59,11 @@
           traefik.http.services.transmission_openvpn.loadbalancer.server.port: "9091"
           kuma.transmission-with-openvpn.http.name: "Transmission (OpenVPN)"
           kuma.transmission-with-openvpn.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ transmission_openvpn_webui_port if transmission_with_openvpn_uptime_kuma_monitor else omit }}"
+          homepage.group: Download Tools
+          homepage.name: Transmission (VPN)
+          homepage.icon: transmission.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ transmission_openvpn_webui_port }}"
+          homepage.description: BitTorrent client over VPN
   when: transmission_with_openvpn_enabled is true
 
 - name: Stop Transmission with OpenVPM

@@ -47,6 +47,11 @@
           traefik.http.services.drone_ci.loadbalancer.server.port: "80"
           kuma.drone-ci.http.name: "Drone CI"
           kuma.drone-ci.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ drone_ci_port_http if drone_ci_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Drone CI
+          homepage.icon: drone.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ drone_ci_port_http }}"
+          homepage.description: CI/CD pipeline
 
     - name: Create Drone-CI Runner container
       community.docker.docker_container:

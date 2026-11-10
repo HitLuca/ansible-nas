@@ -33,6 +33,11 @@
           traefik.http.services.syncthing.loadbalancer.server.port: "8384"
           kuma.syncthing.http.name: "Syncthing"
           kuma.syncthing.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ syncthing_port if syncthing_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: Syncthing
+          homepage.icon: syncthing.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ syncthing_port }}"
+          homepage.description: File synchronization
   when: syncthing_enabled is true
 
 - name: Stop Syncthing
