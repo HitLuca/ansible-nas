@@ -50,4 +50,4 @@ Each application is checked at `http://<nas>:<application port>`, which bypasses
 - AutoKuma mounts the Docker socket read-only and keeps its state in `uptime_kuma_discovery_data_directory`.
 - Disabling an application removes its container, and its monitor is deleted a minute later.
 - Turning off `uptime_kuma_monitor_all_services`, or a single `<role>_uptime_kuma_monitor`, while its container keeps running leaves the existing monitor in place: Docker cannot drop a label from a live container. Remove the container (`docker rm -f <container_name>`) and re-run the playbook to have the labels dropped, or delete the monitor in the UI.
-- Uptime Kuma can't reliably monitor itself — when it is down, so are its alerts. Use a separate checker such as the [healthchecks.io](healthchecks.io.md) role for that.
+- Uptime Kuma can't reliably monitor itself — when it is down, so are its alerts. Use a separate checker such as the [healthchecks.io](../system-tools/healthchecks.io.md) role for that.
