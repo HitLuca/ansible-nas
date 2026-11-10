@@ -13,7 +13,7 @@
     - name: Create MySQL container for Firefly
       community.docker.docker_container:
         name: "{{ firefly_mysql_container_name }}"
-        image: mariadb:10.9
+        image: "{{ firefly_mysql_image_name }}:{{ firefly_mysql_image_version }}"
         pull: true
         volumes:
           - "{{ firefly_data_directory }}/mariadb:/var/lib/mysql:rw"
@@ -32,7 +32,7 @@
     - name: Create Firefly III container
       community.docker.docker_container:
         name: "{{ firefly_container_name }}"
-        image: fireflyiii/core:latest
+        image: "{{ firefly_image_name }}:{{ firefly_image_version }}"
         pull: true
         volumes:
           - "{{ firefly_data_directory }}/export:/var/www/firefly-iii/storage/export:rw"
