@@ -33,6 +33,8 @@
           traefik.http.routers.portainer.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.portainer.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.portainer.loadbalancer.server.port: "9000"
+          kuma.portainer.http.name: "Portainer"
+          kuma.portainer.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ portainer_port if portainer_uptime_kuma_monitor else omit }}"
           traefik.http.routers.portainer.middlewares: "portainer-ipallowlist@docker"
           traefik.http.middlewares.portainer-ipallowlist.ipallowlist.sourcerange: "{{ portainer_ip_allowlist }}"
           homepage.group: System Tools

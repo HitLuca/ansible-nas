@@ -21,3 +21,6 @@ gitlab_group_id: "1000"
 
 # specs
 gitlab_memory: "4g"
+
+# monitoring
+gitlab_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

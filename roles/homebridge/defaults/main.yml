@@ -19,3 +19,6 @@ homebridge_image_version: "2026-10-23"
 
 # specs
 homebridge_memory: "1g"
+
+# monitoring
+homebridge_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

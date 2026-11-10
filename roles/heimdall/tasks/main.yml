@@ -29,6 +29,8 @@
           traefik.http.routers.heimdall.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.heimdall.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.heimdall.loadbalancer.server.port: "80"
+          kuma.heimdall.http.name: "Heimdall"
+          kuma.heimdall.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ heimdall_port_http if heimdall_uptime_kuma_monitor else omit }}"
   when: heimdall_enabled is true
 
 - name: Stop Heimdall

@@ -51,6 +51,8 @@
           traefik.http.routers.seerr.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.seerr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.seerr.loadbalancer.server.port: "5055"
+          kuma.seerr.http.name: "Seerr"
+          kuma.seerr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ seerr_webui_port if seerr_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Seerr
           homepage.icon: seerr

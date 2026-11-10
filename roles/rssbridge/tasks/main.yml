@@ -27,6 +27,8 @@
           traefik.http.routers.rssbridge.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.rssbridge.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.rssbridge.loadbalancer.server.port: "80"
+          kuma.rssbridge.http.name: "RSS-Bridge"
+          kuma.rssbridge.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ rssbridge_port if rssbridge_uptime_kuma_monitor else omit }}"
   when: rssbridge_enabled is true
 
 - name: Stop RSSBridge

@@ -22,3 +22,6 @@ sabnzbd_group_id: "0"
 sabnzbd_container_name: "sabnzbd"
 sabnzbd_image_name: "linuxserver/sabnzbd"
 sabnzbd_image_version: "latest"
+
+# monitoring
+sabnzbd_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

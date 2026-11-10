@@ -45,6 +45,8 @@
           traefik.http.routers.drone_ci.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.drone_ci.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.drone_ci.loadbalancer.server.port: "80"
+          kuma.drone-ci.http.name: "Drone CI"
+          kuma.drone-ci.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ drone_ci_port_http if drone_ci_uptime_kuma_monitor else omit }}"
 
     - name: Create Drone-CI Runner container
       community.docker.docker_container:

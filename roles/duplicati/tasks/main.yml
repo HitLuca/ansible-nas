@@ -23,8 +23,8 @@
           - "/etc/timezone:/etc/timezone:ro"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ duplicati_user_id }}"
-          PGID: "{{ duplicati_group_id }}"
+          PUID: "{{ duplicati_user_id | string }}"
+          PGID: "{{ duplicati_group_id | string }}"
           SETTINGS_ENCRYPTION_KEY: "{{ duplicati_settings_encryption_key }}"
           # DUPLICATI__WEBSERVICE_PASSWORD: "1234"
         restart_policy: unless-stopped
@@ -36,6 +36,8 @@
           traefik.http.routers.duplicati.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.duplicati.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.duplicati.loadbalancer.server.port: "8200"
+          kuma.duplicati.http.name: "Duplicati"
+          kuma.duplicati.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ duplicati_port if duplicati_uptime_kuma_monitor else omit }}"
   when: duplicati_enabled is true
 
 - name: Stop Duplicati

@@ -24,3 +24,6 @@ transmission_image_version: "latest"
 
 # specs
 transmission_memory: 1g
+
+# monitoring
+transmission_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

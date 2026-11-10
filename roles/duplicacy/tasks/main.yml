@@ -26,8 +26,8 @@
         env:
           DUPLICACY_WEB_VERSION: "{{ duplicacy_web_version }}"
           TZ: "{{ ansible_nas_timezone }}"
-          USR_ID: "{{ duplicacy_user_id }}"
-          GRP_ID: "{{ duplicacy_group_id }}"
+          USR_ID: "{{ duplicacy_user_id | string }}"
+          GRP_ID: "{{ duplicacy_group_id | string }}"
         restart_policy: unless-stopped
         memory: "{{ duplicacy_memory }}"
         labels:
@@ -37,6 +37,8 @@
           traefik.http.routers.duplicacy.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.duplicacy.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.duplicacy.loadbalancer.server.port: "3875"
+          kuma.duplicacy.http.name: "Duplicacy"
+          kuma.duplicacy.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ duplicacy_port if duplicacy_uptime_kuma_monitor else omit }}"
   when: duplicacy_enabled is true
 
 - name: Stop Duplicacy

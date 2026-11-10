@@ -40,3 +40,6 @@ woodpecker_ci_gitea_url: "http://{{ hostvars[inventory_hostname]['ansible_facts'
 # gitea auth credentials. see https://woodpecker-ci.org/docs/administration/forges/gitea for more info
 woodpecker_ci_gitea_client: notset
 woodpecker_ci_gitea_secret: notset
+
+# monitoring
+woodpecker_ci_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

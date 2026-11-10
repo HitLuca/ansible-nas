@@ -40,3 +40,6 @@ ddns_updater_http_timeout: 10s
 #       domain: example.com
 #       host: "@"
 #       password: e5322165c1d74692bfa6d807100c0310
+
+# monitoring
+ddns_updater_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

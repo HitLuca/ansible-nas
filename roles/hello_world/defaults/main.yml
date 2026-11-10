@@ -16,3 +16,6 @@ hello_world_memory: 1g
 hello_world_container_name: hello_world
 hello_world_image_name: "crccheck/hello-world"
 hello_world_image_version: "v1.0.0"
+
+# monitoring
+hello_world_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -16,3 +16,6 @@ dashy_memory: 1g
 dashy_container_name: dashy
 dashy_image_name: "lissy93/dashy"
 dashy_image_version: "latest"
+
+# monitoring
+dashy_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

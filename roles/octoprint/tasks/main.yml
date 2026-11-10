@@ -33,6 +33,8 @@
           traefik.http.routers.octoprint.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.octoprint.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.octoprint.loadbalancer.server.port: "80"
+          kuma.octoprint.http.name: "OctoPrint"
+          kuma.octoprint.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ octoprint_port if octoprint_uptime_kuma_monitor else omit }}"
   when: octoprint_enabled is true
 
 - name: Stop Octoprint

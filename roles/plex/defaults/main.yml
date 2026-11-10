@@ -42,3 +42,6 @@ plex_memory: "2g"
 
 # see https://hub.docker.com/r/linuxserver/plex for details on this setting
 plex_version: "docker"
+
+# monitoring
+plex_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

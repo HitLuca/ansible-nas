@@ -27,3 +27,6 @@ duplicacy_memory: 1g
 duplicacy_container_name: duplicacy
 duplicacy_image_name: "saspus/duplicacy-web"
 duplicacy_image_version: "mini"
+
+# monitoring
+duplicacy_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

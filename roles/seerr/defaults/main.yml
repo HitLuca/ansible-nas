@@ -20,3 +20,6 @@ seerr_hostname: "seerr"
 
 # specs
 seerr_memory: 1g
+
+# monitoring
+seerr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

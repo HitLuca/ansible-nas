@@ -26,3 +26,6 @@ miniflux_db_image_version: "11.1"
 # specs
 miniflux_memory: "1g"
 miniflux_postgres_memory: "1g"
+
+# monitoring
+miniflux_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

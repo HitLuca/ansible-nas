@@ -43,6 +43,8 @@
           traefik.http.routers.ddns_updater.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.ddns_updater.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.ddns_updater.loadbalancer.server.port: "8000"
+          kuma.ddns_updater.http.name: "DDNS Updater"
+          kuma.ddns_updater.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ ddns_updater_port if ddns_updater_uptime_kuma_monitor else omit }}"
           homepage.group: Networking
           homepage.name: DDNS Updater
           homepage.icon: ddns-updater

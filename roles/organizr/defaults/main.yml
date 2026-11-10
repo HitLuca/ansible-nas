@@ -19,3 +19,6 @@ organizr_group_id: "1000"
 
 # specs
 organizr_memory: 1g
+
+# monitoring
+organizr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

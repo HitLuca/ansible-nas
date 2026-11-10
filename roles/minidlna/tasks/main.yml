@@ -13,7 +13,7 @@
           MINIDLNA_MEDIA_DIR1: "/media1"
           MINIDLNA_MEDIA_DIR2: "/media2"
           MINIDLNA_FRIENDLY_NAME: "{{ minidlna_friendly_name }}"
-          MINIDLNA_PORT: "{{ minidlna_port }}"
+          MINIDLNA_PORT: "{{ minidlna_port | string }}"
         restart_policy: unless-stopped
         network_mode: host
         memory: "{{ minidlna_memory }}"

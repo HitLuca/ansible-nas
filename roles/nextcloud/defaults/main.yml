@@ -26,3 +26,6 @@ nextcloud_sql_root_password: "nextcloud-secret"
 # specs
 nextcloud_memory: 1g
 nextcloud_db_memory: 1g
+
+# monitoring
+nextcloud_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

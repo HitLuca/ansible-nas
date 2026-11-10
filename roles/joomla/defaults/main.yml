@@ -23,3 +23,6 @@ joomla_db_image_version: "5.7"
 # specs
 joomla_memory: 1g
 joomla_db_memory: 1g
+
+# monitoring
+joomla_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
