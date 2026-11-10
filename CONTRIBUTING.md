@@ -41,7 +41,10 @@ Before opening the PR, run the role's tests and the lint checks:
 make test ROLE=<name>
 make lint
 make check-ports
+make check-images
 ```
+
+`make check-images` reports `<name>_image_version` pins that have fallen behind their registry; `make update-images` rewrites them in place (same major version only). A scheduled workflow runs the check weekly.
 
 Run `make` on its own to list all available targets.
 
