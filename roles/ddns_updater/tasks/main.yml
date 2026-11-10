@@ -20,7 +20,7 @@
     - name: DDNS Updater Container
       community.docker.docker_container:
         name: "{{ ddns_updater_container_name }}"
-        image: qmcgaw/ddns-updater:latest
+        image: "{{ ddns_updater_image_name }}:{{ ddns_updater_image_version }}"
         pull: true
         ports:
           - "{{ ddns_updater_port }}:8000"

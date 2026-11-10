@@ -13,7 +13,7 @@
     - name: Duplicacy Docker Container
       community.docker.docker_container:
         name: "{{ duplicacy_container_name }}"
-        image: saspus/duplicacy-web:mini
+        image: "{{ duplicacy_image_name }}:{{ duplicacy_image_version }}"
         hostname: "{{ duplicacy_hostname }}"
         pull: true
         ports:

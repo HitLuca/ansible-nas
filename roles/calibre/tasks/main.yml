@@ -12,7 +12,7 @@
     - name: Calibre Docker Container
       community.docker.docker_container:
         name: "{{ calibre_container_name }}"
-        image: linuxserver/calibre
+        image: "{{ calibre_image_name }}:{{ calibre_image_version }}"
         pull: true
         volumes:
           - "{{ calibre_data_directory }}/data:/config:rw"

@@ -38,3 +38,6 @@ jobs:
 
       - name: Check role enabled flags
         run: tests/check-enabled-vars.sh
+
+      - name: Check role structure
+        run: tests/check-role-structure.sh

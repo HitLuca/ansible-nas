@@ -22,3 +22,5 @@ calibreweb_memory: 1g
 
 # docker
 calibreweb_container_name: calibreweb
+calibreweb_image_name: "linuxserver/calibre-web"
+calibreweb_image_version: "latest"
