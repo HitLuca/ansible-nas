@@ -97,6 +97,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Silverbullet](https://silverbullet.md) - Note-taking application optimized for people with a hacker mindset
 * [Sonarr](https://sonarr.tv/) - for downloading and managing TV episodes
 * [Speedtest-Tracker](https://github.com/alexjustesen/speedtest-tracker) - Continuously track your internet speed
+* [Spoolman](https://github.com/Donkie/Spoolman) - Keep track of your inventory of 3D-printer filament spools
 * Stats - Monitor and visualise metrics about your NAS and internet connection using Grafana, Prometheus, Telegraf and more.
 * [Syncthing](https://syncthing.net/) - sync directories with another device
 * [Tailscale](https://tailscale.com/) - WireGuard based mesh VPN to reach your NAS and home network from anywhere
@@ -117,6 +118,25 @@ If you have a spare domain name you can configure applications to be accessible 
 * [YouTubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material) - Self-hosted YouTube downloader built on Material Design
 * [Zigbee2MQTT](https://www.zigbee2mqtt.io/) - Use Zigbee devices without the vendor's bridge or gateway, exposed over MQTT
 * [ZNC](https://wiki.znc.in/ZNC) - IRC bouncer to stay connected to favourite IRC networks and channels
+
+## Securing Applications with Authelia
+
+Authelia plugs into Traefik as a forward-auth middleware, so a login can be required before Traefik forwards a request to an application. It is optional per application: an application can be available externally without being protected.
+
+To protect an application:
+
+1. Enable and configure the [Authelia](https://hitluca.github.io/ansible-nas/docs/applications/system-tools/authelia) role: `authelia_enabled: true`, the three required secrets and at least one user in your inventory.
+2. Enable external access for the application (`<application_name>_available_externally: true`) — the middleware only applies to routers Traefik manages.
+3. Attach the `authelia@docker` middleware to that application's router.
+
+For applications that expose a flag for it, set the flag in your inventory; Spoolman, for example, uses `spoolman_authelia_enabled: true`. For any other application, add the label to its `traefik.http.routers.<application_name>.middlewares`
+entry in `roles/<application_name>/tasks/main.yml`:
+
+```yaml
+traefik.http.routers.<application_name>.middlewares: "authelia@docker"
+```
+
+Re-run the playbook so the container picks up the new label. Which domains and paths need one factor, two factors or no authentication at all is decided by the `access_control` rules in Authelia's configuration; the Authelia role's default protects `*.<ansible_nas_domain>` with one factor.
 
 ## Preconfigured Application Stacks
 
