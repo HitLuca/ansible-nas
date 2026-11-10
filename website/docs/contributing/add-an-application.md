@@ -13,8 +13,8 @@ A new application touches the following files:
 
 | File | What to add |
 | --- | --- |
-| `roles/<name>/defaults/main.yml` | Settings, starting with `<name>_enabled: false`. Pin `<name>_image_version` to a real release rather than `latest`. |
-| `roles/<name>/tasks/main.yml` | A start block gated on `when: <name>_enabled is true`, and a stop block gated on `is false` that removes the container. |
+| `roles/<name>/defaults/main.yml` | Settings, starting with `<name>_enabled: false`, plus an `<name>_image_name` / `<name>_image_version` pair. Pin `<name>_image_version` to a real release rather than `latest`. |
+| `roles/<name>/tasks/main.yml` | A start block gated on `when: <name>_enabled is true`, and a stop block gated on `is false` that removes the container. Reference the image as `{{ <name>_image_name }}:{{ <name>_image_version }}`; a literal `image:` fails `tests/check-role-structure.sh`. |
 | `roles/<name>/templates/`, `roles/<name>/files/` | Only if the application needs them. |
 | `roles/<name>/molecule/default/` | `molecule.yml`, `side_effect.yml`, `verify.yml` and `verify_stopped.yml`, following `hello_world` or any neighbouring role. |
 | `nas.yml` | A `- role: <name>` entry with a matching tag, in alphabetical order. |

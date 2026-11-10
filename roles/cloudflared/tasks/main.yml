@@ -4,7 +4,7 @@
     - name: Cloudflared Container
       community.docker.docker_container:
         name: "{{ cloudflared_container_name }}"
-        image: cloudflare/cloudflared
+        image: "{{ cloudflared_image_name }}:{{ cloudflared_image_version }}"
         pull: true
         env:
           TZ: "{{ ansible_nas_timezone }}"

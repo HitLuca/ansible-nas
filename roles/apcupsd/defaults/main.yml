@@ -12,6 +12,8 @@ apcupsd_memory: 1g
 
 # docker
 apcupsd_container_name: apcupsd
+apcupsd_image_name: "gregewing/apcupsd"
+apcupsd_image_version: "latest"
 
 # ups config
 apcupsd_onbatterydelay: 6

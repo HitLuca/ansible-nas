@@ -17,7 +17,7 @@
     - name: Dashy Docker Container
       community.docker.docker_container:
         name: "{{ dashy_container_name }}"
-        image: lissy93/dashy:latest
+        image: "{{ dashy_image_name }}:{{ dashy_image_version }}"
         pull: true
         ports:
           - "{{ dashy_port }}:80"

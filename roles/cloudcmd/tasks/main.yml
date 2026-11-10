@@ -11,7 +11,7 @@
     - name: Create Cloudcmd Docker Container
       community.docker.docker_container:
         name: "{{ cloudcmd_container_name }}"
-        image: coderaiser/cloudcmd
+        image: "{{ cloudcmd_image_name }}:{{ cloudcmd_image_version }}"
         pull: true
         volumes:
           - "{{ cloudcmd_data_directory }}:/config:rw"

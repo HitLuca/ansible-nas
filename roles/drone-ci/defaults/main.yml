@@ -18,6 +18,10 @@ drone_ci_agent_memory: 1g
 # docker
 drone_ci_container_name: drone-ci
 drone_ci_runner_container_name: drone-ci-runner
+drone_ci_image_name: "drone/drone"
+drone_ci_image_version: "2"
+drone_ci_runner_image_name: "drone/drone-runner-docker"
+drone_ci_runner_image_version: "1"
 
 # Drone-CI Application Config
 # the users that'll be granted admin, comma separated. Should match a gitea user.
