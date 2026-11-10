@@ -1,0 +1,24 @@
+---
+spoolman_enabled: false
+spoolman_available_externally: false
+
+# directories
+spoolman_data_directory: "{{ docker_home }}/spoolman"
+
+# network
+spoolman_port: "7912"
+spoolman_hostname: "spoolman"
+
+# traefik
+# Puts the Authelia forward-auth middleware in front of the router, so the app
+# is only reachable after an Authelia login. Requires the authelia role to be
+# running; leave false for an unprotected app.
+spoolman_authelia_enabled: false
+
+# docker
+spoolman_container_name: "spoolman"
+spoolman_image_name: "donkieyo/spoolman"
+spoolman_image_version: "0.27.1"
+
+# specs
+spoolman_memory: 1g
