@@ -49,6 +49,11 @@
           traefik.http.services.woodpecker_ci.loadbalancer.server.port: "8000"
           kuma.woodpecker-ci.http.name: "Woodpecker CI"
           kuma.woodpecker-ci.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ woodpecker_ci_port_ui if woodpecker_ci_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Woodpecker CI
+          homepage.icon: woodpecker-ci.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ woodpecker_ci_port_ui }}"
+          homepage.description: CI/CD pipeline
 
     - name: Create Woodpecker-CI agent container
       community.docker.docker_container:
