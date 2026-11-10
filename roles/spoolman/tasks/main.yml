@@ -1,0 +1,44 @@
+---
+- name: Start Spoolman
+  block:
+    - name: Create Spoolman Directories
+      ansible.builtin.file:
+        path: "{{ spoolman_data_directory }}"
+        state: directory
+        # The image runs as UID/GID 1000 (PUID/PGID) and does not chown its
+        # data directory.
+        owner: "1000"
+        group: "1000"
+
+    - name: Spoolman Docker Container
+      community.docker.docker_container:
+        name: "{{ spoolman_container_name }}"
+        image: "{{ spoolman_image_name }}:{{ spoolman_image_version }}"
+        pull: true
+        volumes:
+          - "{{ spoolman_data_directory }}:/home/app/.local/share/spoolman:rw"
+        ports:
+          - "{{ spoolman_port }}:8000"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ spoolman_memory }}"
+        labels:
+          traefik.enable: "{{ spoolman_available_externally | string }}"
+          traefik.http.routers.spoolman.rule: "Host(`{{ spoolman_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.spoolman.tls.certresolver: "letsencrypt"
+          traefik.http.routers.spoolman.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.spoolman.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.spoolman.loadbalancer.server.port: "8000"
+          # omit drops the label entirely, so a router never points at a
+          # middleware that doesn't exist when Authelia isn't deployed.
+          traefik.http.routers.spoolman.middlewares: "{{ 'authelia@docker' if spoolman_authelia_enabled else omit }}"
+  when: spoolman_enabled is true
+
+- name: Stop Spoolman
+  block:
+    - name: Stop Spoolman
+      community.docker.docker_container:
+        name: "{{ spoolman_container_name }}"
+        state: absent
+  when: spoolman_enabled is false
