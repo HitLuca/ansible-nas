@@ -29,3 +29,6 @@ speedtest_image_version: "v1.15.1-ls177"
 
 # specs
 speedtest_tracker_memory: 1g
+
+# monitoring
+speedtest_tracker_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

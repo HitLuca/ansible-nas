@@ -22,3 +22,6 @@ zigbee2mqtt_image_version: "2.14.3"
 
 # specs
 zigbee2mqtt_memory: "512MB"
+
+# monitoring
+zigbee2mqtt_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

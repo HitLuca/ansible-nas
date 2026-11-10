@@ -37,6 +37,8 @@
           traefik.http.routers.zigbee2mqtt.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.zigbee2mqtt.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.zigbee2mqtt.loadbalancer.server.port: "8080"
+          kuma.zigbee2mqtt.http.name: "Zigbee2MQTT"
+          kuma.zigbee2mqtt.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ zigbee2mqtt_port if zigbee2mqtt_uptime_kuma_monitor else omit }}"
   when: zigbee2mqtt_enabled is true
 
 - name: Stop Zigbee2MQTT

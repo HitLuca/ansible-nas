@@ -21,8 +21,8 @@
           - "{{ bazarr_port }}:6767"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ bazarr_user_id }}"
-          PGID: "{{ bazarr_group_id }}"
+          PUID: "{{ bazarr_user_id | string }}"
+          PGID: "{{ bazarr_group_id | string }}"
         restart_policy: unless-stopped
         memory: "{{ bazarr_memory }}"
         labels:
@@ -32,6 +32,8 @@
           traefik.http.routers.bazarr.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.bazarr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.bazarr.loadbalancer.server.port: "6767"
+          kuma.bazarr.http.name: "Bazarr"
+          kuma.bazarr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ bazarr_port if bazarr_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: Bazarr
           homepage.icon: bazarr.png

@@ -35,6 +35,8 @@
           traefik.http.routers.navidrome.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.navidrome.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.navidrome.loadbalancer.server.port: "4533"
+          kuma.navidrome.http.name: "Navidrome"
+          kuma.navidrome.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ navidrome_port if navidrome_uptime_kuma_monitor else omit }}"
   when: navidrome_enabled is true
 
 - name: Stop Navidrome

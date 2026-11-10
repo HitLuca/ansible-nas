@@ -34,3 +34,6 @@ piwigo_memory: "1g"
 piwigo_mysql_memory: "1g"
 
 piwigo_version: "docker"
+
+# monitoring
+piwigo_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

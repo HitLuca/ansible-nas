@@ -53,9 +53,9 @@ valheim_scheduled_restart: "0"
 valheim_scheduled_restart_schedule: "0 2 * * *"
 
 valheim_env:
-  PUID: "{{ valheim_user_id }}"
-  PGID: "{{ valheim_group_id }}"
-  PORT: "{{ valheim_port_a }}"
+  PUID: "{{ valheim_user_id | string }}"
+  PGID: "{{ valheim_group_id | string }}"
+  PORT: "{{ valheim_port_a | string }}"
   NAME: "{{ valheim_name }}"
   WORLD: "{{ valheim_world }}"
   PASSWORD: "{{ valheim_password }}"

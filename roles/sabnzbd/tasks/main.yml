@@ -21,8 +21,8 @@
           - "{{ sabnzbd_port }}:8080"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ sabnzbd_user_id }}"
-          PGID: "{{ sabnzbd_group_id }}"
+          PUID: "{{ sabnzbd_user_id | string }}"
+          PGID: "{{ sabnzbd_group_id | string }}"
         restart_policy: unless-stopped
         labels:
           traefik.enable: "{{ sabnzbd_available_externally | string }}"
@@ -31,6 +31,8 @@
           traefik.http.routers.sabnzbd.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.sabnzbd.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.sabnzbd.loadbalancer.server.port: "8080"
+          kuma.sabnzbd.http.name: "SABnzbd"
+          kuma.sabnzbd.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ sabnzbd_port if sabnzbd_uptime_kuma_monitor else omit }}"
   when: sabnzbd_enabled is true
 
 - name: Stop Sabnzbd

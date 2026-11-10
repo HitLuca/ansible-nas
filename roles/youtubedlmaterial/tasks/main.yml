@@ -40,6 +40,8 @@
           traefik.http.routers.youtubedlmaterial.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.youtubedlmaterial.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.youtubedlmaterial.loadbalancer.server.port: "17442"
+          kuma.youtubedlmaterial.http.name: "YouTubeDL-Material"
+          kuma.youtubedlmaterial.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ youtubedlmaterial_port_http if youtubedlmaterial_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: YoutubeDL Material
           homepage.icon: youtubedl.png

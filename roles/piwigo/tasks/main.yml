@@ -44,8 +44,8 @@
           - "{{ piwigo_port }}:80"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ piwigo_user_id }}"
-          PGID: "{{ piwigo_group_id }}"
+          PUID: "{{ piwigo_user_id | string }}"
+          PGID: "{{ piwigo_group_id | string }}"
           VERSION: "{{ piwigo_version }}"
         restart_policy: unless-stopped
         memory: "{{ piwigo_memory }}"
@@ -59,6 +59,8 @@
           traefik.http.routers.piwigo.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.piwigo.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.piwigo.loadbalancer.server.port: "80"
+          kuma.piwigo.http.name: "Piwigo"
+          kuma.piwigo.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ piwigo_port if piwigo_uptime_kuma_monitor else omit }}"
           homepage.group: Photos
           homepage.name: Piwigo
           homepage.icon: piwigo.png

@@ -26,6 +26,8 @@
           traefik.http.routers.hello_world.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.hello_world.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.hello_world.loadbalancer.server.port: "8000"
+          kuma.hello_world.http.name: "Hello World"
+          kuma.hello_world.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ hello_world_port if hello_world_uptime_kuma_monitor else omit }}"
   when: hello_world_enabled is true
 
 - name: Stop Hello World

@@ -47,3 +47,6 @@ paperless_ng_languages: "deu eng"
 paperless_ng_ui_memory: 1g
 paperless_ng_postgres_memory: 1g
 paperless_ng_redis_memory: 1g
+
+# monitoring
+paperless_ng_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

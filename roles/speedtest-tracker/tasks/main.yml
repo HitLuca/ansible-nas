@@ -26,8 +26,8 @@
         ports:
           - "{{ speedtest_tracker_port }}:80"
         env:
-          PUID: "{{ speedtest_tracker_user_id }}"
-          PGID: "{{ speedtest_tracker_group_id }}"
+          PUID: "{{ speedtest_tracker_user_id | string }}"
+          PGID: "{{ speedtest_tracker_group_id | string }}"
           TZ: "{{ ansible_nas_timezone }}"
           APP_KEY: "{{ speedtest_tracker_app_key }}"
           APP_URL: "{{ speedtest_tracker_app_url }}"
@@ -43,6 +43,8 @@
           traefik.http.routers.speedtest_tracker.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.speedtest_tracker.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.speedtest_tracker.loadbalancer.server.port: "80"
+          kuma.speedtest-tracker.http.name: "Speedtest-Tracker"
+          kuma.speedtest-tracker.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ speedtest_tracker_port if speedtest_tracker_uptime_kuma_monitor else omit }}"
   when: speedtest_tracker_enabled is true
 
 - name: Stop Speedtest-Tracker
