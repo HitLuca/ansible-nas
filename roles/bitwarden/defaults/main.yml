@@ -28,3 +28,6 @@ bitwarden_image_name: "vaultwarden/server"
 bitwarden_image_version: "latest"
 bitwarden_backup_image_name: "bruceforce/bw_backup"
 bitwarden_backup_image_version: "latest"
+
+# monitoring
+bitwarden_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

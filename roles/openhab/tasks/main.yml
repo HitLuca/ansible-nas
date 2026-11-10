@@ -42,8 +42,8 @@
           - "/etc/localtime:/etc/localtime:ro"
           - "/etc/timezone:/etc/timezone:ro"
         env:
-          OPENHAB_HTTP_PORT: "{{ openhab_port_http }}"
-          OPENHAB_HTTPS_PORT: "{{ openhab_port_https }}"
+          OPENHAB_HTTP_PORT: "{{ openhab_port_http | string }}"
+          OPENHAB_HTTPS_PORT: "{{ openhab_port_https | string }}"
         restart_policy: unless-stopped
         memory: "{{ openhab_memory }}"
         labels:
@@ -53,6 +53,8 @@
           traefik.http.routers.openhab.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.openhab.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.openhab.loadbalancer.server.port: "7777"
+          kuma.openhab.http.name: "openHAB"
+          kuma.openhab.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ openhab_port_http if openhab_uptime_kuma_monitor else omit }}"
   when: openhab_enabled is true
 
 - name: Stop openHAB

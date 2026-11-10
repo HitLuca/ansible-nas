@@ -22,3 +22,6 @@ navidrome_memory: 1g
 navidrome_scan_schedule: "@every 1m" # Cron syntax (https://en.wikipedia.org/wiki/Cron)
 navidrome_log_level: "info"
 navidrome_session_timeout: "24h"
+
+# monitoring
+navidrome_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

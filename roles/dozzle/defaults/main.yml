@@ -36,3 +36,6 @@ dozzle_image_version: "v11.4.2"
 
 # specs
 dozzle_memory: 1g
+
+# monitoring
+dozzle_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

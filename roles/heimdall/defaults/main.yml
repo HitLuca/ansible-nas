@@ -14,3 +14,6 @@ heimdall_hostname: heimdall
 heimdall_memory: 1g
 
 heimdall_container_name: heimdall
+
+# monitoring
+heimdall_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -20,3 +20,6 @@ couchdb_memory: 1024MB
 couchdb_container_name: "couchdb"
 couchdb_image_name: "couchdb"
 couchdb_image_version: "latest"
+
+# monitoring
+couchdb_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -58,6 +58,8 @@
           traefik.http.routers.nextcloud.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.nextcloud.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.nextcloud.loadbalancer.server.port: "80"
+          kuma.nextcloud.http.name: "Nextcloud"
+          kuma.nextcloud.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ nextcloud_port if nextcloud_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Nextcloud
           homepage.icon: nextcloud.png

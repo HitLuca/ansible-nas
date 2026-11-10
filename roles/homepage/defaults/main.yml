@@ -75,3 +75,6 @@ homepage_bookmarks_yaml:
             icon: youtube
 
 homepage_allowed_hosts: "*"
+
+# monitoring
+homepage_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

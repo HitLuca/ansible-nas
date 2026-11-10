@@ -20,3 +20,6 @@ silverbullet_memory: 1g
 # config
 silverbullet_username: admin
 silverbullet_password: topSecret
+
+# monitoring
+silverbullet_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

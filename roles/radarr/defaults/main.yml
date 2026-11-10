@@ -22,3 +22,6 @@ radarr_image_version: "latest"
 
 # specs
 radarr_memory: 1g
+
+# monitoring
+radarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

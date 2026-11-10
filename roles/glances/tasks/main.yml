@@ -25,6 +25,8 @@
           traefik.http.routers.glances.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.glances.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.glances.loadbalancer.server.port: "61208"
+          kuma.glances.http.name: "Glances"
+          kuma.glances.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ glances_port_one if glances_uptime_kuma_monitor else omit }}"
   when: glances_enabled is true
 
 - name: Stop Glances
