@@ -18,3 +18,5 @@ dokuwiki_memory: 1g
 
 # docker
 dokuwiki_container_name: dokuwiki
+dokuwiki_image_name: "linuxserver/dokuwiki"
+dokuwiki_image_version: "latest"

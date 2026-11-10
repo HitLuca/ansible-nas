@@ -11,7 +11,7 @@
     - name: FlareSolverr Docker Container
       community.docker.docker_container:
         name: "{{ flaresolverr_container_name }}"
-        image: flaresolverr/flaresolverr
+        image: "{{ flaresolverr_image_name }}:{{ flaresolverr_image_version }}"
         pull: true
         volumes:
           - "{{ flaresolverr_config_directory }}:/config:rw"

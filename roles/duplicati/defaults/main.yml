@@ -22,5 +22,7 @@ duplicati_memory: 1g
 
 # docker
 duplicati_container_name: duplicati
+duplicati_image_name: "linuxserver/duplicati"
+duplicati_image_version: "latest"
 
 duplicati_settings_encryption_key: ""

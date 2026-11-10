@@ -17,9 +17,10 @@ help: ## Show this help
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}'
 
-lint: ## Run every linter plus the enabled-flag check
+lint: ## Run every linter plus the enabled-flag and role-structure checks
 	uv run pre-commit run --all-files
 	tests/check-enabled-vars.sh
+	tests/check-role-structure.sh
 
 lint-yaml: ## Lint YAML only
 	uv run pre-commit run yamllint --all-files

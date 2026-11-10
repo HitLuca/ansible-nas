@@ -11,7 +11,7 @@
     - name: Hello World Docker Container
       community.docker.docker_container:
         name: "{{ hello_world_container_name }}"
-        image: crccheck/hello-world
+        image: "{{ hello_world_image_name }}:{{ hello_world_image_version }}"
         pull: true
         volumes:
           - "{{ hello_world_data_directory }}:/hello_world:rw"

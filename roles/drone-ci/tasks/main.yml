@@ -21,7 +21,7 @@
     - name: Create Drone-CI container
       community.docker.docker_container:
         name: "{{ drone_ci_container_name }}"
-        image: drone/drone:2
+        image: "{{ drone_ci_image_name }}:{{ drone_ci_image_version }}"
         pull: true
         volumes:
           - "{{ drone_ci_data_directory }}:/var/lib/drone:rw"
@@ -49,7 +49,7 @@
     - name: Create Drone-CI Runner container
       community.docker.docker_container:
         name: "{{ drone_ci_runner_container_name }}"
-        image: drone/drone-runner-docker:1
+        image: "{{ drone_ci_runner_image_name }}:{{ drone_ci_runner_image_version }}"
         pull: true
         volumes:
           - "/var/run/docker.sock:/var/run/docker.sock:rw"
