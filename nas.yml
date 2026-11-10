@@ -381,6 +381,10 @@
       tags:
         - speedtest-tracker
 
+    - role: spoolman
+      tags:
+        - spoolman
+
     - role: stats
       tags:
         - stats
