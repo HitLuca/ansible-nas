@@ -24,8 +24,8 @@ Start by looking at the `hello_world` example. Following this structure is the m
 A new application touches these places:
 
 * `roles/<name>/` - the role itself:
-  * `defaults/main.yml`, starting with `<name>_enabled: false` (the `tests/check-enabled-vars.sh` check fails without it) and pinning `<name>_image_version` to a real release rather than `latest`.
-  * `tasks/main.yml`, with a start block gated on `when: <name>_enabled is true` and a stop block gated on `is false` that removes the container.
+  * `defaults/main.yml`, starting with `<name>_enabled: false` (the `tests/check-enabled-vars.sh` check fails without it), an `<name>_image_name` / `<name>_image_version` pair, and pinning `<name>_image_version` to a real release rather than `latest`.
+  * `tasks/main.yml`, with a start block gated on `when: <name>_enabled is true` and a stop block gated on `is false` that removes the container. Reference the image as `{{ <name>_image_name }}:{{ <name>_image_version }}` rather than writing it out — `tests/check-role-structure.sh` rejects a literal `image:`.
   * `templates/` and `files/`, if the application needs them.
   * `molecule/default/` - `molecule.yml`, `side_effect.yml`, `verify.yml` and `verify_stopped.yml`. Copy the layout from `hello_world` or any neighbouring role.
 * `nas.yml` - add `- role: <name>` with a matching tag, in alphabetical order.

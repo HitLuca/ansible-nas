@@ -11,7 +11,7 @@
     - name: Dupicati Docker Container
       community.docker.docker_container:
         name: "{{ duplicati_container_name }}"
-        image: linuxserver/duplicati
+        image: "{{ duplicati_image_name }}:{{ duplicati_image_version }}"
         pull: true
         ports:
           - "{{ duplicati_port }}:8200"

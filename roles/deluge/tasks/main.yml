@@ -11,8 +11,8 @@
 
     - name: Deluge Docker Container
       community.docker.docker_container:
-        name: deluge
-        image: linuxserver/deluge
+        name: "{{ deluge_container_name }}"
+        image: "{{ deluge_image_name }}:{{ deluge_image_version }}"
         pull: true
         volumes:
           - "{{ deluge_config_directory }}:/config:rw"

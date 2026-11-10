@@ -4,7 +4,7 @@
     - name: Code Server Docker Container
       community.docker.docker_container:
         name: "{{ code_server_container_name }}"
-        image: linuxserver/code-server
+        image: "{{ code_server_image_name }}:{{ code_server_image_version }}"
         pull: true
         volumes:
           - "{{ code_server_config_directory }}:/config"

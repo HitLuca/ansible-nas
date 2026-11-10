@@ -17,7 +17,7 @@
     - name: Bitwarden Docker Container
       community.docker.docker_container:
         name: "{{ bitwarden_container_name }}"
-        image: vaultwarden/server:latest
+        image: "{{ bitwarden_image_name }}:{{ bitwarden_image_version }}"
         pull: true
         ports:
           - "{{ bitwarden_port_a }}:80"
@@ -52,7 +52,7 @@
     - name: Bitwarden Backup Container
       community.docker.docker_container:
         name: "{{ bitwarden_backup_container_name }}"
-        image: bruceforce/bw_backup:latest
+        image: "{{ bitwarden_backup_image_name }}:{{ bitwarden_backup_image_version }}"
         pull: true
         restart_policy: unless-stopped
         volumes_from: bitwarden
