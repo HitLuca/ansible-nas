@@ -14,3 +14,5 @@ dashy_memory: 1g
 
 # docker
 dashy_container_name: dashy
+dashy_image_name: "lissy93/dashy"
+dashy_image_version: "latest"

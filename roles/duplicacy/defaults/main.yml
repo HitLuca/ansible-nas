@@ -25,3 +25,5 @@ duplicacy_memory: 1g
 
 # docker
 duplicacy_container_name: duplicacy
+duplicacy_image_name: "saspus/duplicacy-web"
+duplicacy_image_version: "mini"

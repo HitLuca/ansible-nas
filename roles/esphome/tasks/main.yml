@@ -11,7 +11,7 @@
     - name: EspHome Docker Container
       community.docker.docker_container:
         name: "{{ esphome_container_name }}"
-        image: esphome/esphome:latest
+        image: "{{ esphome_image_name }}:{{ esphome_image_version }}"
         pull: true
         network_mode: host
         volumes:
