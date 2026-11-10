@@ -20,3 +20,6 @@ esphome_memory: 1g
 esphome_container_name: esphome
 esphome_image_name: "esphome/esphome"
 esphome_image_version: "latest"
+
+# monitoring
+esphome_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -21,3 +21,6 @@ netbootxyz_group_id: "1000"
 
 # specs
 netbootxyz_memory: 1g
+
+# monitoring
+netbootxyz_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

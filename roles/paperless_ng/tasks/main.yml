@@ -61,8 +61,8 @@
         env:
           PAPERLESS_REDIS: "redis://{{ paperless_ng_redis_container_name | string }}:6379"
           PAPERLESS_DBHOST: "{{ paperless_ng_db_container_name | string }}"
-          USERMAP_UID: "{{ paperless_ng_user_id }}"
-          USERMAP_GID: "{{ paperless_ng_group_id }}"
+          USERMAP_UID: "{{ paperless_ng_user_id | string }}"
+          USERMAP_GID: "{{ paperless_ng_group_id | string }}"
           PAPERLESS_OCR_LANGUAGES: "{{ paperless_ng_languages }}"
         restart_policy: unless-stopped
         memory: "{{ paperless_ng_ui_memory }}"
@@ -76,6 +76,8 @@
           traefik.http.routers.paperless_ng.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.paperless_ng.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.paperless_ng.loadbalancer.server.port: "8080"
+          kuma.paperless_ng.http.name: "Paperless-ng"
+          kuma.paperless_ng.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ paperless_ng_port if paperless_ng_uptime_kuma_monitor else omit }}"
   when: paperless_ng_enabled is true
 
 - name: Stop paperless_ng

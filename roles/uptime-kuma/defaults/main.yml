@@ -1,0 +1,36 @@
+---
+uptime_kuma_enabled: false
+uptime_kuma_available_externally: false
+
+# directories
+uptime_kuma_data_directory: "{{ docker_home }}/uptime_kuma"
+
+# network
+uptime_kuma_port: "3003"
+uptime_kuma_hostname: "uptime-kuma"
+
+# docker
+uptime_kuma_container_name: "uptime-kuma"
+uptime_kuma_image_name: "louislam/uptime-kuma"
+uptime_kuma_image_version: "2.5.9"
+
+# specs
+uptime_kuma_memory: 1g
+
+# monitoring
+# Default for every role's <role>_uptime_kuma_monitor flag. Keeping this false
+# leaves the inventory free of per-service variables; setting it true turns on
+# monitors for every role that carries kuma.* labels.
+uptime_kuma_monitor_all_services: false
+
+# discovery
+# AutoKuma creates monitors from the containers' kuma.* labels. It authenticates
+# with an account created in the Uptime Kuma web UI after its first start.
+uptime_kuma_discovery_enabled: false
+uptime_kuma_discovery_username: ""
+uptime_kuma_discovery_password: ""
+uptime_kuma_discovery_data_directory: "{{ docker_home }}/uptime_kuma_discovery"
+uptime_kuma_discovery_container_name: "uptime-kuma-discovery"
+uptime_kuma_discovery_image_name: "ghcr.io/bigboot/autokuma"
+uptime_kuma_discovery_image_version: "2.0.0"
+uptime_kuma_discovery_memory: "256m"

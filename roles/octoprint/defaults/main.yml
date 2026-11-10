@@ -22,3 +22,6 @@ octoprint_webcam_mountpoint: "/dev/video0"
 
 # specs
 octoprint_memory: 1g
+
+# monitoring
+octoprint_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

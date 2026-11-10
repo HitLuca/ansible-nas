@@ -433,6 +433,10 @@
       tags:
         - ubooquity
 
+    - role: uptime-kuma
+      tags:
+        - uptime-kuma
+
     - role: valheim
       tags:
         - valheim

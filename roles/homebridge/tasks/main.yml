@@ -29,6 +29,8 @@
           traefik.http.routers.homebridge.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.homebridge.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.homebridge.loadbalancer.server.port: "{{ homebridge_port }}"
+          kuma.homebridge.http.name: "Homebridge"
+          kuma.homebridge.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ homebridge_port if homebridge_uptime_kuma_monitor else omit }}"
   when: homebridge_enabled is true
 
 - name: Stop Homebridge

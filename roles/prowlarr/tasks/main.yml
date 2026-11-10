@@ -19,8 +19,8 @@
           - "{{ prowlarr_port }}:9696"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ prowlarr_user_id }}"
-          PGID: "{{ prowlarr_group_id }}"
+          PUID: "{{ prowlarr_user_id | string }}"
+          PGID: "{{ prowlarr_group_id | string }}"
         restart_policy: unless-stopped
         memory: "{{ prowlarr_memory }}"
         labels:
@@ -30,6 +30,8 @@
           traefik.http.routers.prowlarr.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.prowlarr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.prowlarr.loadbalancer.server.port: "9696"
+          kuma.prowlarr.http.name: "Prowlarr"
+          kuma.prowlarr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ prowlarr_port if prowlarr_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: Prowlarr
           homepage.icon: prowlarr

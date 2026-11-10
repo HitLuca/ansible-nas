@@ -22,3 +22,6 @@ bazarr_memory: 1g
 bazarr_container_name: bazarr
 bazarr_image_name: "linuxserver/bazarr"
 bazarr_image_version: "latest"
+
+# monitoring
+bazarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -22,3 +22,6 @@ booksonic_memory: 1g
 booksonic_container_name: booksonic
 booksonic_image_name: linuxserver/booksonic-air
 booksonic_image_version: version-v2201.1.0
+
+# monitoring
+booksonic_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

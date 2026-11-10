@@ -21,3 +21,6 @@ pyload_image_version: "latest"
 
 # specs
 pyload_memory: "1g"
+
+# monitoring
+pyload_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

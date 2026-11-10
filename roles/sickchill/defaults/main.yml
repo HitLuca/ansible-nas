@@ -22,3 +22,6 @@ sickchill_image_version: "2024.3.1"
 
 # specs
 sickchill_memory: 1g
+
+# monitoring
+sickchill_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

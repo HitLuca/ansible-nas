@@ -13,3 +13,6 @@ netdata_image_version: "latest"
 
 # specs
 netdata_memory: 1g
+
+# monitoring
+netdata_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

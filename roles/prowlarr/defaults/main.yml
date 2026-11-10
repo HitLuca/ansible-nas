@@ -20,3 +20,6 @@ prowlarr_image_version: "develop"
 
 # specs
 prowlarr_memory: 1g
+
+# monitoring
+prowlarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

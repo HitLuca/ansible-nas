@@ -35,3 +35,6 @@ jellyfin_image_version: "latest"
 
 # specs
 jellyfin_memory: "1g"
+
+# monitoring
+jellyfin_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

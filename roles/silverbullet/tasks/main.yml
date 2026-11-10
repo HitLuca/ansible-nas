@@ -28,6 +28,8 @@
           traefik.http.routers.silverbullet.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.silverbullet.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.silverbullet.loadbalancer.server.port: "3000"
+          kuma.silverbullet.http.name: "SilverBullet"
+          kuma.silverbullet.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ silverbullet_port if silverbullet_uptime_kuma_monitor else omit }}"
           homepage.group: Productivity
           homepage.name: Silverbullet
           homepage.icon: silverbullet

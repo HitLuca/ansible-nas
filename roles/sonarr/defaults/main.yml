@@ -22,3 +22,6 @@ sonarr_image_version: "latest"
 
 # specs
 sonarr_memory: 1g
+
+# monitoring
+sonarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

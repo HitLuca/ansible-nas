@@ -19,8 +19,8 @@
         network_mode: host
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ wireshark_user_id }}"
-          PGID: "{{ wireshark_group_id }}"
+          PUID: "{{ wireshark_user_id | string }}"
+          PGID: "{{ wireshark_group_id | string }}"
         capabilities:
           - NET_ADMIN
         restart_policy: unless-stopped
@@ -32,6 +32,8 @@
           traefik.http.routers.wireshark.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.wireshark.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.wireshark.loadbalancer.server.port: "3000"
+          kuma.wireshark.http.name: "Wireshark"
+          kuma.wireshark.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ '3000' if wireshark_uptime_kuma_monitor else omit }}"
   when: wireshark_enabled is true
 
 - name: Stop Wireshark

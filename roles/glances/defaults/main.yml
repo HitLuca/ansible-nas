@@ -19,3 +19,6 @@ glances_image_version: "latest"
 
 # specs
 glances_memory: 1g
+
+# monitoring
+glances_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

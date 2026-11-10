@@ -72,6 +72,8 @@
           traefik.http.routers.romm.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.romm.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.romm.loadbalancer.server.port: "8080"
+          kuma.romm.http.name: "Romm"
+          kuma.romm.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ romm_port if romm_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Romm
           homepage.icon: romm
