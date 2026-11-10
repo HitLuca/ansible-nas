@@ -17,8 +17,8 @@
           - "{{ ombi_port }}:3579"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ ombi_user_id }}"
-          PGID: "{{ ombi_group_id }}"
+          PUID: "{{ ombi_user_id | string }}"
+          PGID: "{{ ombi_group_id | string }}"
         restart_policy: unless-stopped
         memory: "{{ ombi_memory }}"
         labels:
@@ -28,6 +28,8 @@
           traefik.http.routers.ombi.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.ombi.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.ombi.loadbalancer.server.port: "3579"
+          kuma.ombi.http.name: "Ombi"
+          kuma.ombi.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ ombi_port if ombi_uptime_kuma_monitor else omit }}"
   when: ombi_enabled is true
 
 - name: Stop Ombi

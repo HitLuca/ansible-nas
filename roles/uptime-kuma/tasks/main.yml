@@ -1,0 +1,96 @@
+---
+- name: Start Uptime Kuma
+  block:
+    - name: Create Uptime Kuma Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ uptime_kuma_data_directory }}"
+
+    - name: Uptime Kuma Docker Container
+      community.docker.docker_container:
+        name: "{{ uptime_kuma_container_name }}"
+        image: "{{ uptime_kuma_image_name }}:{{ uptime_kuma_image_version }}"
+        pull: true
+        volumes:
+          - "{{ uptime_kuma_data_directory }}:/app/data:rw"
+        ports:
+          - "{{ uptime_kuma_port }}:3001"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ uptime_kuma_memory }}"
+        labels:
+          traefik.enable: "{{ uptime_kuma_available_externally | string }}"
+          traefik.http.routers.uptime_kuma.rule: "Host(`{{ uptime_kuma_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.uptime_kuma.tls.certresolver: "letsencrypt"
+          traefik.http.routers.uptime_kuma.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.uptime_kuma.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.uptime_kuma.loadbalancer.server.port: "3001"
+          homepage.group: Monitoring
+          homepage.name: Uptime Kuma
+          homepage.icon: uptime-kuma.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ uptime_kuma_port }}"
+          homepage.description: Uptime monitoring and status pages
+  when: uptime_kuma_enabled is true
+
+- name: Start Uptime Kuma Discovery
+  block:
+    - name: Check Uptime Kuma discovery credentials are set
+      ansible.builtin.assert:
+        that:
+          - uptime_kuma_discovery_username | length > 0
+          - uptime_kuma_discovery_password | length > 0
+        fail_msg: >-
+          uptime_kuma_discovery_username and uptime_kuma_discovery_password must
+          be set to the account you created in the Uptime Kuma web UI
+          (http://ansible_nas_host_or_ip:{{ uptime_kuma_port }}).
+
+    - name: Create Uptime Kuma Discovery Directory
+      ansible.builtin.file:
+        path: "{{ uptime_kuma_discovery_data_directory }}"
+        state: directory
+
+    - name: Uptime Kuma Discovery Docker Container
+      community.docker.docker_container:
+        name: "{{ uptime_kuma_discovery_container_name }}"
+        image: "{{ uptime_kuma_discovery_image_name }}:{{ uptime_kuma_discovery_image_version }}"
+        pull: true
+        volumes:
+          - "{{ uptime_kuma_discovery_data_directory }}:/data:rw"
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          # Kuma's port is published on the host, and the containers share no
+          # user-defined network, so reach it through the host's address.
+          AUTOKUMA__KUMA__URL: "http://{{ ansible_facts.default_ipv4.address }}:{{ uptime_kuma_port }}"
+          AUTOKUMA__KUMA__USERNAME: "{{ uptime_kuma_discovery_username }}"
+          AUTOKUMA__KUMA__PASSWORD: "{{ uptime_kuma_discovery_password }}"
+          AUTOKUMA__ON_DELETE: delete
+          AUTOKUMA__DELETE_GRACE_PERIOD: "60"
+          AUTOKUMA__DEFAULT_SETTINGS: |-
+            http.interval: 300
+            http.max_retries: 2
+            http.timeout: 10
+        restart_policy: unless-stopped
+        memory: "{{ uptime_kuma_discovery_memory }}"
+  when:
+    - uptime_kuma_enabled is true
+    - uptime_kuma_discovery_enabled is true
+
+- name: Stop Uptime Kuma Discovery
+  block:
+    - name: Stop Uptime Kuma Discovery
+      community.docker.docker_container:
+        name: "{{ uptime_kuma_discovery_container_name }}"
+        state: absent
+  when: uptime_kuma_enabled is false or uptime_kuma_discovery_enabled is false
+
+- name: Stop Uptime Kuma
+  block:
+    - name: Stop Uptime Kuma
+      community.docker.docker_container:
+        name: "{{ uptime_kuma_container_name }}"
+        state: absent
+  when: uptime_kuma_enabled is false

@@ -58,6 +58,8 @@
           traefik.http.routers.gitea.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.gitea.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.gitea.loadbalancer.server.port: "3000"
+          kuma.gitea.http.name: "Gitea"
+          kuma.gitea.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ gitea_port_http if gitea_uptime_kuma_monitor else omit }}"
   when: gitea_enabled is true
 
 - name: Stop Gitea

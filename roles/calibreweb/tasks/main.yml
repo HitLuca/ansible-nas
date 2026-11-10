@@ -20,8 +20,8 @@
           - "{{ calibreweb_data_directory }}/data:/data"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ calibreweb_user_id }}"
-          PGID: "{{ calibreweb_group_id }}"
+          PUID: "{{ calibreweb_user_id | string }}"
+          PGID: "{{ calibreweb_group_id | string }}"
           DOCKER_MODS: "{{ calibreweb_ebook_conversion }}"
         ports:
           - "{{ calibreweb_port }}:8083"
@@ -34,6 +34,8 @@
           traefik.http.routers.calibreweb.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.calibreweb.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.calibreweb.loadbalancer.server.port: "8083"
+          kuma.calibreweb.http.name: "Calibre-Web"
+          kuma.calibreweb.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ calibreweb_port if calibreweb_uptime_kuma_monitor else omit }}"
   when: calibreweb_enabled is true
 
 - name: Stop Calibre-web

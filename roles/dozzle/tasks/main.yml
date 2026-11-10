@@ -45,6 +45,8 @@
           traefik.http.routers.dozzle.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.dozzle.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.dozzle.loadbalancer.server.port: "8080"
+          kuma.dozzle.http.name: "Dozzle"
+          kuma.dozzle.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ dozzle_port if dozzle_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: Dozzle
           homepage.icon: dozzle.png

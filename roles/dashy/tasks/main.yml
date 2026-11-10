@@ -32,6 +32,8 @@
           traefik.http.routers.dashy.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.dashy.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.dashy.loadbalancer.server.port: "80"
+          kuma.dashy.http.name: "Dashy"
+          kuma.dashy.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ dashy_port if dashy_uptime_kuma_monitor else omit }}"
   when: dashy_enabled is true
 
 - name: Stop Dashy

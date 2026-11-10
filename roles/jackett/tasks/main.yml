@@ -29,6 +29,8 @@
           traefik.http.routers.jackett.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.jackett.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.jackett.loadbalancer.server.port: "9117"
+          kuma.jackett.http.name: "Jackett"
+          kuma.jackett.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ jackett_port if jackett_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: Jackett
           homepage.icon: jackett

@@ -34,6 +34,8 @@
           traefik.http.routers.netdata.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.netdata.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.netdata.loadbalancer.server.port: "19999"
+          kuma.netdata.http.name: "Netdata"
+          kuma.netdata.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ netdata_port if netdata_uptime_kuma_monitor else omit }}"
   when: netdata_enabled is true
 
 - name: Stop Netdata

@@ -21,8 +21,8 @@
           - "{{ krusader_port_http }}:6080"
           - "{{ krusader_port_vnc }}:5900"
         env:
-          PUID: "{{ krusader_user_id }}"
-          PGID: "{{ krusader_group_id }}"
+          PUID: "{{ krusader_user_id | string }}"
+          PGID: "{{ krusader_group_id | string }}"
           VNC_PASSWORD: "{{ krusader_vnc_password }}"
           TEMP_FOLDER: "{{ krusader_temp_folder }}"
           WEBPAGE_TITLE: "{{ krusader_webpage_title }}"
@@ -36,6 +36,8 @@
           traefik.http.routers.krusader.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.krusader.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.krusader.loadbalancer.server.port: "6080"
+          kuma.krusader.http.name: "Krusader"
+          kuma.krusader.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ krusader_port_http if krusader_uptime_kuma_monitor else omit }}"
   when: krusader_enabled is true
 
 - name: Stop Krusader

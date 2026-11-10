@@ -19,3 +19,6 @@ thelounge_image_version: "latest"
 # to these so it can read and write it.
 thelounge_user_id: "1000"
 thelounge_group_id: "1000"
+
+# monitoring
+thelounge_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

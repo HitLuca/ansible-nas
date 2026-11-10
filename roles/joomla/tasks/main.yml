@@ -55,6 +55,8 @@
           traefik.http.routers.joomla.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.joomla.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.joomla.loadbalancer.server.port: "80"
+          kuma.joomla.http.name: "Joomla"
+          kuma.joomla.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ joomla_port if joomla_uptime_kuma_monitor else omit }}"
   when: joomla_enabled is true
 
 - name: Stop Joomla

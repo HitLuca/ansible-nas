@@ -27,8 +27,8 @@
         devices: "{{ plex_devices | default(omit) }}"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          PUID: "{{ plex_user_id }}"
-          PGID: "{{ plex_group_id }}"
+          PUID: "{{ plex_user_id | string }}"
+          PGID: "{{ plex_group_id | string }}"
           VERSION: "{{ plex_version }}"
         restart_policy: unless-stopped
         memory: "{{ plex_memory }}"
@@ -39,6 +39,8 @@
           traefik.http.routers.plex.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.plex.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.plex.loadbalancer.server.port: "32400"
+          kuma.plex.http.name: "Plex"
+          kuma.plex.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ '32400' if plex_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Plex
           homepage.icon: plex

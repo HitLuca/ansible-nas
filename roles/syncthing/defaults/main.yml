@@ -26,3 +26,6 @@ syncthing_image_version: "latest"
 
 # specs
 syncthing_memory: 1g
+
+# monitoring
+syncthing_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
