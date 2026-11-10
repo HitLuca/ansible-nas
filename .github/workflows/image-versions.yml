@@ -1,0 +1,83 @@
+---
+name: Image versions
+
+# Reports roles whose pinned image version has fallen behind its registry.
+# The scheduled run only reports; use "Run workflow" with patch enabled to
+# get a branch and a PR with the bumps applied.
+
+on:
+  schedule:
+    # Weekly, a day after the integration run
+    - cron: "0 4 * * 2"
+  workflow_dispatch:
+    inputs:
+      patch:
+        description: "Open a PR with the updated versions"
+        type: boolean
+        default: false
+
+concurrency:
+  group: image-versions
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Check pinned image versions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      # The script is stdlib-only, so nothing to install. It exits 1 when a
+      # pinned image is behind, which fails the run (and emails on schedule).
+      - name: Check image versions
+        run: |
+          set +e
+          python3 tests/check_image_versions.py --check --format markdown > report.md
+          code=$?
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+  patch:
+    name: Open a PR with the updates
+    if: inputs.patch
+    runs-on: ubuntu-latest
+    permissions:
+      # Pushing the branch and opening the PR. Note that a PR opened with
+      # GITHUB_TOKEN does not trigger the CI/integration workflows; re-run
+      # them from the PR page if you want them before merging.
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Apply the updates
+        run: python3 tests/check_image_versions.py --patch
+
+      - name: Open the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet; then
+            echo "Every pinned image is current."
+            exit 0
+          fi
+          git switch -C chore/image-versions
+          git commit -am "⬆️ bumped pinned image versions"
+          git push -u --force-with-lease origin chore/image-versions
+          gh pr create \
+            --title "⬆️ bumped pinned image versions" \
+            --body "Opened by the Image versions workflow." \
+            --head chore/image-versions \
+            || echo "PR already open."
