@@ -23,6 +23,21 @@
       "description": "Major upgrades are proposed but need approval on the dependency dashboard",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Pinned in four places (pyproject, pre-commit, ci.yml, integration.yml); Renovate only sees pyproject, so bumps must be manual",
+      "matchPackageNames": ["ansible-core"],
+      "enabled": false
+    },
+    {
+      "description": "Runtime versions are a CI decision, and .python-version already disagrees with the workflows",
+      "matchPackageNames": [
+        "python",
+        "node",
+        "actions/python-versions",
+        "actions/node-versions"
+      ],
+      "enabled": false
     }
   ]
 }
