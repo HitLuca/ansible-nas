@@ -36,6 +36,11 @@
           traefik.http.services.netbootxyz.loadbalancer.server.port: "3000"
           kuma.netbootxyz.http.name: "netboot.xyz"
           kuma.netbootxyz.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ netbootxyz_port_http if netbootxyz_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: netboot.xyz
+          homepage.icon: netbootxyz.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ netbootxyz_port_http }}"
+          homepage.description: Network boot server
   when: netbootxyz_enabled is true
 
 - name: Stop Netbootxyz

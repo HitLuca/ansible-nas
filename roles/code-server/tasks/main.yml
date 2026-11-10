@@ -27,6 +27,11 @@
           traefik.http.services.code_server.loadbalancer.server.port: "8443"
           kuma.code-server.http.name: "Code Server"
           kuma.code-server.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ code_server_port if code_server_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Code Server
+          homepage.icon: code-server.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ code_server_port }}"
+          homepage.description: VS Code in the browser
   when: code_server_enabled is true
 
 - name: Stop Code Server

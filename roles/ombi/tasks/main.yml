@@ -30,6 +30,11 @@
           traefik.http.services.ombi.loadbalancer.server.port: "3579"
           kuma.ombi.http.name: "Ombi"
           kuma.ombi.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ ombi_port if ombi_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Ombi
+          homepage.icon: ombi.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ ombi_port }}"
+          homepage.description: Media requests
   when: ombi_enabled is true
 
 - name: Stop Ombi

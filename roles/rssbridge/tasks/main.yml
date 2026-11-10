@@ -29,6 +29,11 @@
           traefik.http.services.rssbridge.loadbalancer.server.port: "80"
           kuma.rssbridge.http.name: "RSS-Bridge"
           kuma.rssbridge.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ rssbridge_port if rssbridge_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: RSS-Bridge
+          homepage.icon: rss-bridge.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ rssbridge_port }}"
+          homepage.description: RSS feed generator
   when: rssbridge_enabled is true
 
 - name: Stop RSSBridge
