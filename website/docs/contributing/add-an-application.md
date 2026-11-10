@@ -30,11 +30,17 @@ Nothing else needs editing: the molecule test matrix (`tests/github-test-matrix.
 make test ROLE=<name>
 make lint
 make check-ports
+make check-images
 ```
 
 `make check-ports` lists host ports claimed by more than one role, so it will
 also show clashes that predate your change — check that your new role doesn't
 add one.
+
+`make check-images` asks each role's registry for its tags and reports pinned
+`<name>_image_version` values that have fallen behind. `make update-images`
+rewrites them in place, staying on the same major version. A scheduled workflow
+runs the check every week.
 
 Run `make` on its own to list all available targets.
 
