@@ -5,6 +5,13 @@ on:
   pull_request:
     branches:
       - main
+    # Skip docs checks when nothing docs-related changed. A filtered-out run
+    # reports as neutral, not success: remove these filters if the docs checks
+    # become required status checks on main.
+    paths:
+      - "website/**"
+      - "**.md"
+      - ".github/workflows/docs-test.yml"
 
 jobs:
   lint:

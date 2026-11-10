@@ -5,6 +5,13 @@ on:
   push:
     branches:
       - main
+    # Skip the rebuild when nothing docs-related changed. A filtered-out run
+    # reports as neutral, not success: remove these filters if this check ever
+    # becomes a required status check on main.
+    paths:
+      - "website/**"
+      - "**.md"
+      - ".github/workflows/docs-deploy.yml"
 
 # Read-only by default; only the deploy job may push to the gh-pages branch.
 permissions:
