@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Pin <role>_image_version next to <role>_image_name in role defaults",
+      "managerFilePatterns": ["/^roles/[^/]+/defaults/main\\.yml$/"],
+      "matchStrings": [
+        "(?:^|\\n) *[a-z0-9_]+_image_name: *\"?(?<depName>[^\"'\\s#]+)\"?\\n(?: *#[^\\n]*\\n)* *[a-z0-9_]+_image_version: *\"?(?<currentValue>[^\"'\\s#]+)\"?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Date-tagged images parse as a bare year under docker versioning",
+      "matchPackageNames": ["homebridge/homebridge"],
+      "versioning": "loose"
+    },
+    {
+      "description": "Major upgrades are proposed but need approval on the dependency dashboard",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}
