@@ -38,7 +38,3 @@ jobs:
 
       - name: Check role enabled flags
         run: tests/check-enabled-vars.sh
-
-      # Keep in step with the markdownlint rev in .pre-commit-config.yaml.
-      - name: Lint docs
-        run: npx --yes markdownlint-cli@0.49.1 .
