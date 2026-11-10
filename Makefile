@@ -10,7 +10,7 @@ SHELL := /bin/bash
 # Roles that have a molecule scenario.
 ROLES := $(notdir $(patsubst %/molecule,%,$(wildcard roles/*/molecule)))
 
-.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports test test-all guard-role
+.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images test test-all guard-role
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
@@ -36,6 +36,12 @@ lint-python: ## Lint Python only (pylint + mypy)
 
 check-ports: ## Report host ports claimed by more than one role
 	tests/check-port-conflicts.sh
+
+check-images: ## Report pinned image versions that are behind upstream
+	uv run python tests/check_image_versions.py --check
+
+update-images: ## Rewrite pinned image versions to the latest same-major tag
+	uv run python tests/check_image_versions.py --patch
 
 test: guard-role ## Run one role's molecule test, e.g. make test ROLE=loki
 	uv run pytest "tests/test_molecule.py::test_role[$(ROLE)]" -q
