@@ -22,3 +22,6 @@ lidarr_image_version: "latest"
 
 # specs
 lidarr_memory: 1g
+
+# monitoring
+lidarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

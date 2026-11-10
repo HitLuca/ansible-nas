@@ -22,3 +22,6 @@ spoolman_image_version: "0.27.1"
 
 # specs
 spoolman_memory: 1g
+
+# monitoring
+spoolman_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

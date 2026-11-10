@@ -23,3 +23,6 @@ ispyagentdvr_memory: 1g
 ispyagentdvr_container_name: ispyagentdvr
 ispyagentdvr_image_name: "mekayelanik/ispyagentdvr"
 ispyagentdvr_image_version: "latest"
+
+# monitoring
+ispyagentdvr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

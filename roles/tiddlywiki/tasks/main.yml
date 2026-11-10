@@ -29,6 +29,8 @@
           traefik.http.routers.tiddlywiki.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.tiddlywiki.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.tiddlywiki.loadbalancer.server.port: "8080"
+          kuma.tiddlywiki.http.name: "TiddlyWiki"
+          kuma.tiddlywiki.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ tiddlywiki_port if tiddlywiki_uptime_kuma_monitor else omit }}"
   when: tiddlywiki_enabled is true
 
 - name: Stop Tiddlywiki

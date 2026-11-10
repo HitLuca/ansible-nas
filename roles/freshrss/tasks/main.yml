@@ -31,6 +31,8 @@
           traefik.http.routers.freshrss.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.freshrss.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.freshrss.loadbalancer.server.port: "80"
+          kuma.freshrss.http.name: "FreshRSS"
+          kuma.freshrss.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ freshrss_port if freshrss_uptime_kuma_monitor else omit }}"
   when: freshrss_enabled is true
 
 - name: Stop FreshRSS

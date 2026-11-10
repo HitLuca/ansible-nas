@@ -31,6 +31,8 @@
           traefik.http.routers.couchdb.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.couchdb.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.couchdb.loadbalancer.server.port: "5984"
+          kuma.couchdb.http.name: "CouchDB"
+          kuma.couchdb.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ couchdb_port if couchdb_uptime_kuma_monitor else omit }}"
   when: couchdb_enabled is true
 
 - name: Stop CouchDB

@@ -19,3 +19,6 @@ ubooquity_memory: 1g
 ubooquity_container_name: "ubooquity"
 ubooquity_image_name: "linuxserver/ubooquity"
 ubooquity_image_version: "latest"
+
+# monitoring
+ubooquity_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -28,3 +28,6 @@ calibre_memory: 1g
 calibre_container_name: calibre
 calibre_image_name: "linuxserver/calibre"
 calibre_image_version: "latest"
+
+# monitoring
+calibre_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

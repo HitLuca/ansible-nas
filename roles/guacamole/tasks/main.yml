@@ -45,6 +45,8 @@
           traefik.http.routers.guacamole.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.guacamole.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.guacamole.loadbalancer.server.port: "8080"
+          kuma.guacamole.http.name: "Guacamole"
+          kuma.guacamole.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ guacamole_port if guacamole_uptime_kuma_monitor else omit }}"
 
     - name: Restart Guacamole Container
       community.docker.docker_container:

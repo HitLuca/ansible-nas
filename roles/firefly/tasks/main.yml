@@ -61,6 +61,8 @@
           traefik.http.routers.firefly.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.firefly.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.firefly.loadbalancer.server.port: "8080"
+          kuma.firefly.http.name: "Firefly III"
+          kuma.firefly.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ firefly_port if firefly_uptime_kuma_monitor else omit }}"
   when: firefly_enabled is true
 
 - name: Stop Firefly
