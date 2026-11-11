@@ -1,0 +1,8 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        open_webui_enabled: true
+        # Test-only key, not secret.
+        open_webui_secret_key: "test-secret-key-not-used-anywhere-else"
