@@ -28,6 +28,11 @@
           traefik.http.services.homeassistant.loadbalancer.server.port: "8123"
           kuma.homeassistant.http.name: "Home Assistant"
           kuma.homeassistant.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ homeassistant_port if homeassistant_uptime_kuma_monitor else omit }}"
+          homepage.group: Home Automation
+          homepage.name: Home Assistant
+          homepage.icon: home-assistant.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ homeassistant_port }}"
+          homepage.description: Home automation
         memory: "{{ homeassistant_memory }}"
   when: homeassistant_enabled is true
 

@@ -38,6 +38,11 @@
           traefik.http.services.krusader.loadbalancer.server.port: "6080"
           kuma.krusader.http.name: "Krusader"
           kuma.krusader.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ krusader_port_http if krusader_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Krusader
+          homepage.icon: krusader.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ krusader_port_http }}"
+          homepage.description: File manager
   when: krusader_enabled is true
 
 - name: Stop Krusader

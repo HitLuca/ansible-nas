@@ -37,6 +37,11 @@
           traefik.http.services.komga.loadbalancer.server.port: "25600"
           kuma.komga.http.name: "Komga"
           kuma.komga.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ komga_port_http if komga_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Komga
+          homepage.icon: komga.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ komga_port_http }}"
+          homepage.description: Comic and manga server
   when: komga_enabled is true
 
 - name: Stop Komga

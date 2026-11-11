@@ -36,6 +36,11 @@
           traefik.http.services.mylar.loadbalancer.server.port: "8090"
           kuma.mylar.http.name: "Mylar"
           kuma.mylar.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ mylar_port_http if mylar_uptime_kuma_monitor else omit }}"
+          homepage.group: Download Tools
+          homepage.name: Mylar
+          homepage.icon: mylar.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ mylar_port_http }}"
+          homepage.description: Comic book management
   when: mylar_enabled is true
 
 - name: Stop Mylar

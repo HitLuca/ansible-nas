@@ -33,6 +33,11 @@
           traefik.http.services.couchdb.loadbalancer.server.port: "5984"
           kuma.couchdb.http.name: "CouchDB"
           kuma.couchdb.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ couchdb_port if couchdb_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: CouchDB
+          homepage.icon: couchdb.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ couchdb_port }}"
+          homepage.description: Document database
   when: couchdb_enabled is true
 
 - name: Stop CouchDB

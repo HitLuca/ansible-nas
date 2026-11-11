@@ -33,6 +33,11 @@
           traefik.http.services.cloudcmd.loadbalancer.server.port: "8000"
           kuma.cloudcmd.http.name: "Cloud Commander"
           kuma.cloudcmd.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ cloudcmd_port if cloudcmd_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Cloud Commander
+          homepage.icon: cloudcmd.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ cloudcmd_port }}"
+          homepage.description: Web file manager
   when: cloudcmd_enabled is true
 
 - name: Stop Cloudcmd
