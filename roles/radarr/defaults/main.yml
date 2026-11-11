@@ -18,7 +18,7 @@ radarr_hostname: "radarr"
 # docker
 radarr_container_name: "radarr"
 radarr_image_name: "linuxserver/radarr"
-radarr_image_version: "latest"
+radarr_image_version: "6.4.4"
 
 # specs
 radarr_memory: 1g

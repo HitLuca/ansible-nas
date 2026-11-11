@@ -25,7 +25,7 @@ deluge_memory: 1g
 
 deluge_container_name: deluge
 deluge_image_name: "linuxserver/deluge"
-deluge_image_version: "latest"
+deluge_image_version: "2.2.0"
 
 # monitoring
 deluge_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
