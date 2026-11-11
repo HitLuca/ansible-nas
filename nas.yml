@@ -413,6 +413,10 @@
       tags:
         - tautulli
 
+    - role: tdarr
+      tags:
+        - tdarr
+
     - role: thelounge
       tags:
         - thelounge
