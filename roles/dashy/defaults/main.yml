@@ -15,7 +15,7 @@ dashy_memory: 1g
 # docker
 dashy_container_name: dashy
 dashy_image_name: "lissy93/dashy"
-dashy_image_version: "latest"
+dashy_image_version: "4.9.17"
 
 # monitoring
 dashy_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -19,7 +19,7 @@ komga_port_http: "8088"
 # docker
 komga_container_name: "komga"
 komga_image_name: "gotson/komga"
-komga_image_version: "latest"
+komga_image_version: "1.30.1"
 
 # specs
 komga_memory: "1g"

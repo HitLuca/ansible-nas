@@ -12,7 +12,7 @@ ddns_updater_hostname: "ddns-updater"
 # docker
 ddns_updater_container_name: ddns_updater
 ddns_updater_image_name: "qmcgaw/ddns-updater"
-ddns_updater_image_version: "latest"
+ddns_updater_image_version: "2.10.0"
 
 # specs
 ddns_updater_memory: 1g

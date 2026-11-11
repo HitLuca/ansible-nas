@@ -16,7 +16,7 @@ youtubedlmaterial_port_http: "8998"
 # docker
 youtubedlmaterial_container_name: "youtubedlmaterial"
 youtubedlmaterial_image_name: "tzahi12345/youtubedl-material"
-youtubedlmaterial_image_version: "latest"
+youtubedlmaterial_image_version: "4.3.2"
 
 # specs
 youtubedlmaterial_memory: "1g"

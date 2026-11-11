@@ -22,7 +22,7 @@ ispyagentdvr_memory: 1g
 # docker
 ispyagentdvr_container_name: ispyagentdvr
 ispyagentdvr_image_name: "mekayelanik/ispyagentdvr"
-ispyagentdvr_image_version: "latest"
+ispyagentdvr_image_version: "8.2.7.0"
 
 # monitoring
 ispyagentdvr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
