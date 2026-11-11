@@ -11,7 +11,11 @@ const config = {
   url: 'https://hitluca.github.io',
   baseUrl: '/ansible-nas/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
