@@ -18,7 +18,7 @@ firefly_mysql_memory: "1g"
 firefly_container_name: firefly
 firefly_mysql_container_name: firefly-mysql
 firefly_image_name: "fireflyiii/core"
-firefly_image_version: "latest"
+firefly_image_version: "version-6.7.9"
 firefly_mysql_image_name: "mariadb"
 firefly_mysql_image_version: "10.9"
 

@@ -19,7 +19,7 @@ couchdb_memory: 1024MB
 # docker
 couchdb_container_name: "couchdb"
 couchdb_image_name: "couchdb"
-couchdb_image_version: "latest"
+couchdb_image_version: "3.5.3"
 
 # monitoring
 couchdb_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

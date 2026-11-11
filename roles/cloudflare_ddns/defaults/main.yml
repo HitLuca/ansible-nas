@@ -28,4 +28,4 @@ cloudflare_memory: 512MB
 # docker
 cloudflare_container_name: cloudflare-ddns
 cloudflare_image_name: "joshava/cloudflare-ddns"
-cloudflare_image_version: "latest"
+cloudflare_image_version: "2.9.3"

@@ -23,7 +23,7 @@ tiddlywiki_hostname: tiddlywiki
 tiddlywiki_memory: 512MB
 tiddlywiki_container_name: "tiddlywiki"
 tiddlywiki_image_name: "wmudge/tiddlywiki"
-tiddlywiki_image_version: "latest"
+tiddlywiki_image_version: "5.2.2"
 
 # monitoring
 tiddlywiki_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
