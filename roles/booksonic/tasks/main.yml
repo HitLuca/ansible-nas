@@ -37,6 +37,11 @@
           traefik.http.services.booksonic.loadbalancer.server.port: "4040"
           kuma.booksonic.http.name: "Booksonic"
           kuma.booksonic.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ booksonic_port if booksonic_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Booksonic
+          homepage.icon: booksonic.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ booksonic_port }}"
+          homepage.description: Audiobook server
   when: booksonic_enabled is true
 
 - name: Stop Booksonic

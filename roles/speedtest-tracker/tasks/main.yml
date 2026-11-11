@@ -45,6 +45,11 @@
           traefik.http.services.speedtest_tracker.loadbalancer.server.port: "80"
           kuma.speedtest-tracker.http.name: "Speedtest-Tracker"
           kuma.speedtest-tracker.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ speedtest_tracker_port if speedtest_tracker_uptime_kuma_monitor else omit }}"
+          homepage.group: Monitoring
+          homepage.name: Speedtest Tracker
+          homepage.icon: speedtest-tracker.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ speedtest_tracker_port }}"
+          homepage.description: Internet speed tracking
   when: speedtest_tracker_enabled is true
 
 - name: Stop Speedtest-Tracker

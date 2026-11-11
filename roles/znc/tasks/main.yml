@@ -40,6 +40,11 @@
           traefik.http.services.znc.loadbalancer.server.port: "6677"
           kuma.znc.http.name: "ZNC"
           kuma.znc.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ znc_port if znc_uptime_kuma_monitor else omit }}"
+          homepage.group: Networking
+          homepage.name: ZNC
+          homepage.icon: znc.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ znc_port }}"
+          homepage.description: IRC bouncer
   when: znc_enabled is true
 
 - name: Stop ZNC

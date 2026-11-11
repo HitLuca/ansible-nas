@@ -32,6 +32,11 @@
           traefik.http.services.lidarr.loadbalancer.server.port: "8686"
           kuma.lidarr.http.name: "Lidarr"
           kuma.lidarr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ lidarr_port if lidarr_uptime_kuma_monitor else omit }}"
+          homepage.group: Download Tools
+          homepage.name: Lidarr
+          homepage.icon: lidarr.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ lidarr_port }}"
+          homepage.description: Music collection manager
   when: lidarr_enabled is true
 
 - name: Stop Lidarr

@@ -34,6 +34,11 @@
           traefik.http.services.wireshark.loadbalancer.server.port: "3000"
           kuma.wireshark.http.name: "Wireshark"
           kuma.wireshark.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ '3000' if wireshark_uptime_kuma_monitor else omit }}"
+          homepage.group: Monitoring
+          homepage.name: Wireshark
+          homepage.icon: wireshark.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:3000"
+          homepage.description: Network traffic analysis
   when: wireshark_enabled is true
 
 - name: Stop Wireshark

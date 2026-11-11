@@ -55,6 +55,11 @@
           traefik.http.services.miniflux.loadbalancer.server.port: "8080"
           kuma.miniflux.http.name: "Miniflux"
           kuma.miniflux.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ miniflux_port if miniflux_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Miniflux
+          homepage.icon: miniflux.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ miniflux_port }}"
+          homepage.description: RSS reader
   when: miniflux_enabled is true
 
 - name: Stop Miniflux

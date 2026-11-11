@@ -35,6 +35,11 @@
           traefik.http.services.sickchill.loadbalancer.server.port: "8081"
           kuma.sickchill.http.name: "SickChill"
           kuma.sickchill.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ sickchill_port if sickchill_uptime_kuma_monitor else omit }}"
+          homepage.group: Download Tools
+          homepage.name: SickChill
+          homepage.icon: sickchill.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ sickchill_port }}"
+          homepage.description: TV show management
   when: sickchill_enabled is true
 
 - name: Stop Sickchill

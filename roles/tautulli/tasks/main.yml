@@ -35,6 +35,11 @@
           traefik.http.services.tautulli.loadbalancer.server.port: "8181"
           kuma.tautulli.http.name: "Tautulli"
           kuma.tautulli.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ tautulli_port if tautulli_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Tautulli
+          homepage.icon: tautulli.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ tautulli_port }}"
+          homepage.description: Plex statistics
   when: tautulli_enabled is true
 
 - name: Stop Tautulli
