@@ -26,7 +26,7 @@ paperless_ng_postgres_password: "paperless"
 
 paperless_ng_redis_container_name: "paperless-redis"
 paperless_ng_redis_image_name: "redis"
-paperless_ng_redis_image_version: "6.0"
+paperless_ng_redis_image_version: "6.2"
 
 paperless_ng_db_container_name: "paperless-db"
 paperless_ng_db_image_name: "postgres"
