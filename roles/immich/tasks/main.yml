@@ -1,0 +1,142 @@
+---
+- name: Start Immich
+  block:
+    - name: Create Immich Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ immich_config_directory }}"
+        - "{{ immich_postgres_directory }}"
+        - "{{ immich_photos_directory }}"
+
+    - name: Create Immich network
+      community.docker.docker_network:
+        name: "{{ immich_network_name }}"
+
+    - name: Immich Postgres Docker Container
+      community.docker.docker_container:
+        name: "{{ immich_postgres_container_name }}"
+        image: "{{ immich_postgres_image_name }}:{{ immich_postgres_image_version }}"
+        pull: true
+        volumes:
+          - "{{ immich_postgres_directory }}:/var/lib/postgresql/data:rw"
+        env:
+          POSTGRES_USER: "{{ immich_db_username }}"
+          POSTGRES_PASSWORD: "{{ immich_db_password }}"
+          POSTGRES_DB: "{{ immich_db_name }}"
+          DB_STORAGE_TYPE: "{{ immich_db_storage_type }}"
+        networks:
+          - name: "{{ immich_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ immich_postgres_memory }}"
+
+    - name: Immich Valkey Docker Container
+      community.docker.docker_container:
+        name: "{{ immich_valkey_container_name }}"
+        image: "{{ immich_valkey_image_name }}:{{ immich_valkey_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ immich_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ immich_valkey_memory }}"
+
+    - name: Wait for Immich Postgres
+      community.docker.docker_container_exec:
+        container: "{{ immich_postgres_container_name }}"
+        argv:
+          - pg_isready
+          - -U
+          - "{{ immich_db_username }}"
+          - -d
+          - "{{ immich_db_name }}"
+      register: immich_postgres_ready
+      until: immich_postgres_ready.rc == 0
+      retries: 30
+      delay: 2
+      changed_when: false
+
+    - name: Wait for Immich Valkey
+      community.docker.docker_container_exec:
+        container: "{{ immich_valkey_container_name }}"
+        argv:
+          - valkey-cli
+          - ping
+      register: immich_valkey_ready
+      until: immich_valkey_ready.rc == 0
+      retries: 30
+      delay: 2
+      changed_when: false
+
+    - name: Immich Docker Container
+      community.docker.docker_container:
+        name: "{{ immich_container_name }}"
+        image: "{{ immich_image_name }}:{{ immich_image_version }}"
+        pull: true
+        volumes: "{{ immich_volumes + immich_libraries }}"
+        ports:
+          - "{{ immich_port }}:8080"
+        env: "{{ immich_base_env | combine(immich_nvidia_env if immich_nvidia_gpu else {}) }}"
+        runtime: "{{ 'nvidia' if immich_nvidia_gpu else omit }}"
+        networks:
+          - name: "{{ immich_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ immich_memory }}"
+        labels:
+          traefik.enable: "{{ immich_available_externally | string }}"
+          traefik.http.routers.immich.rule: "Host(`{{ immich_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.immich.tls.certresolver: "letsencrypt"
+          traefik.http.routers.immich.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.immich.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.immich.loadbalancer.server.port: "8080"
+          kuma.immich.http.name: "Immich"
+          kuma.immich.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ immich_port if immich_uptime_kuma_monitor else omit }}"
+          homepage.group: Photos
+          homepage.name: Immich
+          homepage.icon: immich.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ immich_port }}"
+          homepage.description: Photo and video backup
+      vars:
+        immich_volumes:
+          - "{{ immich_config_directory }}:/config:rw"
+          - "{{ immich_photos_directory }}:/photos:rw"
+        immich_base_env:
+          PUID: "{{ immich_user_id }}"
+          PGID: "{{ immich_group_id }}"
+          TZ: "{{ ansible_nas_timezone }}"
+          DB_HOSTNAME: "{{ immich_postgres_container_name }}"
+          DB_USERNAME: "{{ immich_db_username }}"
+          DB_PASSWORD: "{{ immich_db_password }}"
+          DB_DATABASE_NAME: "{{ immich_db_name }}"
+          DB_PORT: "{{ immich_db_port }}"
+          REDIS_HOSTNAME: "{{ immich_valkey_container_name }}"
+          REDIS_PORT: "{{ immich_redis_port }}"
+          REDIS_PASSWORD: "{{ immich_redis_password }}"
+          SERVER_HOST: "0.0.0.0"
+          SERVER_PORT: "8080"
+          MACHINE_LEARNING_HOST: "0.0.0.0"
+          MACHINE_LEARNING_PORT: "3003"
+          MACHINE_LEARNING_WORKERS: "1"
+          MACHINE_LEARNING_WORKER_TIMEOUT: "120"
+        immich_nvidia_env:
+          NVIDIA_VISIBLE_DEVICES: "all"
+          NVIDIA_DRIVER_CAPABILITIES: "compute,video,utility"
+  when: immich_enabled is true
+
+- name: Stop Immich
+  block:
+    - name: Stop Immich
+      community.docker.docker_container:
+        name: "{{ immich_container_name }}"
+        state: absent
+
+    - name: Stop Immich Valkey
+      community.docker.docker_container:
+        name: "{{ immich_valkey_container_name }}"
+        state: absent
+
+    - name: Stop Immich Postgres
+      community.docker.docker_container:
+        name: "{{ immich_postgres_container_name }}"
+        state: absent
+  when: immich_enabled is false
