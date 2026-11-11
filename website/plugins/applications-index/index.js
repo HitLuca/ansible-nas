@@ -33,7 +33,9 @@ function categoryFromId(id) {
 module.exports = function applicationsIndexPlugin(context) {
   return {
     name: 'applications-index',
-    async contentLoaded({allContent, actions}) {
+    // contentLoaded only receives this plugin's own content; another plugin's
+    // docs content is only available in allContentLoaded.
+    async allContentLoaded({allContent, actions}) {
       const docsContent = allContent['docusaurus-plugin-content-docs']?.default;
       const version =
         docsContent?.loadedVersions.find((candidate) => candidate.isLast) ??

@@ -20,6 +20,12 @@
       "versioning": "loose"
     },
     {
+      "description": "One PR for the website deps, pinned like Docusaurus already is; caret ranges there only ever produced lockfile-only PRs",
+      "matchFileNames": ["website/package.json"],
+      "groupName": "website dependencies",
+      "rangeStrategy": "pin"
+    },
+    {
       "description": "Major upgrades are proposed but need approval on the dependency dashboard",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
