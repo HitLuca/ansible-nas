@@ -21,7 +21,7 @@ bazarr_memory: 1g
 # docker
 bazarr_container_name: bazarr
 bazarr_image_name: "linuxserver/bazarr"
-bazarr_image_version: "latest"
+bazarr_image_version: "1.6.2"
 
 # monitoring
 bazarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -12,7 +12,7 @@ octoprint_hostname: "octoprint"
 # docker
 octoprint_container_name: "octoprint"
 octoprint_image_name: "octoprint/octoprint"
-octoprint_image_version: "latest"
+octoprint_image_version: "1.11.8"
 
 # devices
 octoprint_printer_mountpoint: "/dev/ttyUSB0"

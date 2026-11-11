@@ -13,7 +13,7 @@ freshrss_hostname: "freshrss"
 # docker
 freshrss_container_name: freshrss
 freshrss_image_name: "freshrss/freshrss"
-freshrss_image_version: latest
+freshrss_image_version: 1.30.4
 
 # specs
 freshrss_memory: 1g
