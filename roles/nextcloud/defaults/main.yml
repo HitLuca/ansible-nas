@@ -13,7 +13,7 @@ nextcloud_network_name: "nextcloud"
 # docker
 nextcloud_container_name: "nextcloud"
 nextcloud_image_name: "nextcloud"
-nextcloud_image_version: "stable"
+nextcloud_image_version: "30.0.2"
 nextcloud_db_container_name: "nextcloud-db"
 nextcloud_db_image_name: "mysql"
 nextcloud_db_image_version: "5.7"

@@ -14,7 +14,7 @@ minidlna_port: "8201"
 # docker
 minidlna_container_name: "minidnla"
 minidlna_image_name: "vladgh/minidlna"
-minidlna_image_version: "latest"
+minidlna_image_version: "1.3.13"
 
 # specs
 minidlna_memory: "1g"

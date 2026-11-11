@@ -12,7 +12,7 @@ silverbullet_hostname: silverbullet
 # docker
 silverbullet_container_name: "silverbullet"
 silverbullet_image_name: "zefhemel/silverbullet"
-silverbullet_image_version: "latest"
+silverbullet_image_version: "2.12.1"
 
 # specs
 silverbullet_memory: 1g

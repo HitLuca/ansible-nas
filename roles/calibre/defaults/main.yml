@@ -27,7 +27,7 @@ calibre_memory: 1g
 # docker
 calibre_container_name: calibre
 calibre_image_name: "linuxserver/calibre"
-calibre_image_version: "latest"
+calibre_image_version: "9.18.0"
 
 # monitoring
 calibre_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

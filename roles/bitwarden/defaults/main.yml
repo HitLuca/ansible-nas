@@ -25,9 +25,9 @@ bitwarden_backup_memory: 1g
 bitwarden_container_name: bitwarden
 bitwarden_backup_container_name: bitwarden-backup
 bitwarden_image_name: "vaultwarden/server"
-bitwarden_image_version: "latest"
+bitwarden_image_version: "1.37.5"
 bitwarden_backup_image_name: "bruceforce/bw_backup"
-bitwarden_backup_image_version: "latest"
+bitwarden_backup_image_version: "2.1.6"
 
 # monitoring
 bitwarden_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -18,7 +18,7 @@ lidarr_hostname: "lidarr"
 # docker
 lidarr_container_name: "lidarr"
 lidarr_image_name: "linuxserver/lidarr"
-lidarr_image_version: "latest"
+lidarr_image_version: "3.1.6"
 
 # specs
 lidarr_memory: 1g

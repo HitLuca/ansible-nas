@@ -16,7 +16,7 @@ wireshark_hostname: "wireshark"
 # docker
 wireshark_container_name: "wireshark"
 wireshark_image_name: "linuxserver/wireshark"
-wireshark_image_version: "latest"
+wireshark_image_version: "4.6.9"
 
 # specs
 wireshark_memory: "512m"

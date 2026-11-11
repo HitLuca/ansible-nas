@@ -24,7 +24,7 @@ transmission_openvpn_hostname: "transmission_openvpn"
 
 transmission_openvpn_container_name: "transmission-openvpn"
 transmission_openvpn_image_name: "haugene/transmission-openvpn"
-transmission_openvpn_image_version: "latest"
+transmission_openvpn_image_version: "5.5.2"
 
 # Transmission VPN Credentials
 # If you're using Transmission with a VPN, you'll need to set these credentials.

@@ -19,7 +19,7 @@ esphome_memory: 1g
 # docker
 esphome_container_name: esphome
 esphome_image_name: "esphome/esphome"
-esphome_image_version: "latest"
+esphome_image_version: "2026.10.2"
 
 # monitoring
 esphome_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
