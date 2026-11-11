@@ -47,6 +47,11 @@
           traefik.http.services.guacamole.loadbalancer.server.port: "8080"
           kuma.guacamole.http.name: "Guacamole"
           kuma.guacamole.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ guacamole_port if guacamole_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: Guacamole
+          homepage.icon: guacamole.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ guacamole_port }}"
+          homepage.description: Remote desktop gateway
 
     - name: Restart Guacamole Container
       community.docker.docker_container:

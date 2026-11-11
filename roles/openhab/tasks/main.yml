@@ -55,6 +55,11 @@
           traefik.http.services.openhab.loadbalancer.server.port: "7777"
           kuma.openhab.http.name: "openHAB"
           kuma.openhab.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ openhab_port_http if openhab_uptime_kuma_monitor else omit }}"
+          homepage.group: Home Automation
+          homepage.name: openHAB
+          homepage.icon: openhab.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ openhab_port_http }}"
+          homepage.description: Home automation
   when: openhab_enabled is true
 
 - name: Stop openHAB

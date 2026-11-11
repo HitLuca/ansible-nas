@@ -39,6 +39,11 @@
           traefik.http.services.zigbee2mqtt.loadbalancer.server.port: "8080"
           kuma.zigbee2mqtt.http.name: "Zigbee2MQTT"
           kuma.zigbee2mqtt.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ zigbee2mqtt_port if zigbee2mqtt_uptime_kuma_monitor else omit }}"
+          homepage.group: Home Automation
+          homepage.name: Zigbee2MQTT
+          homepage.icon: zigbee2mqtt.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ zigbee2mqtt_port }}"
+          homepage.description: Zigbee bridge
   when: zigbee2mqtt_enabled is true
 
 - name: Stop Zigbee2MQTT

@@ -36,6 +36,11 @@
           traefik.http.services.calibreweb.loadbalancer.server.port: "8083"
           kuma.calibreweb.http.name: "Calibre-Web"
           kuma.calibreweb.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ calibreweb_port if calibreweb_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Calibre-Web
+          homepage.icon: calibre-web.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ calibreweb_port }}"
+          homepage.description: Ebook reader
   when: calibreweb_enabled is true
 
 - name: Stop Calibre-web

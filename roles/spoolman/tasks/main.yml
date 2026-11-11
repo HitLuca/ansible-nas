@@ -32,6 +32,11 @@
           traefik.http.services.spoolman.loadbalancer.server.port: "8000"
           kuma.spoolman.http.name: "Spoolman"
           kuma.spoolman.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ spoolman_port if spoolman_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: Spoolman
+          homepage.icon: spoolman.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ spoolman_port }}"
+          homepage.description: Filament management
           # omit drops the label entirely, so a router never points at a
           # middleware that doesn't exist when Authelia isn't deployed.
           traefik.http.routers.spoolman.middlewares: "{{ 'authelia@docker' if spoolman_authelia_enabled else omit }}"
