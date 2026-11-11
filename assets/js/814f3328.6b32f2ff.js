@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkansible_nas||=[]).push([[7472],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Welcome","permalink":"/ansible-nas/blog/welcome","unlisted":false,"date":"2022-09-19T00:00:00.000Z"}]}')}}]);

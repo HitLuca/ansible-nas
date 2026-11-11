@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkansible_nas||=[]).push([[6607],{3745(s){s.exports=JSON.parse('{"tags":[{"label":"ansible-nas","permalink":"/ansible-nas/blog/tags/ansible-nas","count":1},{"label":"website","permalink":"/ansible-nas/blog/tags/website","count":1}]}')}}]);
