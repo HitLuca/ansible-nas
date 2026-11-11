@@ -12,7 +12,7 @@ gotify_hostname: "gotify"
 # docker
 gotify_container_name: "gotify"
 gotify_image_name: "gotify/server"
-gotify_image_version: "latest"
+gotify_image_version: "3.1.1"
 gotify_user_id: "0"
 gotify_group_id: "0"
 

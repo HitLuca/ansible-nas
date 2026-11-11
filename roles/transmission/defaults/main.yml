@@ -20,7 +20,7 @@ transmission_timezone: "{{ ansible_nas_timezone }}"
 
 transmission_container_name: "transmission"
 transmission_image_name: "linuxserver/transmission"
-transmission_image_version: "latest"
+transmission_image_version: "4.1.4"
 
 # specs
 transmission_memory: 1g
