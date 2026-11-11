@@ -1,0 +1,43 @@
+---
+- name: Start Ollama
+  block:
+    - name: Create Ollama Directories
+      ansible.builtin.file:
+        path: "{{ ollama_data_directory }}"
+        state: directory
+
+    - name: Ollama Docker Container
+      community.docker.docker_container:
+        name: "{{ ollama_container_name }}"
+        image: "{{ ollama_image_name }}:{{ ollama_image_version }}"
+        pull: true
+        tty: true
+        volumes:
+          - "{{ ollama_data_directory }}:/root/.ollama:rw"
+        ports:
+          - "{{ ollama_port }}:11434"
+        env: "{{ ollama_nvidia_env if ollama_nvidia_gpu else {} }}"
+        runtime: "{{ 'nvidia' if ollama_nvidia_gpu else omit }}"
+        restart_policy: unless-stopped
+        memory: "{{ ollama_memory }}"
+        labels:
+          kuma.ollama.http.name: "Ollama"
+          kuma.ollama.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ ollama_port if ollama_uptime_kuma_monitor else omit }}"
+          homepage.group: AI
+          homepage.name: Ollama
+          homepage.icon: ollama.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ ollama_port }}"
+          homepage.description: Local LLM runtime
+      vars:
+        ollama_nvidia_env:
+          NVIDIA_VISIBLE_DEVICES: "all"
+          NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
+  when: ollama_enabled is true
+
+- name: Stop Ollama
+  block:
+    - name: Stop Ollama
+      community.docker.docker_container:
+        name: "{{ ollama_container_name }}"
+        state: absent
+  when: ollama_enabled is false
