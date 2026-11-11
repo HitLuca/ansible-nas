@@ -305,9 +305,17 @@
       tags:
         - octoprint
 
+    - role: ollama
+      tags:
+        - ollama
+
     - role: ombi
       tags:
         - ombi
+
+    - role: open-webui
+      tags:
+        - open-webui
 
     - role: openhab
       tags:

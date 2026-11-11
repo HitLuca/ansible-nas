@@ -1,0 +1,53 @@
+---
+- name: Start Open WebUI
+  block:
+    - name: Check Open WebUI secret key is set
+      ansible.builtin.assert:
+        that: open_webui_secret_key | length > 0
+        fail_msg: >-
+          open_webui_secret_key is required. Generate one with
+          openssl rand -base64 32 and set it in your inventory.
+
+    - name: Create Open WebUI Directories
+      ansible.builtin.file:
+        path: "{{ open_webui_data_directory }}"
+        state: directory
+
+    - name: Open WebUI Docker Container
+      community.docker.docker_container:
+        name: "{{ open_webui_container_name }}"
+        image: "{{ open_webui_image_name }}:{{ open_webui_image_version }}"
+        pull: true
+        volumes:
+          - "{{ open_webui_data_directory }}:/app/backend/data:rw"
+        ports:
+          - "{{ open_webui_port }}:8080"
+        env:
+          OLLAMA_BASE_URL: "{{ open_webui_ollama_base_url }}"
+          WEBUI_SECRET_KEY: "{{ open_webui_secret_key }}"
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ open_webui_memory }}"
+        labels:
+          traefik.enable: "{{ open_webui_available_externally | string }}"
+          traefik.http.routers.open_webui.rule: "Host(`{{ open_webui_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.open_webui.tls.certresolver: "letsencrypt"
+          traefik.http.routers.open_webui.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.open_webui.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.open_webui.loadbalancer.server.port: "8080"
+          kuma.open-webui.http.name: "Open WebUI"
+          kuma.open-webui.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ open_webui_port if open_webui_uptime_kuma_monitor else omit }}"
+          homepage.group: AI
+          homepage.name: Open WebUI
+          homepage.icon: open-webui.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ open_webui_port }}"
+          homepage.description: Chat UI for Ollama models
+  when: open_webui_enabled is true
+
+- name: Stop Open WebUI
+  block:
+    - name: Stop Open WebUI
+      community.docker.docker_container:
+        name: "{{ open_webui_container_name }}"
+        state: absent
+  when: open_webui_enabled is false
