@@ -20,7 +20,7 @@ code_server_memory: 1g
 # docker
 code_server_container_name: code_server
 code_server_image_name: "linuxserver/code-server"
-code_server_image_version: "latest"
+code_server_image_version: "4.145.2"
 
 # monitoring
 code_server_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
