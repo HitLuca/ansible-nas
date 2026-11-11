@@ -105,6 +105,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Syncthing](https://syncthing.net/) - sync directories with another device
 * [Tailscale](https://tailscale.com/) - WireGuard based mesh VPN to reach your NAS and home network from anywhere
 * [Tautulli](http://tautulli.com/) - Monitor Your Plex Media Server
+* [Tdarr](https://tdarr.io/) - Distributed transcoding automation for your media library
 * [The Lounge](https://thelounge.chat) - Web based always-on IRC client
 * [Threadfin](https://github.com/Threadfin/Threadfin) - M3U Proxy for Plex DVR and Emby/Jellyfin Live TV. Based on xTeVe.
 * [TiddlyWiki](https://tiddlywiki.com) - A unique non-linear notebook/wiki for capturing, organizing, and sharing complex information
