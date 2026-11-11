@@ -1,0 +1,7 @@
+{
+  "label": "AI",
+  "link": {
+    "type": "generated-index",
+    "description": "All of the AI and large language model applications available for installation with Ansible-NAS."
+  }
+}

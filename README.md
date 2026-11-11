@@ -77,7 +77,9 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Nomad](https://www.nomadproject.io/) - A simple and flexible scheduler and software orchestrator
 * [NZBget](https://nzbget.net/) - The most efficient usenet downloader
 * [Octoprint](https://octoprint.org/) - Control and monitor your 3D printer
+* [Ollama](https://ollama.com/) - Run large language models locally and serve them over an API
 * [Ombi](https://ombi.io/) - web application that automatically gives your users the ability to request content
+* [Open WebUI](https://openwebui.com/) - Self-hosted chat interface for Ollama and other LLM runtimes
 * [openHAB](https://www.openhab.org/) - A vendor and technology agnostic open source automation software for your home
 * [Organizr](https://organizr.app/) - ORGANIZR aims to be your one stop shop for your Servers Frontend.
 * [Paperless_ng](https://github.com/jonaswinkler/paperless-ng) - Scan, index and archive all your physical documents

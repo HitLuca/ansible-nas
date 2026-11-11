@@ -1,0 +1,26 @@
+---
+ollama_enabled: false
+
+# directories
+ollama_data_directory: "{{ docker_home }}/ollama"
+
+# network
+# Published on the host only. There is no "available externally" flag: the API
+# has no authentication, so reach it over a VPN or SSH tunnel rather than
+# through Traefik.
+ollama_port: "11434"
+
+# nvidia
+ollama_nvidia_gpu: false
+
+# docker
+ollama_container_name: "ollama"
+ollama_image_name: "ollama/ollama"
+ollama_image_version: "0.40.16"
+
+# specs
+# Models are loaded into RAM while in use, so size this for the models you pull.
+ollama_memory: "8g"
+
+# monitoring
+ollama_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
