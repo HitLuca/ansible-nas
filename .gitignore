@@ -23,8 +23,4 @@ Session.vim
 # ansible-lint dependency cache
 .ansible
 
-.claude
-
 __pycache__
-
-CLAUDE.md

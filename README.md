@@ -50,6 +50,7 @@ If you have a spare domain name you can configure applications to be accessible 
 * [Heimdall](https://heimdall.site/) - Home server dashboard
 * [Home Assistant](https://www.home-assistant.io) - Open source home automation
 * [Homebridge](https://homebridge.io) - Emulate the iOS HomeKit API
+* [Immich](https://immich.app/) - High performance self-hosted photo and video backup solution
 * [iSpy Agent DVR](https://www.ispyconnect.com/) - iSpy - Agent DVR is a video surveillance software
 * [Jackett](https://github.com/Jackett/Jackett) - API Support for your favorite torrent trackers
 * [Jellyfin](https://jellyfin.github.io) - The Free Software Media System

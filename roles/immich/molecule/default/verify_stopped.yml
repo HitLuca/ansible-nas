@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    - name: Try and stop and remove Immich
+      community.docker.docker_container:
+        name: "{{ immich_container_name }}"
+        state: absent
+      register: result
+
+    - name: Try and stop and remove Immich Valkey
+      community.docker.docker_container:
+        name: "{{ immich_valkey_container_name }}"
+        state: absent
+      register: result_valkey
+
+    - name: Try and stop and remove Immich Postgres
+      community.docker.docker_container:
+        name: "{{ immich_postgres_container_name }}"
+        state: absent
+      register: result_postgres
+
+    - name: Check Immich containers are stopped
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - not result_valkey.changed
+          - not result_postgres.changed
