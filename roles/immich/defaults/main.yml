@@ -1,0 +1,62 @@
+---
+immich_enabled: false
+immich_available_externally: false
+
+# directories
+immich_data_directory: "{{ docker_home }}/immich"
+immich_config_directory: "{{ immich_data_directory }}/config"
+immich_postgres_directory: "{{ immich_data_directory }}/postgres_data"
+immich_photos_directory: "{{ photos_root }}"
+
+# Extra bind mounts for the container, in Docker's "host:container[:mode]"
+# form. Use the container paths your Immich library already knows, e.g.
+#   - "{{ photos_root }}/user:/libraries/user:ro"
+immich_libraries: []
+
+# network
+immich_port: "8039"
+immich_hostname: "immich"
+immich_network_name: "immich"
+
+# database
+immich_db_username: "postgres"
+immich_db_password: "postgres"
+immich_db_name: "immich"
+immich_db_port: "5432"
+# SSD or HDD, tunes the database I/O profile.
+immich_db_storage_type: "HDD"
+
+# redis
+immich_redis_port: "6379"
+immich_redis_password: ""
+
+# uid / gid
+immich_user_id: "1000"
+immich_group_id: "1000"
+
+# nvidia
+immich_nvidia_gpu: false
+
+# docker
+immich_container_name: "immich"
+immich_image_name: "ghcr.io/imagegenius/immich"
+# Append "-cuda" (e.g. 3.4.0-cuda) when immich_nvidia_gpu is enabled.
+immich_image_version: "3.4.0"
+
+immich_postgres_container_name: "immich-postgres"
+immich_postgres_image_name: "ghcr.io/immich-app/postgres"
+# Keep this in step with the existing data directory: a different PostgreSQL
+# major or extension build can make an existing database unreadable.
+immich_postgres_image_version: "14-vectorchord0.3.0-pgvectors0.2.0"
+
+immich_valkey_container_name: "immich-valkey"
+immich_valkey_image_name: "valkey/valkey"
+immich_valkey_image_version: "8.1.3-bookworm"
+
+# specs
+immich_memory: "6g"
+immich_postgres_memory: "2g"
+immich_valkey_memory: "1g"
+
+# monitoring
+immich_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
