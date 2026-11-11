@@ -1,0 +1,54 @@
+---
+- name: Start Pi-hole
+  block:
+    - name: Create Pi-hole Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ pihole_data_directory }}/etc-pihole"
+        - "{{ pihole_data_directory }}/etc-dnsmasq"
+
+    - name: Pi-hole Docker Container
+      community.docker.docker_container:
+        name: "{{ pihole_container_name }}"
+        image: "{{ pihole_image_name }}:{{ pihole_image_version }}"
+        pull: true
+        volumes:
+          - "{{ pihole_data_directory }}/etc-pihole:/etc/pihole:rw"
+          - "{{ pihole_data_directory }}/etc-dnsmasq:/etc/dnsmasq.d:rw"
+        ports:
+          - "{{ pihole_dns_bind_address }}:{{ pihole_dns_port }}:53/tcp"
+          - "{{ pihole_dns_bind_address }}:{{ pihole_dns_port }}:53/udp"
+          - "{{ pihole_web_port }}:80"
+        env: "{{ pihole_base_env | combine(pihole_password_env) }}"
+        restart_policy: unless-stopped
+        memory: "{{ pihole_memory }}"
+        labels:
+          traefik.enable: "{{ pihole_available_externally | string }}"
+          traefik.http.routers.pihole.rule: "Host(`{{ pihole_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.pihole.tls.certresolver: "letsencrypt"
+          traefik.http.routers.pihole.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.pihole.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.pihole.loadbalancer.server.port: "80"
+          kuma.pihole.http.name: "Pi-hole"
+          kuma.pihole.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ pihole_web_port if pihole_uptime_kuma_monitor else omit }}"
+          homepage.group: Networking
+          homepage.name: Pi-hole
+          homepage.icon: pi-hole.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ pihole_web_port }}/admin"
+          homepage.description: Network-wide ad blocking
+      vars:
+        pihole_base_env:
+          TZ: "{{ ansible_nas_timezone }}"
+          FTLCONF_LOCAL_IPV4: "{{ pihole_host_ip }}"
+        pihole_password_env: "{{ {'FTLCONF_webserver_api_password': pihole_web_password} if pihole_web_password | length > 0 else {} }}"
+  when: pihole_enabled is true
+
+- name: Stop Pi-hole
+  block:
+    - name: Stop Pi-hole
+      community.docker.docker_container:
+        name: "{{ pihole_container_name }}"
+        state: absent
+  when: pihole_enabled is false
