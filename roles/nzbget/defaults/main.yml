@@ -17,7 +17,7 @@ nzbget_hostname: "nzbget"
 # docker
 nzbget_container_name: "nzbget"
 nzbget_image_name: "linuxserver/nzbget"
-nzbget_image_version: "latest"
+nzbget_image_version: "v26.3-ls271"
 
 # specs
 nzbget_memory: "1g"
