@@ -18,7 +18,7 @@ miniflux_port: "8070"
 # docker
 miniflux_container_name: "miniflux"
 miniflux_image_name: "miniflux/miniflux"
-miniflux_image_version: "latest"
+miniflux_image_version: "2.3.5"
 miniflux_db_container_name: "miniflux-postgres"
 miniflux_db_image_name: "postgres"
 miniflux_db_image_version: "11.1"

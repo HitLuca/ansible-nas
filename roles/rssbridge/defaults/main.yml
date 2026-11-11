@@ -12,7 +12,7 @@ rssbridge_hostname: "rssbridge"
 # docker
 rssbridge_container_name: "rssbridge"
 rssbridge_image_name: "rssbridge/rss-bridge"
-rssbridge_image_version: "latest"
+rssbridge_image_version: "2026-09-30"
 
 # specs
 rssbridge_memory: 1g

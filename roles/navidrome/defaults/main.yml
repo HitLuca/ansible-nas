@@ -13,7 +13,7 @@ navidrome_hostname: "navidrome"
 # docker
 navidrome_container_name: "navidrome"
 navidrome_image_name: "deluan/navidrome"
-navidrome_image_version: "latest"
+navidrome_image_version: "0.64.2"
 
 # specs
 navidrome_memory: 1g

@@ -23,7 +23,7 @@ calibreweb_memory: 1g
 # docker
 calibreweb_container_name: calibreweb
 calibreweb_image_name: "linuxserver/calibre-web"
-calibreweb_image_version: "latest"
+calibreweb_image_version: "0.6.27"
 
 # monitoring
 calibreweb_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -21,7 +21,7 @@ sabnzbd_group_id: "0"
 # docker
 sabnzbd_container_name: "sabnzbd"
 sabnzbd_image_name: "linuxserver/sabnzbd"
-sabnzbd_image_version: "latest"
+sabnzbd_image_version: "5.1.3"
 
 # monitoring
 sabnzbd_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
