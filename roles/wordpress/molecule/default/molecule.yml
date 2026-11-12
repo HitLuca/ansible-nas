@@ -1,0 +1,13 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        wordpress_enabled: true
+        wordpress_sites:
+          - name: test
+            port: "9003"
+            db_name: wordpress
+            db_user: wordpress
+            db_password: test-password
+            db_root_password: test-root-password

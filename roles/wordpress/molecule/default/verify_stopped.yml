@@ -1,0 +1,22 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Try and stop and remove WordPress container
+      community.docker.docker_container:
+        name: "wordpress-test"
+        state: absent
+      register: wordpress_app
+
+    - name: Try and stop and remove WordPress database container
+      community.docker.docker_container:
+        name: "wordpress-test-db"
+        state: absent
+      register: wordpress_db
+
+    - name: Check if WordPress is stopped
+      ansible.builtin.assert:
+        that:
+          - not wordpress_app.changed
+          - not wordpress_db.changed

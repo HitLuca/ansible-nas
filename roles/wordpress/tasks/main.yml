@@ -1,0 +1,158 @@
+---
+- name: Start WordPress
+  block:
+    - name: Check at least one WordPress site is defined
+      ansible.builtin.assert:
+        that: wordpress_sites | length > 0
+        fail_msg: >-
+          wordpress_enabled is true but wordpress_sites is empty. Define at
+          least one site with name, port, db_password and db_root_password.
+
+    - name: Check each WordPress site has the required settings
+      ansible.builtin.assert:
+        that:
+          - item.name is defined and item.name | length > 0
+          - item.port is defined and item.port | length > 0
+          - item.db_password is defined and item.db_password | length > 0
+          - item.db_root_password is defined and item.db_root_password | length > 0
+        fail_msg: >-
+          Site '{{ item.name | default('?') }}' is missing a name, port,
+          db_password or db_root_password.
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name | default('?') }}"
+
+    - name: Create WordPress wp-content directories
+      ansible.builtin.file:
+        path: "{{ websites_root }}/{{ item.name }}/wp-content"
+        state: directory
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create WordPress database directories
+      ansible.builtin.file:
+        path: "{{ websites_root }}/{{ item.name }}/db"
+        state: directory
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create WordPress site networks
+      community.docker.docker_network:
+        name: "wordpress-{{ item.name }}"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: WordPress database containers
+      community.docker.docker_container:
+        name: "wordpress-{{ item.name }}-db"
+        image: "{{ wordpress_db_image_name }}:{{ wordpress_db_image_version }}"
+        pull: true
+        networks:
+          - name: "wordpress-{{ item.name }}"
+        network_mode: "wordpress-{{ item.name }}"
+        volumes:
+          - "{{ websites_root }}/{{ item.name }}/db:/var/lib/mysql:rw"
+        env:
+          MYSQL_DATABASE: "{{ item.db_name | default('wordpress') }}"
+          MYSQL_USER: "{{ item.db_user | default('wordpress') }}"
+          MYSQL_PASSWORD: "{{ item.db_password }}"
+          MYSQL_ROOT_PASSWORD: "{{ item.db_root_password }}"
+        restart_policy: unless-stopped
+        memory: "{{ item.db_memory | default(wordpress_db_memory) }}"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: WordPress containers
+      community.docker.docker_container:
+        name: "wordpress-{{ item.name }}"
+        image: "{{ wordpress_image_name }}:{{ wordpress_image_version }}"
+        pull: true
+        networks:
+          - name: "wordpress-{{ item.name }}"
+        network_mode: "wordpress-{{ item.name }}"
+        volumes:
+          - "{{ websites_root }}/{{ item.name }}/wp-content:/var/www/html/wp-content:rw"
+        ports:
+          - "{{ item.port }}:80"
+        env:
+          WORDPRESS_DB_HOST: "wordpress-{{ item.name }}-db:3306"
+          WORDPRESS_DB_NAME: "{{ item.db_name | default('wordpress') }}"
+          WORDPRESS_DB_USER: "{{ item.db_user | default('wordpress') }}"
+          WORDPRESS_DB_PASSWORD: "{{ item.db_password }}"
+          WORDPRESS_CONFIG_EXTRA: "{{ item.config_extra | default(wordpress_default_config_extra) }}"
+        restart_policy: unless-stopped
+        memory: "{{ item.memory | default(wordpress_memory) }}"
+        # The label keys embed the site name, and Ansible does not template Jinja
+        # inside dict keys, so the whole dict is built in a single expression.
+        labels: >-
+          {{
+            {
+              'traefik.enable': (item.available_externally | default(wordpress_available_externally)) | string,
+              'traefik.http.routers.wordpress-' ~ item.name ~ '.rule': 'Host(`' ~ (item.hostname | default(item.name)) ~ '.' ~ ansible_nas_domain ~ '`)',
+              'traefik.http.routers.wordpress-' ~ item.name ~ '.tls.certresolver': 'letsencrypt',
+              'traefik.http.routers.wordpress-' ~ item.name ~ '.tls.domains[0].main': ansible_nas_domain,
+              'traefik.http.routers.wordpress-' ~ item.name ~ '.tls.domains[0].sans': '*.' ~ ansible_nas_domain,
+              'traefik.http.services.wordpress-' ~ item.name ~ '.loadbalancer.server.port': '80',
+              'kuma.wordpress-' ~ item.name ~ '.http.name': item.name,
+              'kuma.wordpress-' ~ item.name ~ '.http.url': ('http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ item.port) if wordpress_uptime_kuma_monitor else omit,
+              'homepage.group': 'Websites',
+              'homepage.name': item.name,
+              'homepage.icon': 'wordpress.png',
+              'homepage.href': 'http://' ~ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] ~ ':' ~ item.port,
+              'homepage.description': 'WordPress site'
+            }
+          }}
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: WordPress phpMyAdmin containers
+      community.docker.docker_container:
+        name: "wordpress-{{ item.name }}-phpmyadmin"
+        image: "{{ wordpress_phpmyadmin_image_name }}:{{ wordpress_phpmyadmin_image_version }}"
+        pull: true
+        networks:
+          - name: "wordpress-{{ item.name }}"
+        network_mode: "wordpress-{{ item.name }}"
+        ports:
+          - "{{ item.phpmyadmin_port }}:80"
+        env:
+          PMA_HOST: "wordpress-{{ item.name }}-db"
+        restart_policy: unless-stopped
+        memory: "{{ wordpress_phpmyadmin_memory }}"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.phpmyadmin_enabled | default(false)
+  when: wordpress_enabled is true
+
+- name: Stop WordPress
+  block:
+    - name: Stop WordPress phpMyAdmin containers
+      community.docker.docker_container:
+        name: "wordpress-{{ item.name }}-phpmyadmin"
+        state: absent
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Stop WordPress containers
+      community.docker.docker_container:
+        name: "wordpress-{{ item.name }}"
+        state: absent
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Stop WordPress database containers
+      community.docker.docker_container:
+        name: "wordpress-{{ item.name }}-db"
+        state: absent
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+  when: wordpress_enabled is false
