@@ -23,6 +23,9 @@ The `movies`, `tv`, `photos`, `music` and `downloads` shares are mounted into th
 container, along with a transcode cache under `{{ docker_home }}/tdarr`. Override
 any of the `tdarr_*_directory` variables to change what is mounted.
 
+Files written by Tdarr and the node are owned by `tdarr_user_id` / `tdarr_group_id`
+and created with `tdarr_umask` (default `002`).
+
 ## NVIDIA GPU transcoding
 
 GPU transcoding is off by default. Set `tdarr_nvidia_gpu: true` to start the
