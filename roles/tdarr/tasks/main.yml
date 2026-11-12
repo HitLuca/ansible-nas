@@ -52,11 +52,13 @@
           TZ: "{{ ansible_nas_timezone }}"
           PUID: "{{ tdarr_user_id | string }}"
           PGID: "{{ tdarr_group_id | string }}"
-          UMASK_SET: "{{ tdarr_umask }}"
+          UMASK: "{{ tdarr_umask }}"
           serverIP: "{{ tdarr_server_ip }}"
           serverPort: "8266"
           webUIPort: "8265"
-          internalNode: "{{ tdarr_internal_node | string }}"
+          # The node's start script compares this string against "true", so it
+          # must be lowercase or the internal node sleeps forever.
+          internalNode: "{{ tdarr_internal_node | string | lower }}"
           nodeID: "{{ tdarr_node_id }}"
         tdarr_nvidia_env:
           NVIDIA_VISIBLE_DEVICES: "all"
