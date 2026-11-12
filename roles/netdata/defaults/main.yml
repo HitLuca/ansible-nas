@@ -9,7 +9,7 @@ netdata_port: "19999"
 # docker
 netdata_container_name: "netdata"
 netdata_image_name: "netdata/netdata"
-netdata_image_version: "latest"
+netdata_image_version: "v2.12.3"
 
 # specs
 netdata_memory: 1g

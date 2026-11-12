@@ -14,7 +14,7 @@ promtail_port: "9080"
 # docker
 promtail_container_name: "promtail"
 promtail_image_name: "grafana/promtail"
-promtail_image_version: "latest"
+promtail_image_version: "3.6.11"
 
 # specs
 promtail_memory: "1g"

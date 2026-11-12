@@ -13,4 +13,4 @@ wallabag_hostname: wallabag
 wallabag_memory: 1g
 wallabag_container_name: "wallabag"
 wallabag_image_name: "wallabag/wallabag"
-wallabag_image_version: "latest"
+wallabag_image_version: "2.6.15.1"

@@ -21,4 +21,4 @@ watchtower_memory: 1g
 
 watchtower_container_name: "watchtower"
 watchtower_image_name: "containrrr/watchtower"
-watchtower_image_version: "latest"
+watchtower_image_version: "1.7.1"

@@ -16,7 +16,7 @@ n8n_basic_auth_password: "n8n_change_me"
 # docker
 n8n_container_name: "n8n"
 n8n_image_name: "docker.n8n.io/n8nio/n8n"
-n8n_image_version: "latest"
+n8n_image_version: "2.47.4"
 
 # specs
 n8n_memory: 1g

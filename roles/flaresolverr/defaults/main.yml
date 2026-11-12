@@ -14,4 +14,4 @@ flaresolverr_memory: 200m
 # docker
 flaresolverr_container_name: flaresolverr
 flaresolverr_image_name: "flaresolverr/flaresolverr"
-flaresolverr_image_version: "latest"
+flaresolverr_image_version: "v3.5.2"

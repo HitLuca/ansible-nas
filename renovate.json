@@ -4,10 +4,20 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Pin <role>_image_version next to <role>_image_name in role defaults",
+      "description": "Pin <role>_image_version/_image_tag next to the image name in role defaults",
       "managerFilePatterns": ["/^roles/[^/]+/defaults/main\\.yml$/"],
       "matchStrings": [
-        "(?:^|\\n) *[a-z0-9_]+_image_name: *\"?(?<depName>[^\"'\\s#]+)\"?\\n(?: *#[^\\n]*\\n)* *[a-z0-9_]+_image_version: *\"?(?<currentValue>[^\"'\\s#]+)\"?"
+        "(?:^|\\n) *[a-z0-9_]+_(?:image_name|docker_image_name|image): *\"?(?<depName>[^\"'\\s#]+)\"?\\n(?: *#[^\\n]*\\n)* *[a-z0-9_]+_(?:image_version|image_tag): *\"?(?<currentValue>[^\"'\\s#]+)\"?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Pin images whose tag is written into the name (heimdall, minecraft-bedrock-server)",
+      "managerFilePatterns": ["/^roles/[^/]+/defaults/main\\.yml$/"],
+      "matchStrings": [
+        "(?:^|\\n) *[a-z0-9_]+_(?:docker_image|image|docker_image_name|image_name): *\"?(?<depName>[^\"'\\s#:]+):(?<currentValue>[^\"'\\s#]+)\"?"
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"

@@ -9,7 +9,7 @@ mymediaforalexa_data_directory: "{{ docker_home }}/mymediaforalexa"
 # docker
 mymediaforalexa_container_name: "mymediaforalexa"
 mymediaforalexa_image_name: "bizmodeller/mymediaforalexa"
-mymediaforalexa_image_version: "latest"
+mymediaforalexa_image_version: "1.3.156.0"
 
 # specs
 mymediaforalexa_memory: "1g"
