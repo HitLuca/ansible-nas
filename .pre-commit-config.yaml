@@ -1,4 +1,15 @@
 ---
+ci:
+  autofix_commit_msg: ":rotating_light: pre-commit fixes"
+  # No autoupdate: these revs are pinned in step with the versions ci.yml and
+  # the docs workflows install, so a bump has to move all of them together.
+  # pylint/mypy run `uv run` against the local environment, which
+  # pre-commit.ci does not have. ansible-lint needs `ansible-galaxy install`,
+  # and pre-commit.ci hooks have no network access. All three still run in CI.
+  skip:
+    - ansible-lint
+    - pylint
+    - mypy
 repos:
   - repo: https://github.com/ansible-community/ansible-lint.git
     rev: v26.10.1
