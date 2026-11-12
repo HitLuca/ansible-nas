@@ -6,8 +6,11 @@
     - ansible.builtin.include_vars:
         file: ../../defaults/main.yml
 
+    # docker_container_info is read-only. The docker_container module compares
+    # the container against the image's built-in env when only a name is given,
+    # and recreates it with that env, undoing the role's settings.
     - name: Get traefik container state
-      community.docker.docker_container:
+      community.docker.docker_container_info:
         name: "{{ traefik_container_name }}"
       register: result
 
@@ -16,3 +19,20 @@
         that:
           - result.container['State']['Status'] == "running"
           - result.container['State']['Restarting'] == false
+
+    # Read the file the container actually loaded rather than the host path:
+    # include_vars above resets traefik_data_directory to its default, which is
+    # not where this scenario's molecule.yml points it.
+    - name: Read rendered dynamic config from the container
+      community.docker.docker_container_exec:
+        container: "{{ traefik_container_name }}"
+        argv:
+          - cat
+          - /etc/traefik/dynamic_config.yml
+      register: traefik_dynamic_config_rendered
+      changed_when: false
+
+    - name: Check the extra router was rendered
+      ansible.builtin.assert:
+        that:
+          - "'molecule:' in traefik_dynamic_config_rendered.stdout"
