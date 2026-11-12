@@ -1,4 +1,13 @@
 ---
+ci:
+  autofix_commit_msg: ":rotating_light: pre-commit fixes"
+  autoupdate_commit_msg: ":arrow_up: pre-commit autoupdate"
+  autoupdate_schedule: weekly
+  # These run `uv run` against the local environment, which pre-commit.ci
+  # does not have. Keep them local-only.
+  skip:
+    - pylint
+    - mypy
 repos:
   - repo: https://github.com/ansible-community/ansible-lint.git
     rev: v26.10.1
