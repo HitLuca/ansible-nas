@@ -6,6 +6,23 @@ provisioner:
         traefik_enabled: true
         ansible_nas_email: me@example.com
         traefik_data_directory: "/tmp/traefik"
+        # Exercises the file provider's extra routers/services; Traefik exits if
+        # the rendered dynamic_config.yml does not parse.
+        traefik_dynamic_config_extra:
+          http:
+            routers:
+              molecule:
+                entryPoints:
+                  - https
+                service: molecule
+                rule: "Host(`molecule.example.com`)"
+                tls:
+                  certResolver: letsencrypt
+            services:
+              molecule:
+                loadBalancer:
+                  servers:
+                    - url: http://127.0.0.1/
 platforms:
   - name: instance
     image: geerlingguy/docker-ubuntu2204-ansible:latest
