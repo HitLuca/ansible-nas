@@ -1,0 +1,46 @@
+---
+tdarr_enabled: false
+tdarr_available_externally: false
+
+# directories
+tdarr_data_directory: "{{ docker_home }}/tdarr"
+tdarr_server_directory: "{{ tdarr_data_directory }}/server"
+tdarr_configs_directory: "{{ tdarr_data_directory }}/configs"
+tdarr_logs_directory: "{{ tdarr_data_directory }}/logs"
+tdarr_transcode_cache_directory: "{{ tdarr_data_directory }}/transcode_cache"
+
+# media
+tdarr_movies_directory: "{{ movies_root }}"
+tdarr_tv_directory: "{{ tv_root }}"
+tdarr_photos_directory: "{{ photos_root }}"
+tdarr_music_directory: "{{ music_root }}"
+tdarr_downloads_directory: "{{ downloads_root }}"
+
+# uid / gid
+tdarr_user_id: "0"
+tdarr_group_id: "0"
+tdarr_umask: "002"
+
+# network
+tdarr_web_port: "8265"
+tdarr_server_port: "8266"
+tdarr_hostname: "tdarr"
+
+# internal node
+tdarr_server_ip: "0.0.0.0"
+tdarr_internal_node: true
+tdarr_node_id: "MyInternalNode"
+
+# nvidia
+tdarr_nvidia_gpu: false
+
+# docker
+tdarr_container_name: "tdarr"
+tdarr_image_name: "ghcr.io/haveagitgat/tdarr"
+tdarr_image_version: "3.07.00"
+
+# specs
+tdarr_memory: "4g"
+
+# monitoring
+tdarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
