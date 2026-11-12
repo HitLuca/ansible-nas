@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    - name: Try and stop and remove Paperless-ngx
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_container_name }}"
+        state: absent
+      register: result
+
+    - name: Try and stop and remove Paperless-ngx Valkey
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_valkey_container_name }}"
+        state: absent
+      register: result_valkey
+
+    - name: Try and stop and remove Paperless-ngx Postgres
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_postgres_container_name }}"
+        state: absent
+      register: result_postgres
+
+    - name: Check Paperless-ngx containers are stopped
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - not result_valkey.changed
+          - not result_postgres.changed
