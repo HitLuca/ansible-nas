@@ -325,9 +325,9 @@
       tags:
         - organizr
 
-    - role: paperless_ng
+    - role: paperless_ngx
       tags:
-        - paperless_ng
+        - paperless_ngx
 
     - role: pihole
       tags:

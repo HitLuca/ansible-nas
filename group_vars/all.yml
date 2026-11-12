@@ -65,7 +65,7 @@ comics_root: "{{ samba_shares_root }}/comics"
 # Where photos are stored
 photos_root: "{{ samba_shares_root }}/photos"
 
-# Where paperless_ng consumes documents
+# Where paperless-ngx consumes documents
 documents_root: "{{ samba_shares_root }}/documents"
 
 # Where personal repos and code are stored
