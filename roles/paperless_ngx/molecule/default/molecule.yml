@@ -1,0 +1,10 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        paperless_ngx_enabled: true
+        # Test-only key and password, not secrets.
+        paperless_ngx_secret_key: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        paperless_ngx_admin_user: "admin"
+        paperless_ngx_admin_password: "admin"
