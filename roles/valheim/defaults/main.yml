@@ -14,7 +14,7 @@ valheim_hostname: "valheim"
 # docker
 valheim_container_name: "valheim"
 valheim_image_name: "mbround18/valheim"
-valheim_image_version: "latest"
+valheim_image_version: "3.8.12"
 
 # uid/gid
 valheim_user_id: "1000"

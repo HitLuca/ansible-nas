@@ -8,7 +8,7 @@ threadfin_port: 34400
 # docker
 threadfin_container_name: "threadfin"
 threadfin_image_name: "fyb3roptik/threadfin"
-threadfin_image_version: "latest"
+threadfin_image_version: "1.2.37"
 
 # specs
 threadfin_memory: 1g
