@@ -40,8 +40,8 @@ immich_nvidia_gpu: false
 # docker
 immich_container_name: "immich"
 immich_image_name: "ghcr.io/imagegenius/immich"
-# Append "-cuda" (e.g. 3.4.0-cuda) when immich_nvidia_gpu is enabled.
-immich_image_version: "3.4.0"
+# Append "-cuda" (e.g. 3.4.1-cuda) when immich_nvidia_gpu is enabled.
+immich_image_version: "3.4.1"
 
 immich_postgres_container_name: "immich-postgres"
 immich_postgres_image_name: "ghcr.io/immich-app/postgres"
