@@ -31,5 +31,22 @@ traefik_environment_variables:
 # traefik_acme_server: "https://acme-staging-v02.api.letsencrypt.org/directory" # staging
 traefik_acme_server: "https://acme-v02.api.letsencrypt.org/directory" # production
 
+# dynamic configuration
+# Rendered into the file provider's dynamic_config.yml. traefik_dynamic_config_extra
+# is deep-merged over this, so per-host routers and services belong there (in
+# host_vars) rather than in the template. Routers pointed at other machines on the
+# LAN still need their services, and any middleware they reference (e.g.
+# "authelia@docker") must exist on that host.
+traefik_dynamic_config:
+  tls:
+    options:
+      default:
+        minVersion: VersionTLS12
+
+      mintls13:
+        minVersion: VersionTLS13
+
+traefik_dynamic_config_extra: {}
+
 # specs
 traefik_memory: 1g
