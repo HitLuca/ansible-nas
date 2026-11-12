@@ -154,7 +154,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Mumble](https://www.mumble.info) | Open source, low latency, high quality voice chat |
 | [Nextcloud](https://nextcloud.com/) | Self-hosted Dropbox alternative |
 | [Octoprint](https://octoprint.org/) | Control and monitor your 3D printer |
-| [Paperless_ng](https://github.com/jonaswinkler/paperless-ng) | Scan, index and archive all your physical documents |
+| [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) | Scan, index and archive all your physical documents |
 | [Piwigo](https://piwigo.org/) | Photo gallery software |
 | [Silverbullet](https://silverbullet.md) | Note-taking application optimised for people with a hacker mindset |
 | [Spoolman](https://github.com/Donkie/Spoolman) | Keep track of your inventory of 3D-printer filament spools |

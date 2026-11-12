@@ -1,0 +1,66 @@
+---
+paperless_ngx_enabled: false
+paperless_ngx_available_externally: false
+
+# directories
+paperless_ngx_config_directory: "{{ docker_home }}/paperless_ngx"
+paperless_ngx_files_directory: "{{ documents_root }}/paperless"
+
+paperless_ngx_postgres_directory: "{{ paperless_ngx_config_directory }}/postgres"
+paperless_ngx_data_directory: "{{ paperless_ngx_config_directory }}/data"
+paperless_ngx_export_directory: "{{ paperless_ngx_config_directory }}/export"
+paperless_ngx_media_directory: "{{ paperless_ngx_files_directory }}/media"
+paperless_ngx_consume_directory: "{{ paperless_ngx_files_directory }}/consume"
+
+# network
+paperless_ngx_port: "8110"
+paperless_ngx_hostname: "paperless"
+paperless_ngx_network_name: "paperless_ngx"
+# Used for the links Paperless generates and for its CSRF/CORS checks.
+paperless_ngx_url: "http://{{ ansible_facts.default_ipv4.address }}:{{ paperless_ngx_port }}"
+
+# application
+# Required; Paperless refuses to start without it. Generate once and keep it,
+# changing it invalidates every existing session and token:
+#   python3 -c "import secrets; print(secrets.token_urlsafe(64))"
+paperless_ngx_secret_key: ""
+# Superuser created on the first start; requires both values. Leave empty to
+# create it by hand instead:
+#   docker exec -it paperless-webserver python manage.py createsuperuser
+paperless_ngx_admin_user: ""
+paperless_ngx_admin_password: ""
+# Tesseract language used for OCR, ISO 639-2 ("eng", "eng+deu").
+paperless_ngx_ocr_language: "eng"
+# Extra Tesseract language packs to install, space separated ISO 639-2 codes.
+paperless_ngx_ocr_languages: "eng"
+
+# database
+paperless_ngx_db_name: "paperless"
+paperless_ngx_db_user: "paperless"
+paperless_ngx_db_password: "paperless"
+
+# uid / gid
+paperless_ngx_user_id: "1000"
+paperless_ngx_group_id: "1000"
+
+# docker
+paperless_ngx_container_name: "paperless-webserver"
+paperless_ngx_image_name: "ghcr.io/paperless-ngx/paperless-ngx"
+paperless_ngx_image_version: "3.4.2"
+
+paperless_ngx_postgres_container_name: "paperless-postgres"
+paperless_ngx_postgres_image_name: "postgres"
+# PostgreSQL 18 keeps its cluster under /var/lib/postgresql; mount the parent.
+paperless_ngx_postgres_image_version: "18.6-alpine"
+
+paperless_ngx_valkey_container_name: "paperless-valkey"
+paperless_ngx_valkey_image_name: "valkey/valkey"
+paperless_ngx_valkey_image_version: "9.1.3-alpine"
+
+# specs
+paperless_ngx_memory: 2g
+paperless_ngx_postgres_memory: 1g
+paperless_ngx_valkey_memory: 512m
+
+# monitoring
+paperless_ngx_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
