@@ -1,0 +1,134 @@
+---
+- name: Start Paperless-ngx
+  block:
+    - name: Check Paperless-ngx secret key is set
+      ansible.builtin.assert:
+        that: paperless_ngx_secret_key | length > 0
+        fail_msg: >-
+          paperless_ngx_secret_key is required and Paperless will not start
+          without it. Generate one with
+          python3 -c "import secrets; print(secrets.token_urlsafe(64))"
+          and set it in your inventory. Keep it: changing it logs everyone out
+          and invalidates existing tokens.
+
+    - name: Check Paperless-ngx admin credentials
+      ansible.builtin.assert:
+        that: paperless_ngx_admin_password | length > 0
+        fail_msg: >-
+          paperless_ngx_admin_password is required when paperless_ngx_admin_user
+          is set, or leave paperless_ngx_admin_user empty and create the
+          superuser later with docker exec.
+      when: paperless_ngx_admin_user | length > 0
+
+    - name: Create Paperless-ngx Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "{{ paperless_ngx_config_directory }}"
+        - "{{ paperless_ngx_postgres_directory }}"
+        - "{{ paperless_ngx_data_directory }}"
+        - "{{ paperless_ngx_export_directory }}"
+        - "{{ paperless_ngx_media_directory }}"
+        - "{{ paperless_ngx_consume_directory }}"
+
+    - name: Create Paperless-ngx network
+      community.docker.docker_network:
+        name: "{{ paperless_ngx_network_name }}"
+
+    - name: Paperless-ngx Postgres Docker Container
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_postgres_container_name }}"
+        image: "{{ paperless_ngx_postgres_image_name }}:{{ paperless_ngx_postgres_image_version }}"
+        pull: true
+        volumes:
+          # PostgreSQL 18 stores its cluster in a subdirectory, so mount the parent.
+          - "{{ paperless_ngx_postgres_directory }}:/var/lib/postgresql:rw"
+        env:
+          POSTGRES_DB: "{{ paperless_ngx_db_name }}"
+          POSTGRES_USER: "{{ paperless_ngx_db_user }}"
+          POSTGRES_PASSWORD: "{{ paperless_ngx_db_password }}"
+        networks:
+          - name: "{{ paperless_ngx_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ paperless_ngx_postgres_memory }}"
+
+    - name: Paperless-ngx Valkey Docker Container
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_valkey_container_name }}"
+        image: "{{ paperless_ngx_valkey_image_name }}:{{ paperless_ngx_valkey_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ paperless_ngx_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ paperless_ngx_valkey_memory }}"
+
+    - name: Paperless-ngx Docker Container
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_container_name }}"
+        image: "{{ paperless_ngx_image_name }}:{{ paperless_ngx_image_version }}"
+        pull: true
+        volumes:
+          - "{{ paperless_ngx_data_directory }}:/usr/src/paperless/data:rw"
+          - "{{ paperless_ngx_media_directory }}:/usr/src/paperless/media:rw"
+          - "{{ paperless_ngx_export_directory }}:/usr/src/paperless/export:rw"
+          - "{{ paperless_ngx_consume_directory }}:/usr/src/paperless/consume:rw"
+        ports:
+          - "{{ paperless_ngx_port }}:8000"
+        env: "{{ paperless_ngx_base_env | combine(paperless_ngx_admin_env if paperless_ngx_admin_user | length > 0 else {}) }}"
+        networks:
+          - name: "{{ paperless_ngx_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ paperless_ngx_memory }}"
+        labels:
+          traefik.enable: "{{ paperless_ngx_available_externally | string }}"
+          traefik.http.routers.paperless_ngx.rule: "Host(`{{ paperless_ngx_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.paperless_ngx.tls.certresolver: "letsencrypt"
+          traefik.http.routers.paperless_ngx.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.paperless_ngx.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.paperless_ngx.loadbalancer.server.port: "8000"
+          kuma.paperless_ngx.http.name: "Paperless-ngx"
+          kuma.paperless_ngx.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ paperless_ngx_port if paperless_ngx_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Paperless-ngx
+          homepage.icon: paperless-ngx.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ paperless_ngx_port }}"
+          homepage.description: Document management
+      vars:
+        paperless_ngx_base_env:
+          PAPERLESS_REDIS: "redis://{{ paperless_ngx_valkey_container_name }}:6379"
+          PAPERLESS_DBENGINE: "postgresql"
+          PAPERLESS_DBHOST: "{{ paperless_ngx_postgres_container_name }}"
+          PAPERLESS_DBNAME: "{{ paperless_ngx_db_name }}"
+          PAPERLESS_DBUSER: "{{ paperless_ngx_db_user }}"
+          PAPERLESS_DBPASS: "{{ paperless_ngx_db_password }}"
+          PAPERLESS_SECRET_KEY: "{{ paperless_ngx_secret_key }}"
+          PAPERLESS_URL: "{{ paperless_ngx_url }}"
+          PAPERLESS_TIME_ZONE: "{{ ansible_nas_timezone }}"
+          PAPERLESS_OCR_LANGUAGE: "{{ paperless_ngx_ocr_language }}"
+          PAPERLESS_OCR_LANGUAGES: "{{ paperless_ngx_ocr_languages }}"
+          USERMAP_UID: "{{ paperless_ngx_user_id | string }}"
+          USERMAP_GID: "{{ paperless_ngx_group_id | string }}"
+        paperless_ngx_admin_env:
+          PAPERLESS_ADMIN_USER: "{{ paperless_ngx_admin_user }}"
+          PAPERLESS_ADMIN_PASSWORD: "{{ paperless_ngx_admin_password }}"
+  when: paperless_ngx_enabled is true
+
+- name: Stop Paperless-ngx
+  block:
+    - name: Stop Paperless-ngx
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_container_name }}"
+        state: absent
+
+    - name: Stop Paperless-ngx Valkey
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_valkey_container_name }}"
+        state: absent
+
+    - name: Stop Paperless-ngx Postgres
+      community.docker.docker_container:
+        name: "{{ paperless_ngx_postgres_container_name }}"
+        state: absent
+  when: paperless_ngx_enabled is false
