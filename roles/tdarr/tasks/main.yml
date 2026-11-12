@@ -1,0 +1,74 @@
+---
+- name: Start Tdarr
+  block:
+    - name: Create Tdarr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tdarr_server_directory }}"
+        - "{{ tdarr_configs_directory }}"
+        - "{{ tdarr_logs_directory }}"
+        - "{{ tdarr_transcode_cache_directory }}"
+
+    - name: Tdarr Docker Container
+      community.docker.docker_container:
+        name: "{{ tdarr_container_name }}"
+        image: "{{ tdarr_image_name }}:{{ tdarr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ tdarr_server_directory }}:/app/server:rw"
+          - "{{ tdarr_configs_directory }}:/app/configs:rw"
+          - "{{ tdarr_logs_directory }}:/app/logs:rw"
+          - "{{ tdarr_movies_directory }}:/movies:rw"
+          - "{{ tdarr_tv_directory }}:/tv_shows:rw"
+          - "{{ tdarr_photos_directory }}:/photos:rw"
+          - "{{ tdarr_music_directory }}:/music:rw"
+          - "{{ tdarr_downloads_directory }}:/downloads:rw"
+          - "{{ tdarr_transcode_cache_directory }}:/temp:rw"
+        ports:
+          - "{{ tdarr_web_port }}:8265"
+          - "{{ tdarr_server_port }}:8266"
+        env: "{{ tdarr_env | combine(tdarr_nvidia_env if tdarr_nvidia_gpu else {}) }}"
+        runtime: "{{ 'nvidia' if tdarr_nvidia_gpu else omit }}"
+        restart_policy: unless-stopped
+        memory: "{{ tdarr_memory }}"
+        labels:
+          traefik.enable: "{{ tdarr_available_externally | string }}"
+          traefik.http.routers.tdarr.rule: "Host(`{{ tdarr_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.tdarr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.tdarr.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.tdarr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.tdarr.loadbalancer.server.port: "8265"
+          kuma.tdarr.http.name: "Tdarr"
+          kuma.tdarr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ tdarr_web_port if tdarr_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Tdarr
+          homepage.icon: tdarr.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ tdarr_web_port }}"
+          homepage.description: Distributed media transcoding
+      vars:
+        tdarr_env:
+          TZ: "{{ ansible_nas_timezone }}"
+          PUID: "{{ tdarr_user_id | string }}"
+          PGID: "{{ tdarr_group_id | string }}"
+          UMASK: "{{ tdarr_umask }}"
+          serverIP: "{{ tdarr_server_ip }}"
+          serverPort: "8266"
+          webUIPort: "8265"
+          # The node's start script compares this string against "true", so it
+          # must be lowercase or the internal node sleeps forever.
+          internalNode: "{{ tdarr_internal_node | string | lower }}"
+          nodeID: "{{ tdarr_node_id }}"
+        tdarr_nvidia_env:
+          NVIDIA_VISIBLE_DEVICES: "all"
+          NVIDIA_DRIVER_CAPABILITIES: "compute,video,utility"
+  when: tdarr_enabled is true
+
+- name: Stop Tdarr
+  block:
+    - name: Stop Tdarr
+      community.docker.docker_container:
+        name: "{{ tdarr_container_name }}"
+        state: absent
+  when: tdarr_enabled is false
