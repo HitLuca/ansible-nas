@@ -17,7 +17,7 @@ znc_port: "6677"
 # docker
 znc_container_name: "znc"
 znc_image_name: "znc"
-znc_image_version: "latest"
+znc_image_version: "1.10.3"
 
 # specs
 znc_memory: "1g"

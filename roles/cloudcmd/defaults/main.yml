@@ -21,7 +21,7 @@ cloudcmd_memory: "1g"
 # docker
 cloudcmd_container_name: cloudcmd
 cloudcmd_image_name: "coderaiser/cloudcmd"
-cloudcmd_image_version: "latest"
+cloudcmd_image_version: "19.23.0"
 
 # monitoring
 cloudcmd_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

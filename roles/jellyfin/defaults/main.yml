@@ -31,7 +31,7 @@ jellyfin_port_http: "8096"
 # docker
 jellyfin_container_name: "jellyfin"
 jellyfin_image_name: "linuxserver/jellyfin"
-jellyfin_image_version: "latest"
+jellyfin_image_version: "12.4ubu2604-ls59"
 
 # specs
 jellyfin_memory: "1g"

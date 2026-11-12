@@ -1,0 +1,32 @@
+---
+pihole_enabled: false
+pihole_available_externally: false
+
+# directories
+pihole_data_directory: "{{ docker_home }}/pihole"
+
+# network
+# DNS port 53 is published on pihole_dns_bind_address; the container itself
+# always listens on 53. pihole_host_ip is the address Pi-hole hands out as the
+# answer to DNS queries, so it must be the address clients see.
+pihole_host_ip: "{{ ansible_facts.default_ipv4.address }}"
+pihole_dns_bind_address: "{{ pihole_host_ip }}"
+pihole_dns_port: "53"
+pihole_web_port: "8072"
+pihole_hostname: "pihole"
+
+# docker
+pihole_container_name: "pihole"
+pihole_image_name: "pihole/pihole"
+pihole_image_version: "2026.11.0"
+
+# web
+# Empty leaves the admin password unset: Pi-hole generates a random one and
+# prints it in the container log. Set a value here to pin it instead.
+pihole_web_password: ""
+
+# specs
+pihole_memory: 512m
+
+# monitoring
+pihole_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
