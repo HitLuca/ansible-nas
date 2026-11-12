@@ -34,6 +34,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [DokuWiki](https://www.dokuwiki.org/) | Simple, highly versatile open source wiki software that doesn't require a database |
 | [Joomla](https://www.joomla.org/) | Open source content management system |
 | [TiddlyWiki](https://tiddlywiki.com) | Non-linear notebook for capturing, organising and sharing complex information |
+| [WordPress](https://wordpress.org/) | Open source content management system, with support for hosting multiple independent sites |
 
 ### Dashboards
 
