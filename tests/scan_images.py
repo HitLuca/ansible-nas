@@ -13,6 +13,11 @@ its vulnerability database.
     tests/scan_images.py --role nextcloud      # one role only
     tests/scan_images.py --include-unfixed     # also findings with no fix
 
+The Markdown report can carry a ``--stamp`` line saying when it was produced,
+and link every role to the line that pins its image with ``--source-url``, so a
+reader can tell a refreshed report from a stale one and jump straight to the
+pin to bump.
+
 Findings with no fix are hidden by default: a bump cannot clear them, so they
 are noise for a repo that only pins tags. Trivy must be on ``PATH``; pass
 ``--trivy`` to point at a different binary.
@@ -93,6 +98,21 @@ class Options:
     # everything else on its runner. Empty credentials mean anonymous pulls.
     username: str = ""
     password: str = field(default="", repr=False)
+
+
+@dataclass(frozen=True)
+class Layout:
+    """How the Markdown report is folded and annotated.
+
+    *source_url* and *stamp* leave the table and JSON formats untouched: those
+    are machine-readable, and a note or a set of links would only get in a
+    consumer's way.
+    """
+
+    per_image: int = 10
+    body_limit: int = BODY_LIMIT
+    source_url: str = ""
+    stamp: str = ""
 
 
 def _run(
@@ -248,6 +268,22 @@ def _cell(text: str) -> str:
     return text.replace("|", "\\|")
 
 
+def _role_cell(item: Scan, source_url: str) -> str:
+    """The role name, linked to the line that pins its image.
+
+    *source_url* is the base a repo-relative path is appended to, normally the
+    ``blob`` URL of the commit that was scanned. Without it, or when the role's
+    defaults live outside the repository, the bare name is returned.
+    """
+    if not source_url:
+        return item.ref.role
+    try:
+        path = item.ref.path.relative_to(inventory.REPO_ROOT).as_posix()
+    except ValueError:
+        return item.ref.role
+    return f"[{item.ref.role}]({source_url.rstrip('/')}/{path}#L{item.ref.line})"
+
+
 def _details_block(item: Scan, options: Options, per_image: int) -> list[str]:
     """One collapsible block with an image's worst findings."""
     counts = ", ".join(
@@ -293,9 +329,7 @@ def _errors_block(scans: Sequence[Scan]) -> list[str]:
     return lines
 
 
-def _markdown(
-    scans: Sequence[Scan], options: Options, per_image: int, body_limit: int
-) -> list[str]:
+def _markdown(scans: Sequence[Scan], options: Options, layout: Layout) -> list[str]:
     """Render the report as Markdown lines.
 
     The summary table is the part worth reading; the per-image CVE tables are
@@ -304,6 +338,7 @@ def _markdown(
     """
     mode = "fixable findings only" if options.ignore_unfixed else "including unfixed findings"
     lines = [
+        *([f"> {layout.stamp}", ""] if layout.stamp else []),
         "## Container image vulnerabilities",
         "",
         f"Trivy scanned {len(scans)} pinned images at "
@@ -318,13 +353,13 @@ def _markdown(
         lines.append("| " + " | ".join("---" for _ in headers) + " |")
         for item in affected:
             cells = (
-                item.ref.role,
+                _role_cell(item, layout.source_url),
                 item.image,
                 *(str(item.count(severity)) for severity in options.severities),
             )
             lines.append("| " + " | ".join(_cell(cell) for cell in cells) + " |")
 
-    if affected and per_image > 0:
+    if affected and layout.per_image > 0:
         lines += [
             "",
             "## Findings per image",
@@ -334,10 +369,10 @@ def _markdown(
     size = len("\n".join(lines))
     skipped = 0
     for item in affected:
-        if per_image <= 0:
+        if layout.per_image <= 0:
             break
-        block = _details_block(item, options, per_image)
-        if size + len("\n".join(block)) > body_limit:
+        block = _details_block(item, options, layout.per_image)
+        if size + len("\n".join(block)) > layout.body_limit:
             skipped += 1
             continue
         lines += block
@@ -388,14 +423,12 @@ def _json(scans: Sequence[Scan]) -> list[str]:
     return [json.dumps(payload, indent=2)]
 
 
-def render(
-    scans: Sequence[Scan], options: Options, output: str, per_image: int, body_limit: int
-) -> str:
+def render(scans: Sequence[Scan], options: Options, output: str, layout: Layout) -> str:
     """Render the report in the requested format."""
     if output == "json":
         lines = _json(scans)
     elif output == "markdown":
-        lines = _markdown(scans, options, per_image, body_limit)
+        lines = _markdown(scans, options, layout)
     else:
         lines = _table(scans, options)
         lines += ["", _summary(scans, options)]
@@ -456,6 +489,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         metavar="CHARS",
         help=f"cap the Markdown report, it may become an issue body (default {BODY_LIMIT})",
     )
+    parser.add_argument(
+        "--stamp",
+        metavar="TEXT",
+        help="Markdown only: a note above the report, e.g. when the scan ran",
+    )
+    parser.add_argument(
+        "--source-url",
+        metavar="URL",
+        help="Markdown only: link each role to its image pin under this URL, "
+        "normally the blob URL of the scanned commit",
+    )
     parser.add_argument("--trivy", default="trivy", help="Trivy binary (default: trivy)")
     args = parser.parse_args(argv)
 
@@ -496,9 +540,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     scans = scan_all(refs, options)
-    report = render(
-        scans, options, args.format, args.details_per_image, args.body_limit
+    layout = Layout(
+        per_image=args.details_per_image,
+        body_limit=args.body_limit,
+        source_url=args.source_url or "",
+        stamp=args.stamp or "",
     )
+    report = render(scans, options, args.format, layout)
     if args.output:
         args.output.write_text(report)
     else:
