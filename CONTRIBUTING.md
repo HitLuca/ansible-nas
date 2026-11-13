@@ -46,7 +46,7 @@ make check-images
 
 `make check-images` reports `<name>_image_version` pins that have fallen behind their registry; `make update-images` rewrites them in place (same major version only). A scheduled workflow runs the check weekly.
 
-`make scan-images` looks inside the pinned images instead of at their tags: Trivy reports CRITICAL and HIGH CVEs that a version bump would clear. It needs `trivy` on your `PATH`, and the weekly Image scan workflow files whatever it finds on a tracking issue rather than failing the build.
+`make scan-images` looks inside the pinned images instead of at their tags: Trivy reports CRITICAL and HIGH CVEs that a version bump would clear. It needs `trivy` on your `PATH`, and the weekly Image scan workflow files whatever it finds on a tracking issue rather than failing the build. The issue leads with a per-role summary table and folds each image's CVE list into a collapsible block, so the full list lives in the run's `image-scan` artifact instead.
 
 Run `make` on its own to list all available targets.
 

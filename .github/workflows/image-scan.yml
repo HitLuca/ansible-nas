@@ -65,15 +65,30 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           set +e
-          args=(--severity "$SEVERITY" --format markdown --output report.md --max-details 40 --check)
+          args=(--severity "$SEVERITY" --format markdown --output report.md
+                --json-output report.json --check)
           if [ "$UNFIXED" = "true" ]; then
             args+=(--include-unfixed)
           fi
           python3 tests/scan_images.py "${args[@]}"
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
-          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f report.md ]; then
+            cat report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
           exit 0
+
+      # The issue body is capped at 65536 characters and folds the long lists
+      # away, so the complete findings are attached here.
+      - name: Upload the full report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: image-scan
+          path: |
+            report.md
+            report.json
+          if-no-files-found: ignore
 
       - name: Track the findings on an issue
         env:

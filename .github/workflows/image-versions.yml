@@ -37,6 +37,11 @@ jobs:
       # The script is stdlib-only, so nothing to install. It exits 1 when a
       # pinned image is behind, which fails the run (and emails on schedule).
       - name: Check image versions
+        env:
+          # Optional: lifts the anonymous Docker Hub rate limit. Unset secrets
+          # leave the queries anonymous, which is fine unless a run is limited.
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           set +e
           python3 tests/check_image_versions.py --check --format markdown > report.md
@@ -63,6 +68,9 @@ jobs:
           python-version: "3.13"
 
       - name: Apply the updates
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: python3 tests/check_image_versions.py --patch
 
       - name: Open the pull request

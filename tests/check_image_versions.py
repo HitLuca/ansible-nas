@@ -12,14 +12,27 @@ shape and major version.
     tests/check-image-versions.py --patch     # rewrite the pinned versions
     tests/check-image-versions.py --format markdown > report.md
 
-Only ``docker.io``, ``ghcr.io``, ``lscr.io`` (LinuxServer's ghcr mirror) and
-``quay.io`` are queried. Floating tags (``latest``, ``edge``) are reported but
-never changed.
+Only ``docker.io``, ``ghcr.io``, ``lscr.io`` (LinuxServer's ghcr mirror),
+``docker.n8n.io`` (a Docker Hub proxy) and ``quay.io`` are queried. Floating
+tags (``latest``) are reported but never changed. So are tags that name a
+channel (``beta``, ``alpine``), a commit, or a composite build such as Immich's
+``14-vectorchord0.3.0-pgvectors0.2.0``: they are compared against nothing.
+
+Each repository is asked for one page of tags: the newest 100 for Docker Hub,
+1000 elsewhere. A pin that has fallen off the page is reported as
+``truncated`` instead of ``ok`` - it may or may not be current, so it is not
+silently passed. On a newest-first page a pin that *is* on the page is proven
+current, since every newer tag was scanned.
+
+``DOCKERHUB_USERNAME`` and ``DOCKERHUB_TOKEN`` are used, when set, to log in
+and lift the anonymous Docker Hub rate limit (the same variables
+``scan_images.py`` reads).
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -28,6 +41,7 @@ import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, Sequence
 
@@ -35,20 +49,31 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 ROLES_DIR = REPO_ROOT / "roles"
 TIMEOUT = 20
 USER_AGENT = "ansible-nas-image-check/1.0"
+HUB_LOGIN = "https://hub.docker.com/v2/users/login/"
+HUB_TAGS = "https://hub.docker.com/v2/repositories/{path}/tags?page_size=100&ordering=last_updated"
 
 ASSIGNMENT = re.compile(r"^(?P<key>[a-z0-9_]+):[ \t]*(?P<raw>.*)$")
 REPO_KEY = re.compile(r"^(?P<prefix>.+)_(?:image_name|docker_image_name|image|docker_image)$")
 VERSION_SUFFIXES = ("_image_version", "_image_tag")
-TAG_STYLE = re.compile(
-    r"^(?P<vers>version-)?(?P<v>[vV]?)(?P<core>\d+(?:[._-]\d+)*)"
-    r"(?:[-._](?P<variant>[A-Za-z]+)(?P<build>\d*))?$"
+CHANNEL_PREFIX = re.compile(
+    r"^(?P<prefix>version|develop|nightly|stable|release|edge|beta|alpha)-", re.I
 )
+TAG_CORE = re.compile(r"^(?P<v>[vV]?)(?P<core>\d+(?:[._-]\d+)*)(?P<rest>.*)$")
+REVISION_LETTER = re.compile(r"^(?P<letter>[a-z])(?=[._-]|$)", re.I)
+COMMIT_TAG = re.compile(r"^(?:version-)?(?=[0-9a-f]*[a-f])[0-9a-f]{7,40}$", re.I)
+CHANNEL_TAG = re.compile(r"^[A-Za-z][A-Za-z0-9._-]*$")
+VARIANT_BUILD = re.compile(r"[._-]?(?P<build>\d+)$")
+DOTTED_NUMBER = re.compile(r"\d\.\d")
 PRERELEASE = re.compile(r"(alpha|beta|rc|dev|nightly|test|edge|unstable|snapshot|preview)", re.I)
 HARDCODED_IMAGE = re.compile(r"^\s*image:\s*(?P<value>[^\s#]+)", re.M)
 
 
 class RegistryError(Exception):
     """A registry could not be queried."""
+
+    def __init__(self, message: str, status: int | None = None) -> None:
+        super().__init__(message)
+        self.status = status
 
 
 @dataclass(frozen=True)
@@ -57,13 +82,27 @@ class Tag:
 
     prefix: str
     parts: tuple[int, ...]
+    revision: int
     variant: str
     build: int
 
     @property
-    def key(self) -> tuple[tuple[int, ...], int]:
-        """Sort key that also orders rebuilds of the same version."""
-        return self.parts, self.build
+    def key(self) -> tuple[tuple[int, ...], int, int]:
+        """Sort key that also orders revisions and rebuilds of the same version."""
+        return self.parts, self.revision, self.build
+
+    @property
+    def prerelease(self) -> bool:
+        """Whether the tag carries a pre-release marker, in its channel or suffix."""
+        return bool(PRERELEASE.search(self.prefix + self.variant))
+
+
+@dataclass(frozen=True)
+class Unversioned:
+    """A tag that names a channel, a commit or a composite build, not a version."""
+
+    status: str
+    detail: str
 
 
 @dataclass
@@ -77,6 +116,14 @@ class ImageRef:
     repo: str
     version: str
     line: int
+
+
+@dataclass(frozen=True)
+class TagPage:
+    """The tags fetched for one repository, and whether the registry had more."""
+
+    names: list[str]
+    complete: bool
 
 
 @dataclass
@@ -172,20 +219,62 @@ def split_host(repo: str) -> tuple[str, str]:
     return "docker.io", repo
 
 
-def _get_json(url: str, token: str | None = None) -> dict:
-    """GET *url*, retrying transient failures, and decode the JSON body."""
+def _hub_credentials() -> tuple[str, str] | None:
+    """The Docker Hub username and token, or None when either is unset."""
+    username = os.environ.get("DOCKERHUB_USERNAME", "").strip()
+    password = os.environ.get("DOCKERHUB_TOKEN", "").strip()
+    if not username or not password:
+        return None
+    return username, password
+
+
+@lru_cache(maxsize=None)
+def _hub_login(username: str, password: str) -> str:
+    """Exchange the credentials for the JWT that Docker Hub's web API accepts."""
+    payload = _fetch(
+        HUB_LOGIN,
+        data=json.dumps({"username": username, "password": password}).encode(),
+    )[0]
+    return payload.get("token", "")
+
+
+def _hub_authorization() -> str | None:
+    """The ``Authorization`` header for Docker Hub, or None to query anonymously.
+
+    Uses the same variables as ``scan_images.py``. A username without a token
+    is ignored rather than sent as an empty password.
+    """
+    credentials = _hub_credentials()
+    if credentials is None:
+        return None
+    token = _hub_login(*credentials)
+    return f"JWT {token}" if token else None
+
+
+def _fetch(
+    url: str,
+    token: str | None = None,
+    authorization: str | None = None,
+    data: bytes | None = None,
+) -> tuple[dict, dict[str, str]]:
+    """Request *url*, retrying transient failures, and decode the JSON body + headers."""
     headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
+    if authorization:
+        headers["Authorization"] = authorization
     if token:
         headers["Authorization"] = f"Bearer {token}"
+    if data:
+        headers["Content-Type"] = "application/json"
     last_error: Exception | None = None
     for attempt in range(3):
-        request = urllib.request.Request(url, headers=headers)
+        request = urllib.request.Request(url, headers=headers, data=data)
         try:
             with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-                return json.loads(response.read().decode())
+                body = json.loads(response.read().decode())
+                return body, {name.lower(): value for name, value in response.headers.items()}
         except urllib.error.HTTPError as exc:
             if exc.code not in (429, 500, 502, 503, 504):
-                raise RegistryError(f"HTTP {exc.code}") from exc
+                raise RegistryError(f"HTTP {exc.code}", exc.code) from exc
             last_error = exc
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             last_error = exc
@@ -193,60 +282,112 @@ def _get_json(url: str, token: str | None = None) -> dict:
     raise RegistryError(str(last_error))
 
 
-def _docker_hub_tags(path: str) -> list[str]:
-    """Return the tags of a Docker Hub repository."""
+def _docker_hub_tags(path: str) -> TagPage:
+    """Return the newest tags of a Docker Hub repository, newest update first.
+
+    One page of 100 is enough: the tags of each release cluster at the top, and
+    a pin that has fallen off the page is reported as ``truncated`` rather than
+    guessed at. Paginating instead is not an option - linuxserver/radarr alone
+    carries 19k tags - so the ordering is what makes a single page sufficient.
+    """
     if "/" not in path:
         path = f"library/{path}"
-    url = (
-        "https://hub.docker.com/v2/repositories/"
-        f"{urllib.parse.quote(path, safe='/')}/tags?page_size=100&ordering=last_updated"
+    try:
+        authorization = _hub_authorization()
+    except RegistryError as exc:
+        if exc.status != 401:
+            raise
+        raise RegistryError("Docker Hub rejected DOCKERHUB_USERNAME/DOCKERHUB_TOKEN", 401) from exc
+    payload, _ = _fetch(HUB_TAGS.format(path=urllib.parse.quote(path, safe="/")),
+                        authorization=authorization)
+    return TagPage(
+        [entry["name"] for entry in payload.get("results", [])],
+        complete=not payload.get("next"),
     )
-    payload = _get_json(url)
-    return [entry["name"] for entry in payload.get("results", [])]
 
 
-def _ghcr_tags(path: str) -> list[str]:
+def _ghcr_tags(path: str) -> TagPage:
     """Return the tags of a GitHub Container Registry repository."""
     scope = urllib.parse.quote(f"repository:{path}:pull", safe="")
-    token = _get_json(f"https://ghcr.io/token?service=ghcr.io&scope={scope}").get("token", "")
-    payload = _get_json(f"https://ghcr.io/v2/{path}/tags/list?n=1000", token=token)
-    return payload.get("tags") or []
+    token = _fetch(f"https://ghcr.io/token?service=ghcr.io&scope={scope}")[0].get("token", "")
+    payload, headers = _fetch(f"https://ghcr.io/v2/{path}/tags/list?n=1000", token=token)
+    return TagPage(payload.get("tags") or [], complete="next" not in headers.get("link", ""))
 
 
-def _quay_tags(path: str) -> list[str]:
+def _quay_tags(path: str) -> TagPage:
     """Return the active tags of a Quay repository."""
     url = f"https://quay.io/api/v1/repository/{path}/tag/?limit=100&onlyActiveTags=true"
-    payload = _get_json(url)
-    return [entry["name"] for entry in payload.get("tags", [])]
+    payload, _ = _fetch(url)
+    return TagPage(
+        [entry["name"] for entry in payload.get("tags", [])],
+        complete=not payload.get("has_additional"),
+    )
 
 
-def fetch_tags(repo: str) -> list[str]:
+def fetch_tags(repo: str) -> TagPage:
     """Return every tag of *repo*, mapping known registry mirrors."""
     host, path = split_host(repo)
     if host in ("docker.io", "index.docker.io", "registry-1.docker.io"):
         return _docker_hub_tags(path)
     if host == "ghcr.io":
         return _ghcr_tags(path)
-    if host == "lscr.io":
-        # lscr.io is LinuxServer's proxy over Docker Hub; ghcr.io/linuxserver
-        # carries arch-prefixed build tags (amd64-v1.2.3-ls4) instead.
+    if host in ("lscr.io", "docker.n8n.io"):
+        # Both are proxies over Docker Hub; ghcr.io/linuxserver carries
+        # arch-prefixed build tags (amd64-v1.2.3-ls4) instead.
         return _docker_hub_tags(path)
     if host == "quay.io":
         return _quay_tags(path)
     raise RegistryError(f"unsupported registry {host}")
 
 
-def _parse_tag(tag: str) -> Tag | None:
-    """Split *tag* into its comparable pieces, or None if it has no version."""
-    match = TAG_STYLE.match(tag)
-    if not match:
-        return None
-    parts = tuple(int(part) for part in re.split(r"[._-]", match["core"]))
+def _variant_and_build(rest: str) -> tuple[str, int]:
+    """Split a tag's suffix into its remaining shape and a trailing build number."""
+    text = rest.strip("._-").lower()
+    match = VARIANT_BUILD.search(text)
+    if match is None:
+        return text, 0
+    return text[: match.start()], int(match["build"])
+
+
+def _unversioned(tag: str) -> Unversioned:
+    """Describe a tag whose text carries no leading version number."""
+    if CHANNEL_TAG.match(tag):
+        return Unversioned("channel", "channel tag")
+    return Unversioned("unrecognized", "tag is not a version")
+
+
+def _parse_tag(tag: str) -> Tag | Unversioned:
+    """Split *tag* into its comparable pieces, or describe why it has no version."""
+    text = tag.strip()
+    if COMMIT_TAG.match(text):
+        return Unversioned("commit", "pinned to a commit")
+    prefix_match = CHANNEL_PREFIX.match(text)
+    prefix = f"{prefix_match['prefix'].lower()}-" if prefix_match else ""
+    core_match = TAG_CORE.match(text[len(prefix):])
+    if core_match is None:
+        return _unversioned(text)
+    parts = tuple(int(part) for part in re.split(r"[._-]", core_match["core"]))
+    rest = core_match["rest"]
+    revision = 0
+    if len(parts) == 3 and parts[0] >= 1900:
+        # Only date cores take a revision letter (2026-07-14c); elsewhere the
+        # letter begins the suffix (12.4ubu2604-ls59).
+        letter = REVISION_LETTER.match(rest)
+        if letter:
+            revision = ord(letter["letter"].lower()) - ord("a") + 1
+            rest = rest[letter.end():]
+    shape, build = _variant_and_build(rest)
+    if DOTTED_NUMBER.search(shape):
+        # A version fragment in the suffix (vectorchord0.4.1) is a composite
+        # build: the upstream release pins the exact combination, so there is
+        # no safe automatic bump.
+        return Unversioned("composite", "composite tag")
     return Tag(
-        prefix=(match["vers"] or "") + match["v"],
+        prefix=prefix,
         parts=parts,
-        variant=(match["variant"] or "").lower(),
-        build=int(match["build"] or 0),
+        revision=revision,
+        variant=re.sub(r"[._-]", "", shape),
+        build=build,
     )
 
 
@@ -255,18 +396,13 @@ def _is_date(tag: Tag) -> bool:
     return len(tag.parts) == 3 and tag.parts[0] >= 1900
 
 
-def _is_prerelease(tag: Tag) -> bool:
-    """Whether the tag carries a pre-release marker."""
-    return bool(PRERELEASE.search(tag.variant))
-
-
 def _acceptable(current: Tag, candidate: Tag, allow_major: bool) -> bool:
     """Whether *candidate* is a plausible upgrade of *current*."""
     if candidate.prefix != current.prefix or candidate.variant != current.variant:
         return False
     if len(candidate.parts) != len(current.parts):
         return False
-    if _is_prerelease(candidate) and not _is_prerelease(current):
+    if candidate.prerelease and not current.prerelease:
         return False
     if not allow_major and not _is_date(current) and candidate.parts[0] != current.parts[0]:
         return False
@@ -279,7 +415,7 @@ def _best_match(current: Tag, tags: Iterable[str], allow_major: bool) -> str | N
     name = ""
     for tag in tags:
         candidate = _parse_tag(tag)
-        if candidate is None or not _acceptable(current, candidate, allow_major):
+        if not isinstance(candidate, Tag) or not _acceptable(current, candidate, allow_major):
             continue
         if best is None or candidate.key > best.key:
             best = candidate
@@ -289,32 +425,36 @@ def _best_match(current: Tag, tags: Iterable[str], allow_major: bool) -> str | N
 
 def _evaluate(
     ref: ImageRef,
-    tags_by_repo: dict[str, list[str]],
+    tags_by_repo: dict[str, TagPage],
     errors: dict[str, str],
     allow_major: bool,
 ) -> Result:
     """Decide whether *ref* is behind its registry."""
-    if not ref.version:
-        return Result(ref, "floating", detail="no tag pinned")
-    if ref.version.lower() == "latest":
-        return Result(ref, "floating", detail="pinned to latest")
+    if not ref.version or ref.version.lower() == "latest":
+        detail = "pinned to latest" if ref.version else "no tag pinned"
+        return Result(ref, "floating", detail=detail)
     current = _parse_tag(ref.version)
-    if current is None:
-        return Result(ref, "unrecognized", detail="tag is not a version")
+    if isinstance(current, Unversioned):
+        return Result(ref, current.status, detail=current.detail)
     if ref.repo in errors:
         return Result(ref, "error", detail=errors[ref.repo])
-    latest = _best_match(current, tags_by_repo.get(ref.repo, []), allow_major)
-    if latest is None:
+    page = tags_by_repo[ref.repo]
+    latest = _best_match(current, page.names, allow_major)
+    if latest is not None:
+        return Result(ref, "update", latest=latest)
+    # A newest-first page proves the pin current when the pin is on it: every
+    # newer tag was scanned above. Otherwise the list may hide a newer tag.
+    if page.complete or ref.version in page.names:
         return Result(ref, "ok")
-    return Result(ref, "update", latest=latest)
+    return Result(ref, "truncated", detail="pinned tag not in the fetched page")
 
 
-def _fetch_all(repos: list[str], jobs: int) -> tuple[dict[str, list[str]], dict[str, str]]:
+def _fetch_all(repos: list[str], jobs: int) -> tuple[dict[str, TagPage], dict[str, str]]:
     """Fetch each repository's tags once, returning (tags, errors)."""
-    tags: dict[str, list[str]] = {}
+    tags: dict[str, TagPage] = {}
     errors: dict[str, str] = {}
 
-    def _one(repo: str) -> tuple[str, list[str] | None, str | None]:
+    def _one(repo: str) -> tuple[str, TagPage | None, str | None]:
         try:
             return repo, fetch_tags(repo), None
         except (RegistryError, OSError) as exc:
@@ -334,7 +474,9 @@ def evaluate(refs: Sequence[ImageRef], allow_major: bool, jobs: int) -> list[Res
     queryable = {
         ref.repo
         for ref in refs
-        if ref.version and ref.version.lower() != "latest" and _parse_tag(ref.version)
+        if ref.version
+        and ref.version.lower() != "latest"
+        and isinstance(_parse_tag(ref.version), Tag)
     }
     tags_by_repo, errors = _fetch_all(sorted(queryable), jobs)
     return [_evaluate(ref, tags_by_repo, errors, allow_major) for ref in refs]
@@ -452,7 +594,7 @@ def _report(results: list[Result], output: str, verbose: bool) -> None:
         print()
         print(_summary(results))
         for result in results:
-            if result.status in ("error", "unrecognized"):
+            if result.detail and result.status != "floating":
                 print(f"  {result.ref.role}: {result.detail} ({result.ref.repo})")
     if verbose:
         hardcoded = _hardcoded_images()
