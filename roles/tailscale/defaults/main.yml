@@ -26,7 +26,7 @@ tailscale_enable_ip_forwarding: "{{ tailscale_routes | length > 0 or '--advertis
 # docker
 tailscale_container_name: "tailscale"
 tailscale_image_name: "tailscale/tailscale"
-tailscale_image_version: "v1.104.4"
+tailscale_image_version: "v1.104.7"
 
 # specs
 tailscale_memory: "256MB"
