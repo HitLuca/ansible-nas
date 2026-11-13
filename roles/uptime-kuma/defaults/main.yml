@@ -12,7 +12,7 @@ uptime_kuma_hostname: "uptime-kuma"
 # docker
 uptime_kuma_container_name: "uptime-kuma"
 uptime_kuma_image_name: "louislam/uptime-kuma"
-uptime_kuma_image_version: "2.5.9"
+uptime_kuma_image_version: "2.5.11"
 
 # specs
 uptime_kuma_memory: 1g
