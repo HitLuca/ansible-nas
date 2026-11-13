@@ -25,14 +25,25 @@
   ],
   "packageRules": [
     {
+      "description": "Name the role(s) an image bump touches in the title, e.g. 'firefly - Update mariadb Docker tag to v10.11', and list them in the PR body when a shared dependency lands in one branch. `upgrades` is the only place the full role list exists",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": ["roles/*/defaults/main.yml"],
+      "commitMessagePrefix": "{{#each (distinct (lookupArray upgrades 'packageFile'))}}{{replace '^roles/([^/]+)/.*$' '$1' this}}{{#unless @last}}, {{/unless}}{{/each}} -",
+      "prHeader": "{{#if (containsString (toJSON (distinct (lookupArray upgrades 'packageFile'))) ',')}}Affected roles: {{#each (distinct (lookupArray upgrades 'packageFile'))}}{{replace '^roles/([^/]+)/.*$' '$1' this}}{{#unless @last}}, {{/unless}}{{/each}}\n\n{{/if}}"
+    },
+    {
       "description": "Date-tagged images parse as a bare year under docker versioning",
       "matchPackageNames": ["homebridge/homebridge"],
       "versioning": "loose"
     },
     {
-      "description": "One PR for the website deps, pinned like Docusaurus already is; caret ranges there only ever produced lockfile-only PRs",
-      "matchFileNames": ["website/package.json"],
+      "description": "One PR for the website deps, titled 'website - ...', pinned like Docusaurus already is; caret ranges there only ever produced lockfile-only PRs. The group topic override avoids 'website - Update website dependencies'",
+      "matchFileNames": ["website/package.json", "website/package-lock.json"],
+      "commitMessagePrefix": "website -",
       "groupName": "website dependencies",
+      "group": {
+        "commitMessageTopic": "dependencies"
+      },
       "rangeStrategy": "pin"
     },
     {
