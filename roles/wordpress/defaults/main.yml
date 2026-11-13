@@ -1,0 +1,65 @@
+---
+wordpress_enabled: false
+wordpress_available_externally: false
+
+# sites
+# One entry per WordPress website. Each site gets its own database and, if
+# requested, its own phpMyAdmin. `name` must be unique and safe to use in a
+# docker container/network name (lowercase, no spaces).
+wordpress_sites: []
+#  - name: myblog                 # required, unique
+#    hostname: myblog             # optional, defaults to name; served at <hostname>.<domain>
+#    port: "9003"                 # required, unique host port for the site
+#    available_externally: true   # optional, defaults to wordpress_available_externally
+#    phpmyadmin_enabled: false    # optional
+#    phpmyadmin_port: "9004"      # required when phpmyadmin_enabled
+#    db_name: wordpress           # optional
+#    db_user: wordpress           # optional
+#    db_password: ""              # required
+#    db_root_password: ""         # required
+#    memory: 1g                   # optional
+#    db_memory: 1g                # optional
+#    config_extra: ""             # optional PHP, injected into wp-config.php
+
+# Optional PHP added to every site's wp-config.php (the image's
+# WORDPRESS_CONFIG_EXTRA). It runs before WordPress reads the database, so it
+# can define constants. Every site is reachable both through its host port and
+# through Traefik, so by default WP_HOME/WP_SITEURL follow the hostname the
+# request arrived on. Without this WordPress redirects to whatever siteurl
+# holds in the database, which only ever matches one of the two.
+#   use_request_host: derive WP_HOME/WP_SITEURL from the request host (default)
+#   stored_siteurl:   define neither, so WordPress uses the siteurl/home stored
+#                     in the database and the Settings fields stay editable
+wordpress_config_extra_mode: "use_request_host"
+
+# Derives WP_HOME/WP_SITEURL from the request host, so one install answers on
+# every hostname it is reached by (both local ip:port and Traefik domain).
+wordpress_request_host_config: >-
+  if (!empty($_SERVER['HTTP_HOST'])) {
+  $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+  define('WP_HOME', $scheme . '://' . $_SERVER['HTTP_HOST']);
+  define('WP_SITEURL', $scheme . '://' . $_SERVER['HTTP_HOST']);
+  }
+
+# Applied to any site that does not set its own config_extra.
+wordpress_default_config_extra: "{{ wordpress_request_host_config if wordpress_config_extra_mode == 'use_request_host' else '' }}"
+
+# directories
+# websites_root is a share root defined in group_vars/all.yml; each site is
+# stored under {{ websites_root }}/{{ site.name }}.
+
+# docker
+wordpress_image_name: "wordpress"
+wordpress_image_version: "7.1.4"
+wordpress_db_image_name: "mariadb"
+wordpress_db_image_version: "11.8.9"
+wordpress_phpmyadmin_image_name: "phpmyadmin"
+wordpress_phpmyadmin_image_version: "5.2.3"
+
+# specs
+wordpress_memory: 1g
+wordpress_db_memory: 1g
+wordpress_phpmyadmin_memory: 512m
+
+# monitoring
+wordpress_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

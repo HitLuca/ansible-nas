@@ -481,6 +481,10 @@
       tags:
         - woodpecker_ci
 
+    - role: wordpress
+      tags:
+        - wordpress
+
     - role: youtubedlmaterial
       tags:
         - youtubedlmaterial
