@@ -4,18 +4,42 @@ guacamole_available_externally: false
 
 # directories
 guacamole_data_directory: "{{ docker_home }}/guacamole"
+guacamole_postgres_directory: "{{ guacamole_data_directory }}/postgres_data"
 
 # network
 guacamole_port: "8090"
 guacamole_hostname: "guacamole"
+guacamole_network_name: "guacamole"
+# Context the webapp is deployed under; ROOT serves it at "/".
+guacamole_webapp_context: "ROOT"
+
+# database
+guacamole_db_name: "guacamole_db"
+guacamole_db_username: "guacamole"
+# Required; used to initialize the database and for Guacamole to log in.
+# Generate once and keep it: changing it locks Guacamole out of its own data.
+guacamole_db_password: ""
+guacamole_db_port: "5432"
 
 # docker
 guacamole_container_name: "guacamole"
-guacamole_image_name: "oznu/guacamole"
-guacamole_image_version: "1.3.0-latest"
+guacamole_image_name: "guacamole/guacamole"
+guacamole_image_version: "1.6.0"
+
+guacamole_guacd_container_name: "guacamole-guacd"
+guacamole_guacd_image_name: "guacamole/guacd"
+guacamole_guacd_image_version: "1.6.0"
+guacamole_guacd_port: "4822"
+
+guacamole_postgres_container_name: "guacamole-postgres"
+guacamole_postgres_image_name: "postgres"
+# PostgreSQL 18 keeps its cluster under /var/lib/postgresql; mount the parent.
+guacamole_postgres_image_version: "18.7-alpine"
 
 # specs
 guacamole_memory: 1g
+guacamole_guacd_memory: 512m
+guacamole_postgres_memory: 512m
 
 # monitoring
 guacamole_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

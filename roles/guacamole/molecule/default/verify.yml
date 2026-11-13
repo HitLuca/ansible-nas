@@ -6,13 +6,42 @@
     - ansible.builtin.include_vars:
         file: ../../defaults/main.yml
 
-    - name: Get guacamole container state
-      community.docker.docker_container:
+    - name: Get Guacamole Postgres container state
+      community.docker.docker_container_info:
+        name: "{{ guacamole_postgres_container_name }}"
+      register: result_postgres
+      until: >-
+        result_postgres.container['State']['Status'] == "running"
+        and result_postgres.container['State']['Restarting'] == false
+      retries: 30
+      delay: 2
+
+    - name: Get Guacamole guacd container state
+      community.docker.docker_container_info:
+        name: "{{ guacamole_guacd_container_name }}"
+      register: result_guacd
+      until: >-
+        result_guacd.container['State']['Status'] == "running"
+        and result_guacd.container['State']['Restarting'] == false
+      retries: 30
+      delay: 2
+
+    - name: Get Guacamole container state
+      community.docker.docker_container_info:
         name: "{{ guacamole_container_name }}"
       register: result
+      until: >-
+        result.container['State']['Status'] == "running"
+        and result.container['State']['Restarting'] == false
+      retries: 60
+      delay: 5
 
-    - name: Check if guacamole containers are running
+    - name: Check Guacamole containers are running
       ansible.builtin.assert:
         that:
+          - result_postgres.container['State']['Status'] == "running"
+          - result_postgres.container['State']['Restarting'] == false
+          - result_guacd.container['State']['Status'] == "running"
+          - result_guacd.container['State']['Restarting'] == false
           - result.container['State']['Status'] == "running"
           - result.container['State']['Restarting'] == false

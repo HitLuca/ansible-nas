@@ -198,8 +198,7 @@ To protect an application:
 2. Enable external access for the application (`<application_name>_available_externally: true`) — the middleware only applies to routers Traefik manages.
 3. Attach the `authelia@docker` middleware to that application's router.
 
-For applications that expose a flag for it, set the flag in your inventory; Spoolman, for example, uses `spoolman_authelia_enabled: true`. For any other application, add the label to its `traefik.http.routers.<application_name>.middlewares`
-entry in `roles/<application_name>/tasks/main.yml`:
+For applications that expose a flag for it, set the flag in your inventory; Spoolman, for example, uses `spoolman_authelia_enabled: true`. For any other application, add the label to its `traefik.http.routers.<application_name>.middlewares` entry in `roles/<application_name>/tasks/main.yml`:
 
 ```yaml
 traefik.http.routers.<application_name>.middlewares: "authelia@docker"
