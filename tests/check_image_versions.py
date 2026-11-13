@@ -164,7 +164,7 @@ def discover(only: Iterable[str] = ()) -> list[ImageRef]:
     return refs
 
 
-def _split_host(repo: str) -> tuple[str, str]:
+def split_host(repo: str) -> tuple[str, str]:
     """Split ``host/path``; a bare ``namespace/name`` defaults to docker.io."""
     first, _, rest = repo.partition("/")
     if rest and ("." in first or ":" in first or first == "localhost"):
@@ -222,7 +222,7 @@ def _quay_tags(path: str) -> list[str]:
 
 def fetch_tags(repo: str) -> list[str]:
     """Return every tag of *repo*, mapping known registry mirrors."""
-    host, path = _split_host(repo)
+    host, path = split_host(repo)
     if host in ("docker.io", "index.docker.io", "registry-1.docker.io"):
         return _docker_hub_tags(path)
     if host == "ghcr.io":
