@@ -21,6 +21,8 @@ pihole_image_name: "pihole/pihole"
 pihole_image_version: "2026.11.0"
 
 # web
+# The admin UI is served under /admin; the web root answers 404.
+pihole_web_path: "/admin"
 # Empty leaves the admin password unset: Pi-hole generates a random one and
 # prints it in the container log. Set a value here to pin it instead.
 pihole_web_password: ""

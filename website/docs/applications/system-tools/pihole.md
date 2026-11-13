@@ -15,6 +15,8 @@ showing what it filtered.
 Set `pihole_enabled: true` in your `inventories/<your_inventory>/group_vars/nas.yml` file.
 
 The admin interface is then reachable at `http://ansible_nas_host_or_ip:8072/admin`.
+The web root itself answers 404, so `pihole_web_path` (default `/admin`) is what
+the Homepage link and the Uptime Kuma monitor use.
 
 ### Admin password
 
