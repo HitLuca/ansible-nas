@@ -6,13 +6,27 @@
     - ansible.builtin.include_vars:
         file: ../../defaults/main.yml
 
-    - name: Try and stop and remove guacamole
+    - name: Try and stop and remove Guacamole
       community.docker.docker_container:
         name: "{{ guacamole_container_name }}"
         state: absent
       register: result
 
-    - name: Check if guacamole is stopped
+    - name: Try and stop and remove Guacamole guacd
+      community.docker.docker_container:
+        name: "{{ guacamole_guacd_container_name }}"
+        state: absent
+      register: result_guacd
+
+    - name: Try and stop and remove Guacamole Postgres
+      community.docker.docker_container:
+        name: "{{ guacamole_postgres_container_name }}"
+        state: absent
+      register: result_postgres
+
+    - name: Check Guacamole containers are stopped
       ansible.builtin.assert:
         that:
           - not result.changed
+          - not result_guacd.changed
+          - not result_postgres.changed
