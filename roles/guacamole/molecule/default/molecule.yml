@@ -4,3 +4,5 @@ provisioner:
     group_vars:
       all:
         guacamole_enabled: true
+        # Test-only password, not a secret.
+        guacamole_db_password: "guacamole"
