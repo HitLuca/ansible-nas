@@ -46,6 +46,8 @@ make check-images
 
 `make check-images` reports `<name>_image_version` pins that have fallen behind their registry; `make update-images` rewrites them in place (same major version only). A scheduled workflow runs the check weekly.
 
+`make scan-images` looks inside the pinned images instead of at their tags: Trivy reports CRITICAL and HIGH CVEs that a version bump would clear. It needs `trivy` on your `PATH`, and the weekly Image scan workflow files whatever it finds on a tracking issue rather than failing the build.
+
 Run `make` on its own to list all available targets.
 
 Note that molecule expands `molecule.yml` with `string.Template`, so a literal `$` in that file (a bcrypt hash, for example) must be written as `$$`.

@@ -60,6 +60,7 @@ The difference most relevant to running this on real hardware is how the roles a
 * **Every role has a molecule scenario.** It converges the role, runs it a second time to prove idempotence, verifies the container is running, then runs the role with its flag disabled and asserts the container is gone. The same scenario runs on Ubuntu 22.04 containers, the release this playbook targets.
 * **Integration tests are scoped to the change.** CI runs the molecule scenario of the roles a pull request touches, and the full matrix once a week — which also catches upstream images that disappear or stop starting.
 * **Pinned images are watched.** A weekly job reports roles whose pinned image version has fallen behind its registry (`make check-images` locally, `make update-images` to rewrite the pins within the same major version), and Renovate opens PRs for the rest. A handful of inherited roles still track a floating `latest` tag; the rest pin an explicit release.
+* **Pinned images are scanned for CVEs.** Version checks only compare tags, which says nothing about what is inside a release. A second weekly job runs Trivy over every pinned image and files the fixable CRITICAL findings on a tracking issue; `make scan-images` runs the same scan locally.
 * **Linting is enforced, not advisory.** `ansible-lint`, `yamllint`, `markdownlint`, and scripts that check every role's enabled flag and anatomy all run on every pull request.
 
 ## Moving an existing deployment onto this fork
