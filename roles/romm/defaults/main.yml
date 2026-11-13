@@ -23,7 +23,7 @@ romm_image_version: "5.4.1"
 
 romm_db_container_name: "romm-db"
 romm_db_image_name: "mariadb"
-romm_db_image_version: "11.2"
+romm_db_image_version: "11.8"
 
 romm_redis_container_name: "romm-redis"
 romm_redis_image_name: "redis"
