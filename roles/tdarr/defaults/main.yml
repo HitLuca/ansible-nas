@@ -37,7 +37,7 @@ tdarr_nvidia_gpu: false
 # docker
 tdarr_container_name: "tdarr"
 tdarr_image_name: "ghcr.io/haveagitgat/tdarr"
-tdarr_image_version: "3.07.00"
+tdarr_image_version: "3.08.00"
 
 # specs
 tdarr_memory: "4g"
