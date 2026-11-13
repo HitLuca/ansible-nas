@@ -6,8 +6,7 @@ Homepage: [https://github.com/joshuaavalon/docker-cloudflare](https://github.com
 
 Cloudflare: [https://www.cloudflare.com](https://www.cloudflare.com)
 
-If you want your Ansible-NAS accessible externally then you'll need a domain name. You'll also need to set a wildcard
-host A record to point to your static IP, or enable this container to automatically update Cloudflare with your dynamic IP address.
+If you want your Ansible-NAS accessible externally then you'll need a domain name. You'll also need to set a wildcard host A record to point to your static IP, or enable this container to automatically update Cloudflare with your dynamic IP address.
 
 ## Usage
 
