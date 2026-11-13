@@ -47,7 +47,10 @@ Each application is checked at `http://<nas>:<application port>`, which bypasses
 
 ### Notes
 
-- AutoKuma mounts the Docker socket read-only and keeps its state in `uptime_kuma_discovery_data_directory`.
-- Disabling an application removes its container, and its monitor is deleted a minute later.
+- AutoKuma mounts the Docker socket read-only and keeps its state in `uptime_kuma_discovery_data_directory`. If that directory is lost, AutoKuma no longer recognises the monitors it made and cannot delete them.
+- The sidecar is pinned to AutoKuma 2.1.0-rc.2 because 2.0.0 never reconnects: after the Uptime Kuma connection dropped (a Uptime Kuma restart is enough), it kept using the dead socket and stopped syncing for good, stranding monitors for containers that no longer existed. On 2.0.0 the only fix was restarting `uptime-kuma-discovery` itself.
+- Disabling an application makes the playbook delete its container (the role's stop block uses `state: absent`), and AutoKuma drops the monitor a minute later.
+- Stopping a container is **not** enough. AutoKuma lists containers including stopped ones, so `docker stop <container_name>` leaves the monitor in place, where it shows as down. Remove the container (`docker rm -f <container_name>`, or run the playbook with that role's flag off) to have the monitor deleted.
+- AutoKuma only deletes monitors it created and still tracks in its state directory. A monitor left over from an earlier AutoKuma install, or one created by hand in the UI, is never touched — delete it once in the UI, after which the role keeps everything in sync.
 - Turning off `uptime_kuma_monitor_all_services`, or a single `<role>_uptime_kuma_monitor`, while its container keeps running leaves the existing monitor in place: Docker cannot drop a label from a live container. Remove the container (`docker rm -f <container_name>`) and re-run the playbook to have the labels dropped, or delete the monitor in the UI.
 - Uptime Kuma can't reliably monitor itself — when it is down, so are its alerts. Use a separate checker such as the [healthchecks.io](../system-tools/healthchecks.io.md) role for that.
