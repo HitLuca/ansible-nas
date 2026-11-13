@@ -1,10 +1,10 @@
 # Ansible NAS
 
-![Available Applications](https://img.shields.io/github/directory-file-count/HitLuca/ansible-nas/roles?label=Available%20Applications&style=flat-square)
-[![CI](https://github.com/HitLuca/ansible-nas/actions/workflows/ci.yml/badge.svg)](https://github.com/HitLuca/ansible-nas/actions/workflows/ci.yml)
-[![license](https://img.shields.io/github/license/HitLuca/ansible-nas.svg?style=flat-square)](LICENSE)
+![applications](https://img.shields.io/github/directory-file-count/HitLuca/ansible-nas/roles?label=applications&style=flat-square) [![CI](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/ci.yml?label=CI&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/ci.yml) [![integration](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/integration.yml?label=integration&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/integration.yml) [![CodeQL](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/codeql.yml?label=CodeQL&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/codeql.yml) [![release](https://img.shields.io/github/v/release/HitLuca/ansible-nas?style=flat-square)](https://github.com/HitLuca/ansible-nas/releases) ![last commit](https://img.shields.io/github/last-commit/HitLuca/ansible-nas?style=flat-square) ![Ubuntu 22.04 LTS](https://img.shields.io/badge/ubuntu-22.04%20LTS-E95420?style=flat-square) [![license](https://img.shields.io/github/license/HitLuca/ansible-nas.svg?style=flat-square)](LICENSE)
 
 > This is a maintained fork of [davestephens/ansible-nas](https://github.com/davestephens/ansible-nas), which is no longer actively maintained. All credit for the original project goes to David Stephens and its contributors.
+>
+> See [Differences from Upstream](https://hitluca.github.io/ansible-nas/docs/differences-from-upstream) for the applications this fork adds, the roles it renamed or dropped, and how to move an existing deployment onto it.
 
 After getting burned by broken FreeNAS updates one too many times, I figured I could do a much better job myself using just a stock Ubuntu install, some clever Ansible config and a bunch of Docker containers.
 
@@ -237,7 +237,7 @@ Read the [migrating from FreeNAS](https://hitluca.github.io/ansible-nas/docs/fur
 
 ## Requirements
 
-* Ansible NAS targets the latest Ubuntu LTS release, which is currently Ubuntu Server 22.04 LTS.
+* Ansible NAS is built and tested on Ubuntu Server 22.04 LTS. That is the supported release: newer LTS versions have not been tested and are unsupported for now.
 * You can run Ansible-NAS on whatever hardware you like, read the docs for more info.
 
 ## Getting Help
