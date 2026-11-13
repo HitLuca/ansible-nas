@@ -8,9 +8,7 @@ Github: [https://github.com/syncthing/syncthing](https://github.com/syncthing/sy
 
 Docker: [https://hub.docker.com/r/syncthing/syncthing](https://hub.docker.com/r/syncthing/syncthing)
 
-Syncthing is a continuous file synchronization program. It synchronizes files
-between two or more computers. It strives to fulfill the goals below in summary.
-Syncthing should be:
+Syncthing is a continuous file synchronization program. It synchronizes files between two or more computers. It strives to fulfill the goals below in summary. Syncthing should be:
 
 1. Safe From Data Loss
 2. Secure Against Attackers

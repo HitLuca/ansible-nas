@@ -2,8 +2,7 @@
 title: "Minecraft Bedrock Server"
 ---
 
-Homepage: [https://www.minecraft.net/](https://www.minecraft.net/)
-Docker Image: [https://github.com/itzg/docker-minecraft-bedrock-server](https://github.com/itzg/docker-minecraft-bedrock-server)
+Homepage: [https://www.minecraft.net/](https://www.minecraft.net/) Docker Image: [https://github.com/itzg/docker-minecraft-bedrock-server](https://github.com/itzg/docker-minecraft-bedrock-server)
 
 The server version of the game Minecraft (Bedrock edition), running in a container.
 

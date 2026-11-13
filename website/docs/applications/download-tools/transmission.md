@@ -4,8 +4,7 @@ title: "Transmission"
 
 Homepage: [https://transmissionbt.com/](https://transmissionbt.com/)
 
-Transmission is a free BitTorrent client. Two versions are provided - one that tunnels through OpenVPN and one that connects
-directly.
+Transmission is a free BitTorrent client. Two versions are provided - one that tunnels through OpenVPN and one that connects directly.
 
 ## Usage
 

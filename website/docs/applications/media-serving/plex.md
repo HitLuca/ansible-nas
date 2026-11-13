@@ -14,5 +14,4 @@ The Plex web interface can be found at [http://ansible_nas_host_or_ip:32400/web/
 
 ## Specific Configuration
 
-You'll need to log in with a plex account, (or possibly claim your server).
-You'll need to set up your local file store - go to settings > Manage > Libraries, and add your libraries. These are mounted in the root directory by default.
+You'll need to log in with a plex account, (or possibly claim your server). You'll need to set up your local file store - go to settings > Manage > Libraries, and add your libraries. These are mounted in the root directory by default.

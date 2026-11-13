@@ -31,13 +31,9 @@ Passwords must be bcrypt hashes. Generate the entry with:
 docker run -it --rm amir20/dozzle:v11.4.2 generate admin --name Admin --email me@example.com
 ```
 
-Dozzle prompts for the password, so it stays out of your shell history, then
-prints a `users.yml` block. Copy its `name`, `email` and `password` values into
-`dozzle_users`.
+Dozzle prompts for the password, so it stays out of your shell history, then prints a `users.yml` block. Copy its `name`, `email` and `password` values into `dozzle_users`.
 
-To limit what a user can see or do, pass `--user-filter` and `--user-roles` to
-the generator and copy the resulting `filter` and `roles` values too. Both are
-comma-separated strings; a user without `roles` gets full access.
+To limit what a user can see or do, pass `--user-filter` and `--user-roles` to the generator and copy the resulting `filter` and `roles` values too. Both are comma-separated strings; a user without `roles` gets full access.
 
 Logins last 24 hours by default; change `dozzle_auth_ttl` (units `s`, `m` and `h`) to adjust.
 
