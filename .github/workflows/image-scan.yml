@@ -9,11 +9,21 @@ name: Image scan
 #
 # The scheduled run reports CRITICAL only, and only findings that a tag bump can
 # clear. Dispatch with a wider severity to audit the rest.
+#
+# A push that repins an image re-runs the scan as well, so the tracking issue
+# drops a role the moment its fix is merged instead of a week later.
 
 on:
   schedule:
     # Weekly, a day after the image-versions report
     - cron: "0 4 * * 3"
+  push:
+    branches: [main]
+    paths:
+      # Where roles pin their image name and version.
+      - "roles/*/defaults/main.yml"
+      # A change to the scanner changes what the issue says.
+      - "tests/scan_images.py"
   workflow_dispatch:
     inputs:
       severity:
@@ -65,8 +75,12 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           set +e
+          # Stamp the report so a reader can tell a fresh one from a stale one,
+          # and link every role to the pin at the commit that was scanned.
           args=(--severity "$SEVERITY" --format markdown --output report.md
-                --json-output report.json --check)
+                --json-output report.json --check
+                --stamp "Scanned $(date -u '+%Y-%m-%d %H:%M UTC') at ${GITHUB_SHA:0:7}"
+                --source-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$GITHUB_SHA")
           if [ "$UNFIXED" = "true" ]; then
             args+=(--include-unfixed)
           fi
