@@ -24,8 +24,7 @@ vd_users:
 
 ## Mounts
 
-`samba_shares_root` is mounted to `/samba`.
-`docker_home` is mounted to `/docker`.
+`samba_shares_root` is mounted to `/samba`. `docker_home` is mounted to `/docker`.
 
 ## Remote Access
 
