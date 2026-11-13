@@ -20,7 +20,7 @@ firefly_mysql_container_name: firefly-mysql
 firefly_image_name: "fireflyiii/core"
 firefly_image_version: "version-6.7.9"
 firefly_mysql_image_name: "mariadb"
-firefly_mysql_image_version: "10.9"
+firefly_mysql_image_version: "10.11"
 
 # monitoring
 firefly_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
