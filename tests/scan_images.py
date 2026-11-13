@@ -17,6 +17,10 @@ Findings with no fix are hidden by default: a bump cannot clear them, so they
 are noise for a repo that only pins tags. Trivy must be on ``PATH``; pass
 ``--trivy`` to point at a different binary.
 
+The Markdown report keeps the summary table up front and folds each image's
+CVEs into a collapsible block, because a single stale image can carry hundreds
+of findings and an issue body is capped at 65536 characters.
+
 Docker Hub credentials in ``DOCKERHUB_USERNAME``/``DOCKERHUB_TOKEN`` are used
 for docker.io images only, which lifts the anonymous pull limit. Set them in CI
 as repo secrets; locally, Trivy already reads ``docker login``.
@@ -26,6 +30,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -40,6 +45,9 @@ SEVERITIES = ("CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN")
 RANK = {severity: index for index, severity in enumerate(SEVERITIES)}
 SCAN_TIMEOUT = 600
 DB_TIMEOUT = 300
+# GitHub rejects an issue body above 65536 characters.
+BODY_LIMIT = 60000
+ERROR_PREFIX = re.compile(r"^\S+Z?\s+(?:FATAL|ERROR|WARN|INFO|DEBUG)\s+(?:Fatal error\s+)?")
 
 
 @dataclass
@@ -140,6 +148,18 @@ def _parse(payload: dict) -> list[Finding]:
     return findings
 
 
+def _last_error(stderr: str) -> str:
+    """The last line of Trivy's stderr, minus its log prefix.
+
+    Trivy prefixes every line with an RFC 3339 timestamp and a level; keeping
+    them stops identical failures from collapsing into one line in the report.
+    """
+    lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+    if not lines:
+        return ""
+    return " ".join(ERROR_PREFIX.sub("", lines[-1]).replace("\t", " ").split())
+
+
 def scan(ref: inventory.ImageRef, options: Options) -> Scan:
     """Scan one pinned image."""
     scan_result = Scan(ref=ref)
@@ -153,6 +173,12 @@ def scan(ref: inventory.ImageRef, options: Options) -> Scan:
         "--severity",
         ",".join(options.severities),
         "--skip-db-update",
+        # Trivy's on-disk cache is a BoltDB, which only one process may open at
+        # a time; concurrent scans fail with "cache may be in use by another
+        # process". The scan cache lives in memory instead, while --cache-dir
+        # still supplies the vulnerability DB the download step put on disk.
+        "--cache-backend",
+        "memory",
         "--timeout",
         f"{options.timeout}s",
     ]
@@ -167,8 +193,7 @@ def scan(ref: inventory.ImageRef, options: Options) -> Scan:
         scan_result.error = f"{type(error).__name__}: {error}"
         return scan_result
     if result.returncode != 0:
-        stderr = [line for line in result.stderr.strip().splitlines() if line.strip()]
-        scan_result.error = stderr[-1] if stderr else f"trivy exited {result.returncode}"
+        scan_result.error = _last_error(result.stderr) or f"trivy exited {result.returncode}"
         return scan_result
     try:
         scan_result.findings = _parse(json.loads(result.stdout or "{}"))
@@ -223,8 +248,60 @@ def _cell(text: str) -> str:
     return text.replace("|", "\\|")
 
 
-def _markdown(scans: Sequence[Scan], options: Options, max_details: int) -> list[str]:
-    """Render the report as Markdown lines."""
+def _details_block(item: Scan, options: Options, per_image: int) -> list[str]:
+    """One collapsible block with an image's worst findings."""
+    counts = ", ".join(
+        f"{item.count(severity)} {severity.lower()}"
+        for severity in options.severities
+        if item.count(severity)
+    )
+    lines = [
+        "",
+        "<details>",
+        f"<summary><b>{item.ref.role}</b> — <code>{item.image}</code> — {counts}</summary>",
+        "",
+        "| CVE | Severity | Package | Installed | Fixed | Title |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for finding in item.findings[:per_image]:
+        lines.append(
+            f"| {_cell(finding.vuln_id)} | {finding.severity} "
+            f"| {_cell(finding.package)} | {_cell(finding.installed)} "
+            f"| {_cell(finding.fixed) or '-'} | {_cell(finding.title)} |"
+        )
+    remaining = len(item.findings) - per_image
+    if remaining > 0:
+        lines += ["", f"…and {remaining} more findings on this image."]
+    lines += ["", "</details>"]
+    return lines
+
+
+def _errors_block(scans: Sequence[Scan]) -> list[str]:
+    """The images that could not be scanned, grouped by identical failure."""
+    errors = [item for item in scans if item.error]
+    if not errors:
+        return []
+    grouped: dict[str, list[str]] = {}
+    for item in errors:
+        grouped.setdefault(item.error, []).append(f"{item.ref.role} (`{item.image}`)")
+    summary = f"<summary><b>{len(errors)} images could not be scanned</b></summary>"
+    lines = ["", "<details>", summary]
+    for message, images in sorted(grouped.items(), key=lambda pair: -len(pair[1])):
+        lines += ["", f"**{message}**", ""]
+        lines += [f"- {image}" for image in images]
+    lines += ["", "</details>"]
+    return lines
+
+
+def _markdown(
+    scans: Sequence[Scan], options: Options, per_image: int, body_limit: int
+) -> list[str]:
+    """Render the report as Markdown lines.
+
+    The summary table is the part worth reading; the per-image CVE tables are
+    folded away and budgeted, because one image can carry hundreds of findings
+    and GitHub caps an issue body at 65536 characters.
+    """
     mode = "fixable findings only" if options.ignore_unfixed else "including unfixed findings"
     lines = [
         "## Container image vulnerabilities",
@@ -247,32 +324,31 @@ def _markdown(scans: Sequence[Scan], options: Options, max_details: int) -> list
             )
             lines.append("| " + " | ".join(_cell(cell) for cell in cells) + " |")
 
-    total_findings = sum(len(item.findings) for item in affected)
-    shown = 0
-    details: list[str] = []
+    if affected and per_image > 0:
+        lines += [
+            "",
+            "## Findings per image",
+            "",
+            "Expand an image to see its worst findings.",
+        ]
+    size = len("\n".join(lines))
+    skipped = 0
     for item in affected:
-        if shown >= max_details:
+        if per_image <= 0:
             break
-        details += ["", f"### {item.ref.role} — `{item.image}`", ""]
-        details.append("| CVE | Severity | Package | Installed | Fixed | Title |")
-        details.append("| --- | --- | --- | --- | --- | --- |")
-        for finding in item.findings:
-            if shown >= max_details:
-                break
-            details.append(
-                f"| {_cell(finding.vuln_id)} | {finding.severity} "
-                f"| {_cell(finding.package)} | {_cell(finding.installed)} "
-                f"| {_cell(finding.fixed) or '-'} | {_cell(finding.title)} |"
-            )
-            shown += 1
-    lines += details
-    if total_findings > max_details:
-        lines += ["", f"Details truncated: {max_details} of {total_findings} findings listed."]
+        block = _details_block(item, options, per_image)
+        if size + len("\n".join(block)) > body_limit:
+            skipped += 1
+            continue
+        lines += block
+        size += len("\n".join(block))
+    if skipped:
+        lines += [
+            "",
+            f"Findings for {skipped} more images are in the full report attached to the run.",
+        ]
 
-    errors = [item for item in scans if item.error]
-    if errors:
-        lines += ["", "### Images that could not be scanned", ""]
-        lines += [f"- `{item.image}` ({item.ref.role}): {item.error}" for item in errors]
+    lines += _errors_block(scans)
     return lines
 
 
@@ -312,12 +388,14 @@ def _json(scans: Sequence[Scan]) -> list[str]:
     return [json.dumps(payload, indent=2)]
 
 
-def render(scans: Sequence[Scan], options: Options, output: str, max_details: int) -> str:
+def render(
+    scans: Sequence[Scan], options: Options, output: str, per_image: int, body_limit: int
+) -> str:
     """Render the report in the requested format."""
     if output == "json":
         lines = _json(scans)
     elif output == "markdown":
-        lines = _markdown(scans, options, max_details)
+        lines = _markdown(scans, options, per_image, body_limit)
     else:
         lines = _table(scans, options)
         lines += ["", _summary(scans, options)]
@@ -352,6 +430,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--output", type=Path, metavar="PATH", help="write the report here instead of stdout"
     )
     parser.add_argument(
+        "--json-output",
+        type=Path,
+        metavar="PATH",
+        help="also write the full findings as JSON, every CVE included",
+    )
+    parser.add_argument(
         "--jobs", type=int, default=4, metavar="N", help="images scanned in parallel (default 4)"
     )
     parser.add_argument(
@@ -359,7 +443,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="timeout per image (default 600)",
     )
     parser.add_argument(
-        "--max-details", type=int, default=40, help="findings listed in Markdown (default 40)"
+        "--details-per-image",
+        type=int,
+        default=10,
+        metavar="N",
+        help="findings listed per image in Markdown, 0 for the summary only (default 10)",
+    )
+    parser.add_argument(
+        "--body-limit",
+        type=int,
+        default=BODY_LIMIT,
+        metavar="CHARS",
+        help=f"cap the Markdown report, it may become an issue body (default {BODY_LIMIT})",
     )
     parser.add_argument("--trivy", default="trivy", help="Trivy binary (default: trivy)")
     args = parser.parse_args(argv)
@@ -401,11 +496,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     scans = scan_all(refs, options)
-    report = render(scans, options, args.format, args.max_details)
+    report = render(
+        scans, options, args.format, args.details_per_image, args.body_limit
+    )
     if args.output:
         args.output.write_text(report)
     else:
         print(report, end="")
+    if args.json_output:
+        args.json_output.write_text("\n".join(_json(scans)) + "\n")
 
     if all(item.error for item in scans):
         print("Every image failed to scan; see the report.", file=sys.stderr)
