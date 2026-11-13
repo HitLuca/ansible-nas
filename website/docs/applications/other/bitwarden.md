@@ -14,8 +14,7 @@ Set `bitwarden_enabled: true` in your `inventories/<your_inventory>/group_vars/n
 
 ## Specific Configuration
 
-Make sure you set your admin token! It is `bitwarden_admin_token` in `group_vars/all.yml` file. The string you put here will be the login to the admin section of your Bitwarden installation ([https://bitwarden.ansiblenasdomain.tld/admin](https://bitwarden.ansiblenasdomain.tld/admin)). This token can be anything, but it's recommended to use a long, randomly generated string of characters, for example running:
-`openssl rand -base64 48`.
+Make sure you set your admin token! It is `bitwarden_admin_token` in `group_vars/all.yml` file. The string you put here will be the login to the admin section of your Bitwarden installation ([https://bitwarden.ansiblenasdomain.tld/admin](https://bitwarden.ansiblenasdomain.tld/admin)). This token can be anything, but it's recommended to use a long, randomly generated string of characters, for example running: `openssl rand -base64 48`.
 
 To create a user, you need to set `bitwarden_allow_signups` to `true` in your `all.yml`, and re-run the playbook to reprovision the container. Once you've created your users, set `bitwarden_allow_signups` back to `false` and run again.
 

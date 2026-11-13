@@ -19,13 +19,7 @@ The Seerr web interface can be found at [http://ansible_nas_host_or_ip:5055](htt
 This role was previously named `overseerr`. To migrate an existing deployment:
 
 1. Rename `overseerr_enabled` to `seerr_enabled` in your inventory.
-2. Remove the old container, which still holds port 5055:
-   `docker rm -f overseerr`.
-3. Move the data directory: the role now stores its config in `seerr/config`
-   under `docker_home`, where it used to use `overseerr/config`. Either move the
-   old folder (`mv overseerr seerr`) or point `seerr_data_directory` at the old
-   path. Back the folder up first so you can roll back.
+2. Remove the old container, which still holds port 5055: `docker rm -f overseerr`.
+3. Move the data directory: the role now stores its config in `seerr/config` under `docker_home`, where it used to use `overseerr/config`. Either move the old folder (`mv overseerr seerr`) or point `seerr_data_directory` at the old path. Back the folder up first so you can roll back.
 
-Seerr migrates an existing Overseerr database automatically the first time it
-starts. Before that first start the role chowns the config folder to UID 1000,
-the user Seerr runs as.
+Seerr migrates an existing Overseerr database automatically the first time it starts. Before that first start the role chowns the config folder to UID 1000, the user Seerr runs as.
