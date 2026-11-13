@@ -32,5 +32,8 @@ uptime_kuma_discovery_password: ""
 uptime_kuma_discovery_data_directory: "{{ docker_home }}/uptime_kuma_discovery"
 uptime_kuma_discovery_container_name: "uptime-kuma-discovery"
 uptime_kuma_discovery_image_name: "ghcr.io/bigboot/autokuma"
-uptime_kuma_discovery_image_version: "2.0.0"
+# 2.1.0-rc.1 is the first release that reconnects after the Uptime Kuma
+# websocket drops; 2.0.0 keeps the dead client cached and stops syncing, which
+# strands monitors for containers that no longer exist.
+uptime_kuma_discovery_image_version: "2.1.0-rc.2"
 uptime_kuma_discovery_memory: "256m"
