@@ -5,7 +5,7 @@
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Pi-hole | Ansible-NAS</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://hitluca.github.io/ansible-nas/docs/applications/system-tools/pihole/"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Pi-hole | Ansible-NAS"><meta data-rh="true" name="description" content="Homepage//pi-hole.net/"><meta data-rh="true" property="og:description" content="Homepage//pi-hole.net/"><link data-rh="true" rel="icon" href="/ansible-nas/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://hitluca.github.io/ansible-nas/docs/applications/system-tools/pihole/"><link data-rh="true" rel="alternate" href="https://hitluca.github.io/ansible-nas/docs/applications/system-tools/pihole/" hreflang="en"><link data-rh="true" rel="alternate" href="https://hitluca.github.io/ansible-nas/docs/applications/system-tools/pihole/" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Applications","item":"https://hitluca.github.io/ansible-nas/docs/category/applications"},{"@type":"ListItem","position":2,"name":"System Tools","item":"https://hitluca.github.io/ansible-nas/docs/category/system-tools"},{"@type":"ListItem","position":3,"name":"Pi-hole","item":"https://hitluca.github.io/ansible-nas/docs/applications/system-tools/pihole"}]}</script><link rel="alternate" type="application/rss+xml" href="/ansible-nas/blog/rss.xml" title="Ansible-NAS RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/ansible-nas/blog/atom.xml" title="Ansible-NAS Atom Feed"><link rel="stylesheet" href="/ansible-nas/assets/css/styles.87ea04f4.css">
-<script src="/ansible-nas/assets/js/runtime~main.02fd2038.js" defer="defer"></script>
+<script src="/ansible-nas/assets/js/runtime~main.bc2e5afc.js" defer="defer"></script>
 <script src="/ansible-nas/assets/js/main.daf5c53d.js" defer="defer"></script>
 </head>
 <body>
@@ -19,7 +19,9 @@ for DNS and it blocks ad and tracker domains network-wide, with a dashboard
 showing what it filtered.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="usage">Usage<a href="#usage" class="hash-link" aria-label="Direct link to Usage" title="Direct link to Usage" translate="no">​</a></h2>
 <p>Set <code>pihole_enabled: true</code> in your <code>inventories/&lt;your_inventory&gt;/group_vars/nas.yml</code> file.</p>
-<p>The admin interface is then reachable at <code>http://ansible_nas_host_or_ip:8072/admin</code>.</p>
+<p>The admin interface is then reachable at <code>http://ansible_nas_host_or_ip:8072/admin</code>.
+The web root itself answers 404, so <code>pihole_web_path</code> (default <code>/admin</code>) is what
+the Homepage link and the Uptime Kuma monitor use.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="admin-password">Admin password<a href="#admin-password" class="hash-link" aria-label="Direct link to Admin password" title="Direct link to Admin password" translate="no">​</a></h3>
 <p>By default no password is set, so Pi-hole generates a random one on first start
 and prints it in the container log:</p>
