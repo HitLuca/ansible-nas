@@ -77,6 +77,9 @@ roms_root: "{{ samba_shares_root }}/roms"
 # Where video and audio recordings are stored
 recordings_root: "{{ samba_shares_root }}/recordings"
 
+# Where websites (WordPress sites) are stored
+websites_root: "{{ samba_shares_root }}/websites"
+
 # The description that'll appear next to your Ansible-NAS box when browsing your network
 samba_server_string: Ansible NAS
 

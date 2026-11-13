@@ -1,0 +1,40 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Get WordPress container state
+      community.docker.docker_container_info:
+        name: "wordpress-test"
+      register: wordpress_app
+
+    - name: Get WordPress database container state
+      community.docker.docker_container_info:
+        name: "wordpress-test-db"
+      register: wordpress_db
+
+    - name: Check if WordPress containers are running
+      ansible.builtin.assert:
+        that:
+          - wordpress_app.container['State']['Status'] == "running"
+          - wordpress_app.container['State']['Restarting'] == false
+          - wordpress_db.container['State']['Status'] == "running"
+          - wordpress_db.container['State']['Restarting'] == false
+
+    - name: Check the site's Traefik router label was rendered
+      ansible.builtin.assert:
+        that:
+          - wordpress_app.container['Config']['Labels']['traefik.http.routers.wordpress-test.rule'] == 'Host(`test.ansible-nas.io`)'
+          - wordpress_app.container['Config']['Labels']['traefik.http.services.wordpress-test.loadbalancer.server.port'] == '80'
+        fail_msg: >-
+          Traefik labels are missing or unrendered. Ansible does not template
+          Jinja inside dict keys, so the labels dict must be built in a single
+          expression.
+
+    - name: Check no label key was left untemplated
+      ansible.builtin.assert:
+        # [{] rather than the literal brace pair: '{{' would open a template block.
+        that: wordpress_app.container['Config']['Labels'] | dict2items | map(attribute='key') | select('search', '[{]') | list | length == 0
+        fail_msg: >-
+          A label key still contains an opening brace, meaning Ansible did not
+          template it.
