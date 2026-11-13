@@ -1,0 +1,101 @@
+---
+name: Image scan
+
+# Reports pinned images that carry known, fixable vulnerabilities. Renovate
+# bumps tags and check_image_versions.py flags stale pins, but neither looks
+# inside an image, so a CVE in its OS packages or bundled libraries is invisible
+# to both. Trivy does look inside, and the findings land on one tracking issue
+# instead of failing the run every week.
+#
+# The scheduled run reports CRITICAL only, and only findings that a tag bump can
+# clear. Dispatch with a wider severity to audit the rest.
+
+on:
+  schedule:
+    # Weekly, a day after the image-versions report
+    - cron: "0 4 * * 3"
+  workflow_dispatch:
+    inputs:
+      severity:
+        description: "Severities to report"
+        type: choice
+        options:
+          - CRITICAL
+          - CRITICAL,HIGH
+          - HIGH
+        default: CRITICAL
+      include_unfixed:
+        description: "Also report findings that no fix exists for"
+        type: boolean
+        default: false
+
+concurrency:
+  group: image-scan
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Scan pinned images with Trivy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Opening, updating and closing the tracking issue.
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.3.1
+
+      # The script exits 1 when it found something; record that instead of
+      # failing, so the next step can put the report on an issue.
+      - name: Scan the pinned images
+        id: scan
+        env:
+          SEVERITY: ${{ inputs.severity || 'CRITICAL' }}
+          UNFIXED: ${{ inputs.include_unfixed }}
+          # Optional: lifts the anonymous Docker Hub pull limit. Unset secrets
+          # leave the pulls anonymous, which is fine unless a run is rate-limited.
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          set +e
+          args=(--severity "$SEVERITY" --format markdown --output report.md --max-details 40 --check)
+          if [ "$UNFIXED" = "true" ]; then
+            args+=(--include-unfixed)
+          fi
+          python3 tests/scan_images.py "${args[@]}"
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Track the findings on an issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATUS: ${{ steps.scan.outputs.status }}
+        run: |
+          title="Container image vulnerabilities"
+          number=$(gh issue list --state open --search "in:title \"$title\"" \
+            --json number --jq '.[0].number')
+          if [ "$STATUS" -ge 2 ]; then
+            echo "The scan itself failed; leaving the tracking issue alone." >&2
+            exit 1
+          fi
+          if [ "$STATUS" = "1" ]; then
+            if [ -n "$number" ]; then
+              gh issue edit "$number" --body-file report.md
+            else
+              gh issue create --title "$title" --body-file report.md --label security
+            fi
+          elif [ -n "$number" ]; then
+            gh issue close "$number" \
+              --comment "Trivy found no fixable vulnerabilities in the pinned images."
+          else
+            echo "Nothing to report."
+          fi
