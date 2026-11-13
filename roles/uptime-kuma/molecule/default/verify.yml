@@ -18,3 +18,14 @@
         that:
           - result.container['State']['Status'] == "running"
           - result.container['State']['Restarting'] == false
+
+    - name: Get discovery container state
+      community.docker.docker_container_info:
+        name: "{{ uptime_kuma_discovery_container_name }}"
+      register: discovery
+
+    - name: Check AutoKuma is running
+      ansible.builtin.assert:
+        that:
+          - discovery.container['State']['Status'] == "running"
+          - discovery.container['State']['Restarting'] == false

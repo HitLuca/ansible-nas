@@ -4,3 +4,8 @@ provisioner:
     group_vars:
       all:
         uptime_kuma_enabled: true
+        # AutoKuma stays up and retries when it cannot log in, so dummy
+        # credentials are enough to exercise the sidecar's image and startup.
+        uptime_kuma_discovery_enabled: true
+        uptime_kuma_discovery_username: "autokuma"
+        uptime_kuma_discovery_password: "autokuma"
