@@ -18,3 +18,14 @@
       ansible.builtin.assert:
         that:
           - not result.changed
+
+    - name: Try and stop and remove AutoKuma
+      community.docker.docker_container:
+        name: "{{ uptime_kuma_discovery_container_name }}"
+        state: absent
+      register: discovery_result
+
+    - name: Check AutoKuma is stopped
+      ansible.builtin.assert:
+        that:
+          - not discovery_result.changed
