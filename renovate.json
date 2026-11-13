@@ -47,6 +47,16 @@
       "rangeStrategy": "pin"
     },
     {
+      "description": "pyproject.toml, uv.lock and requirements-dev.txt are the uv-managed tooling environment, so name it in the title: 'python env - Update dependency molecule to v26.11.0'",
+      "matchManagers": ["pep621", "pip_requirements"],
+      "commitMessagePrefix": "python env -"
+    },
+    {
+      "description": "Galaxy roles and collections live in requirements.yml, so name it in the title: 'ansible requirements - Update dependency community.general to v13.5.1'",
+      "matchManagers": ["ansible-galaxy"],
+      "commitMessagePrefix": "ansible requirements -"
+    },
+    {
       "description": "Major upgrades are proposed but need approval on the dependency dashboard",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
