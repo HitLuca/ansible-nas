@@ -1,12 +1,22 @@
 ---
 - name: Start Guacamole
   block:
+    - name: Check Guacamole database password is set
+      ansible.builtin.assert:
+        that: guacamole_db_password | length > 0
+        fail_msg: >-
+          guacamole_db_password is required: PostgreSQL uses it to create the
+          database on first start and Guacamole uses it to log in. Set a long
+          random string in your inventory and keep it, changing it later locks
+          Guacamole out of its existing data.
+
     - name: Create Guacamole directories
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
       with_items:
-        - "{{ guacamole_data_directory }}/config"
+        - "{{ guacamole_data_directory }}"
+        - "{{ guacamole_postgres_directory }}"
 
     - name: Remove Old Guacamole Mysql Docker Container
       community.docker.docker_container:
@@ -14,28 +24,75 @@
         state: absent
         keep_volumes: true
 
-    - name: Remove Old Guacamole guacd Docker Container
-      community.docker.docker_container:
-        name: guacamole-guacd
-        state: absent
-        keep_volumes: true
-
     - name: Remove old Guacamole directories
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ guacamole_data_directory }}/mysql"
         state: absent
-      with_items:
-        - "{{ guacamole_data_directory }}/mysql"
+
+    - name: Create Guacamole network
+      community.docker.docker_network:
+        name: "{{ guacamole_network_name }}"
+
+    - name: Guacamole Postgres Docker Container
+      community.docker.docker_container:
+        name: "{{ guacamole_postgres_container_name }}"
+        image: "{{ guacamole_postgres_image_name }}:{{ guacamole_postgres_image_version }}"
+        pull: true
+        volumes:
+          - "{{ guacamole_postgres_directory }}:/var/lib/postgresql:rw"
+        env:
+          POSTGRES_DB: "{{ guacamole_db_name }}"
+          POSTGRES_USER: "{{ guacamole_db_username }}"
+          POSTGRES_PASSWORD: "{{ guacamole_db_password }}"
+        networks:
+          - name: "{{ guacamole_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ guacamole_postgres_memory }}"
+
+    - name: Wait for Guacamole Postgres
+      community.docker.docker_container_exec:
+        container: "{{ guacamole_postgres_container_name }}"
+        argv:
+          - pg_isready
+          - -U
+          - "{{ guacamole_db_username }}"
+          - -d
+          - "{{ guacamole_db_name }}"
+      register: guacamole_postgres_ready
+      until: guacamole_postgres_ready.rc == 0
+      retries: 30
+      delay: 2
+      changed_when: false
+
+    - name: Guacamole guacd Docker Container
+      community.docker.docker_container:
+        name: "{{ guacamole_guacd_container_name }}"
+        image: "{{ guacamole_guacd_image_name }}:{{ guacamole_guacd_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ guacamole_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ guacamole_guacd_memory }}"
 
     - name: Guacamole Container
       community.docker.docker_container:
         name: "{{ guacamole_container_name }}"
         image: "{{ guacamole_image_name }}:{{ guacamole_image_version }}"
         pull: true
-        volumes:
-          - "{{ guacamole_data_directory }}/config:/config:rw"
+        networks:
+          - name: "{{ guacamole_network_name }}"
         ports:
           - "{{ guacamole_port }}:8080"
+        env:
+          GUACD_HOSTNAME: "{{ guacamole_guacd_container_name }}"
+          GUACD_PORT: "{{ guacamole_guacd_port }}"
+          POSTGRESQL_HOSTNAME: "{{ guacamole_postgres_container_name }}"
+          POSTGRESQL_PORT: "{{ guacamole_db_port }}"
+          POSTGRESQL_DATABASE: "{{ guacamole_db_name }}"
+          POSTGRESQL_USERNAME: "{{ guacamole_db_username }}"
+          POSTGRESQL_PASSWORD: "{{ guacamole_db_password }}"
+          WEBAPP_CONTEXT: "{{ guacamole_webapp_context }}"
+          TZ: "{{ ansible_nas_timezone }}"
         restart_policy: unless-stopped
         memory: "{{ guacamole_memory }}"
         labels:
@@ -53,12 +110,43 @@
           homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ guacamole_port }}"
           homepage.description: Remote desktop gateway
 
-    - name: Restart Guacamole Container
-      community.docker.docker_container:
-        name: "{{ guacamole_container_name }}"
-        image: "{{ guacamole_image_name }}:{{ guacamole_image_version }}"
-        restart: true
-      tags: molecule-idempotence-notest
+    - name: Check Guacamole database schema
+      community.docker.docker_container_exec:
+        container: "{{ guacamole_postgres_container_name }}"
+        argv:
+          - psql
+          - -U
+          - "{{ guacamole_db_username }}"
+          - -d
+          - "{{ guacamole_db_name }}"
+          - -tAc
+          - "SELECT to_regclass('public.guacamole_entity') IS NOT NULL"
+      register: guacamole_schema
+      changed_when: false
+
+    - name: Generate Guacamole database schema
+      community.docker.docker_container_exec:
+        container: "{{ guacamole_container_name }}"
+        argv:
+          - /opt/guacamole/bin/initdb.sh
+          - --postgresql
+      register: guacamole_initdb
+      changed_when: false
+      when: guacamole_schema.stdout | trim != "t"
+
+    - name: Initialize Guacamole database
+      community.docker.docker_container_exec:
+        container: "{{ guacamole_postgres_container_name }}"
+        argv:
+          - psql
+          - -U
+          - "{{ guacamole_db_username }}"
+          - -d
+          - "{{ guacamole_db_name }}"
+          - -v
+          - ON_ERROR_STOP=1
+        stdin: "{{ guacamole_initdb.stdout }}"
+      when: guacamole_schema.stdout | trim != "t"
   when: guacamole_enabled is true
 
 - name: Stop Guacamole
@@ -66,5 +154,15 @@
     - name: Stop Guacamole
       community.docker.docker_container:
         name: "{{ guacamole_container_name }}"
+        state: absent
+
+    - name: Stop Guacamole guacd
+      community.docker.docker_container:
+        name: "{{ guacamole_guacd_container_name }}"
+        state: absent
+
+    - name: Stop Guacamole Postgres
+      community.docker.docker_container:
+        name: "{{ guacamole_postgres_container_name }}"
         state: absent
   when: guacamole_enabled is false
