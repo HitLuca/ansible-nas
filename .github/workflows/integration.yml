@@ -8,7 +8,8 @@ on:
     paths:
       - "roles/**"
       - "tests/molecule/**"
-      - "tests/github-test-matrix.sh"
+      - "scripts/github-test-matrix.sh"
+      - "requirements-dev.txt"
       - ".github/workflows/integration.yml"
 
   # Test every role weekly, to catch upstream images that break or disappear
@@ -39,7 +40,7 @@ jobs:
       - name: Generate Test Matrix
         id: set-matrix
         shell: bash
-        run: "tests/github-test-matrix.sh"
+        run: "scripts/github-test-matrix.sh"
 
   test:
     # No matrix expression here: a skipped job would show it unexpanded.

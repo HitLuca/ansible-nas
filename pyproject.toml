@@ -13,6 +13,18 @@ dependencies = [
 [tool.uv]
 package = false
 
+# The tools CI and make call live in scripts/; the tests under tests/ import
+# them by module name.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]
+
+[tool.mypy]
+mypy_path = "scripts"
+
+[tool.pylint.main]
+init-hook = "import sys; sys.path.insert(0, 'scripts')"
+
 [dependency-groups]
 dev = [
     "mypy>=2.4.1",

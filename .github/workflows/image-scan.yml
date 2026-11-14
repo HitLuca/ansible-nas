@@ -22,8 +22,11 @@ on:
     paths:
       # Where roles pin their image name and version.
       - "roles/*/defaults/main.yml"
-      # A change to the scanner changes what the issue says.
-      - "tests/scan_images.py"
+      # A change to the scanner, or to how it finds the pins, changes what
+      # the issue says.
+      - "scripts/scan_images.py"
+      - "scripts/check_image_versions.py"
+      - "scripts/role_defaults.py"
   workflow_dispatch:
     inputs:
       severity:
@@ -84,7 +87,7 @@ jobs:
           if [ "$UNFIXED" = "true" ]; then
             args+=(--include-unfixed)
           fi
-          python3 tests/scan_images.py "${args[@]}"
+          python3 scripts/scan_images.py "${args[@]}"
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           if [ -f report.md ]; then

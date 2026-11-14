@@ -7,11 +7,11 @@ they never look inside the image, so a CVE in its OS packages or bundled
 libraries stays invisible to them. Trivy unpacks each pinned image and queries
 its vulnerability database.
 
-    tests/scan_images.py                       # report, exit 0
-    tests/scan_images.py --check               # report, exit 1 on findings
-    tests/scan_images.py --format markdown     # issue body or job summary
-    tests/scan_images.py --role nextcloud      # one role only
-    tests/scan_images.py --include-unfixed     # also findings with no fix
+    scripts/scan_images.py                       # report, exit 0
+    scripts/scan_images.py --check               # report, exit 1 on findings
+    scripts/scan_images.py --format markdown     # issue body or job summary
+    scripts/scan_images.py --role nextcloud      # one role only
+    scripts/scan_images.py --include-unfixed     # also findings with no fix
 
 The Markdown report can carry a ``--stamp`` line saying when it was produced,
 and link every role to the line that pins its image with ``--source-url``, so a
@@ -40,7 +40,7 @@ import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Sequence
 
@@ -227,10 +227,18 @@ def scan(ref: inventory.ImageRef, options: Options) -> Scan:
 
 
 def scan_all(refs: Sequence[inventory.ImageRef], options: Options) -> list[Scan]:
-    """Scan every reference, *jobs* images at a time."""
+    """Scan every reference, *jobs* images at a time.
+
+    Roles that pin the same image (a shared postgres or redis tag) are scanned
+    once; each still gets its own Scan, so the report lists every role.
+    """
+    unique: dict[str, inventory.ImageRef] = {}
+    for ref in refs:
+        unique.setdefault(Scan(ref=ref).image, ref)
     with ThreadPoolExecutor(max_workers=options.jobs) as pool:
-        futures = [pool.submit(scan, ref, options) for ref in refs]
-        return [future.result() for future in futures]
+        futures = {image: pool.submit(scan, ref, options) for image, ref in unique.items()}
+        by_image = {image: future.result() for image, future in futures.items()}
+    return [replace(by_image[Scan(ref=ref).image], ref=ref) for ref in refs]
 
 
 def _totals(scans: Sequence[Scan], severities: Sequence[str]) -> dict[str, int]:
@@ -264,8 +272,8 @@ def _sorted_affected(scans: Sequence[Scan], options: Options) -> list[Scan]:
 
 
 def _cell(text: str) -> str:
-    """Escape a value for a Markdown table cell."""
-    return text.replace("|", "\\|")
+    """Escape a value for a Markdown table cell, which must stay on one line."""
+    return " ".join(text.replace("|", "\\|").split())
 
 
 def _role_cell(item: Scan, source_url: str) -> str:
@@ -366,24 +374,30 @@ def _markdown(scans: Sequence[Scan], options: Options, layout: Layout) -> list[s
             "",
             "Expand an image to see its worst findings.",
         ]
+    errors = _errors_block(scans)
+    # Reserve room for what follows the per-image blocks: the error list and
+    # the "N more images" note (padded for a count of any width).
+    trailer = len("\n".join(errors)) + 100
     size = len("\n".join(lines))
     skipped = 0
     for item in affected:
         if layout.per_image <= 0:
             break
         block = _details_block(item, options, layout.per_image)
-        if size + len("\n".join(block)) > layout.body_limit:
+        # +1 for the newline joining the block to what precedes it.
+        block_size = len("\n".join(block)) + 1
+        if size + block_size + trailer > layout.body_limit:
             skipped += 1
             continue
         lines += block
-        size += len("\n".join(block))
+        size += block_size
     if skipped:
         lines += [
             "",
             f"Findings for {skipped} more images are in the full report attached to the run.",
         ]
 
-    lines += _errors_block(scans)
+    lines += errors
     return lines
 
 
@@ -438,6 +452,14 @@ def render(scans: Sequence[Scan], options: Options, output: str, layout: Layout)
     return "\n".join(lines) + "\n"
 
 
+def _positive_int(text: str) -> int:
+    """An argparse type for counts that must be at least 1."""
+    value = int(text)
+    if value < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return value
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Entry point."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -469,7 +491,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="also write the full findings as JSON, every CVE included",
     )
     parser.add_argument(
-        "--jobs", type=int, default=4, metavar="N", help="images scanned in parallel (default 4)"
+        "--jobs", type=_positive_int, default=4, metavar="N",
+        help="images scanned in parallel (default 4)",
     )
     parser.add_argument(
         "--timeout", type=int, default=SCAN_TIMEOUT, metavar="SECONDS",

@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 import check_image_versions as civ
+import role_defaults
 
 
 def _tag(text: str) -> civ.Tag:
@@ -158,3 +159,139 @@ def test_evaluate_flags_missing_pin_on_truncated_page() -> None:
     result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
     assert result.status == "truncated"
     assert result.detail
+
+
+def test_evaluate_lexical_page_does_not_prove_current() -> None:
+    """On a truncated lexically sorted page (ghcr.io) finding the pin proves nothing."""
+    ref = _ref("1.2.3")
+    page = civ.TagPage(["1.0.0", "1.2.3"], complete=False, newest_first=False)
+    assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == "truncated"
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("linuxserver/heimdall:2.8.4", ("linuxserver/heimdall", "2.8.4")),
+        ("postgres", ("postgres", "")),
+        ("registry.local:5000/app", ("registry.local:5000/app", "")),
+        ("registry.local:5000/app:1.0", ("registry.local:5000/app", "1.0")),
+    ],
+)
+def test_split_repo_tag(value: str, expected: tuple[str, str]) -> None:
+    """A registry port is not mistaken for a tag."""
+    assert role_defaults.split_repo_tag(value) == expected
+
+
+@pytest.mark.parametrize(
+    ("repo", "expected"),
+    [
+        ("vendor/app", ("docker.io", "vendor/app")),
+        ("ghcr.io/vendor/app", ("ghcr.io", "vendor/app")),
+        ("localhost/app", ("localhost", "app")),
+        ("postgres", ("docker.io", "postgres")),
+    ],
+)
+def test_split_host(repo: str, expected: tuple[str, str]) -> None:
+    """A bare namespace/name defaults to Docker Hub."""
+    assert civ.split_host(repo) == expected
+
+
+def _write_role(tmp_path: Path, text: str) -> role_defaults.Role:
+    path = tmp_path / "example"
+    (path / "defaults").mkdir(parents=True)
+    (path / "defaults" / "main.yml").write_text(text)
+    defaults = role_defaults.load_defaults(path / "defaults" / "main.yml")
+    return role_defaults.Role("example", path, defaults)
+
+
+def test_refs_in_role(tmp_path: Path) -> None:
+    """Paired pins, embedded tags and templated names are all handled."""
+    role = _write_role(
+        tmp_path,
+        "---\n"
+        'example_image_name: "vendor/app"\n'
+        'example_image_version: "1.2.3"  # pinned\n'
+        "example_db_image: postgres:16.4\n"
+        'example_proxy_image: "{{ example_image_name }}"\n',
+    )
+    refs = {ref.repo_key: ref for ref in civ._refs_in_role(role)}
+    assert set(refs) == {"example_image_name", "example_db_image"}
+    assert (refs["example_image_name"].version, refs["example_image_name"].line) == ("1.2.3", 3)
+    assert refs["example_image_name"].version_key == "example_image_version"
+    assert (refs["example_db_image"].repo, refs["example_db_image"].version) == ("postgres", "16.4")
+
+
+def test_patch_rewrites_pins_and_keeps_quotes(tmp_path: Path, monkeypatch) -> None:
+    """--patch keeps each line's quoting and comment, and skips a pin it cannot place."""
+    monkeypatch.setattr(civ, "REPO_ROOT", tmp_path)
+    role = _write_role(
+        tmp_path,
+        "---\n"
+        "example_image_name: vendor/app\n"
+        "example_image_version: '1.2.3'  # pinned\n"
+        "example_db_image: postgres:16.4\n",
+    )
+    refs = {ref.repo_key: ref for ref in civ._refs_in_role(role)}
+    results = [
+        civ.Result(refs["example_image_name"], "update", latest="1.3.0"),
+        civ.Result(refs["example_db_image"], "update", latest="16.5"),
+    ]
+    changes = civ.patch(results)
+    text = role.defaults_path.read_text()
+    assert "example_image_version: '1.3.0'  # pinned\n" in text
+    assert "example_db_image: postgres:16.5\n" in text
+    assert len(changes) == 2
+
+
+def test_patch_does_not_report_a_change_it_did_not_make(tmp_path: Path, monkeypatch,
+                                                        capsys) -> None:
+    """A pin edited since discovery is reported as unpatched, not as patched."""
+    monkeypatch.setattr(civ, "REPO_ROOT", tmp_path)
+    role = _write_role(
+        tmp_path, "---\nexample_image_name: vendor/app\nexample_image_version: 1.2.3\n"
+    )
+    ref = civ._refs_in_role(role)[0]
+    role.defaults_path.write_text(
+        "---\nexample_image_name: vendor/app\nexample_image_version: 9.9.9\n"
+    )
+    assert not civ.patch([civ.Result(ref, "update", latest="1.3.0")])
+    assert "could not patch" in capsys.readouterr().err
+
+
+class _Response:
+    """A stand-in for the object urlopen returns."""
+
+    def __init__(self, body: bytes) -> None:
+        self.body = body
+        self.headers = {"Content-Type": "text/html"}
+
+    def __enter__(self) -> "_Response":
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        return None
+
+    def read(self) -> bytes:
+        """The response body."""
+        return self.body
+
+
+def test_fetch_non_json_is_a_registry_error(monkeypatch) -> None:
+    """An HTML page answering 200 fails one repository, not the whole run."""
+    monkeypatch.setattr(civ.urllib.request, "urlopen",
+                        lambda *_args, **_kwargs: _Response(b"<html>login</html>"))
+    with pytest.raises(civ.RegistryError, match="non-JSON"):
+        civ._fetch("https://registry.invalid/v2/tags")
+
+
+def test_fetch_all_reports_errors_per_repo(monkeypatch) -> None:
+    """A failing repository lands in errors while the others still resolve."""
+    def fake(repo: str) -> civ.TagPage:
+        if repo == "bad/repo":
+            raise civ.RegistryError("HTTP 404", 404)
+        return civ.TagPage(["1.0.0"], complete=True)
+
+    monkeypatch.setattr(civ, "fetch_tags", fake)
+    tags, errors = civ._fetch_all(["bad/repo", "good/repo"], jobs=2)
+    assert list(tags) == ["good/repo"]
+    assert errors == {"bad/repo": "HTTP 404"}

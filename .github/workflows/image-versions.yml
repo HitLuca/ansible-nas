@@ -44,7 +44,7 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           set +e
-          python3 tests/check_image_versions.py --check --format markdown > report.md
+          python3 scripts/check_image_versions.py --check --format markdown > report.md
           code=$?
           cat report.md >> "$GITHUB_STEP_SUMMARY"
           exit $code
@@ -71,7 +71,7 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: python3 tests/check_image_versions.py --patch
+        run: python3 scripts/check_image_versions.py --patch
 
       - name: Open the pull request
         env:

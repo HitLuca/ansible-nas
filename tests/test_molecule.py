@@ -16,7 +16,8 @@ import warnings
 from pathlib import Path
 
 import pytest
-import yaml
+
+import role_defaults
 
 REPO = Path(__file__).resolve().parent.parent
 # docker_home in tests/molecule/base.yml, shared between host and instance
@@ -37,11 +38,11 @@ def _containers() -> dict[str, str]:
 
 def _container_names(role: Path) -> set[str]:
     """Literal *_container_name values from the role's defaults."""
-    defaults = yaml.safe_load((role / "defaults" / "main.yml").read_text()) or {}
+    defaults = role_defaults.load_defaults(role / "defaults" / "main.yml")
     return {
-        v
-        for k, v in defaults.items()
-        if k.endswith("_container_name") and isinstance(v, str) and "{{" not in v
+        entry.text
+        for key, entry in defaults.items()
+        if key.endswith("_container_name") and entry.text and "{{" not in entry.text
     }
 
 

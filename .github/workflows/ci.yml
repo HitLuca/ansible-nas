@@ -23,7 +23,7 @@ jobs:
       - name: Check out the codebase
         uses: actions/checkout@v7
         with:
-          # Full history and tags: check-breaking-changes.sh diffs against the
+          # Full history and tags: check_breaking_changes.py diffs against the
           # last release tag, which a shallow clone does not have.
           fetch-depth: 0
 
@@ -44,10 +44,17 @@ jobs:
         run: yamllint .
 
       - name: Check role enabled flags
-        run: tests/check-enabled-vars.sh
+        run: python3 scripts/check_enabled_vars.py
 
       - name: Check role structure
-        run: tests/check-role-structure.sh
+        run: python3 scripts/check_role_structure.py
 
       - name: Check breaking changes are in the changelog
-        run: tests/check-breaking-changes.sh
+        run: python3 scripts/check_breaking_changes.py
+
+      # The checks above and the image scripts have their own tests; keep the
+      # pytest pin in step with uv.lock.
+      - name: Unit tests for the test scripts
+        run: |
+          pip3 install pytest==9.2.0
+          python3 -m pytest tests --ignore=tests/test_molecule.py -q

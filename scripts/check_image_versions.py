@@ -7,10 +7,10 @@ as a ``<role>_image_name`` / ``<role>_image_version`` pair (a few use
 role, asks the registry for its tags, and reports the newest tag of the same
 shape and major version.
 
-    tests/check-image-versions.py             # report, exit 0
-    tests/check-image-versions.py --check     # report, exit 1 when behind
-    tests/check-image-versions.py --patch     # rewrite the pinned versions
-    tests/check-image-versions.py --format markdown > report.md
+    scripts/check_image_versions.py             # report, exit 0
+    scripts/check_image_versions.py --check     # report, exit 1 when behind
+    scripts/check_image_versions.py --patch     # rewrite the pinned versions
+    scripts/check_image_versions.py --format markdown > report.md
 
 Only ``docker.io``, ``ghcr.io``, ``lscr.io`` (LinuxServer's ghcr mirror),
 ``docker.n8n.io`` (a Docker Hub proxy) and ``quay.io`` are queried. Floating
@@ -21,8 +21,9 @@ channel (``beta``, ``alpine``), a commit, or a composite build such as Immich's
 Each repository is asked for one page of tags: the newest 100 for Docker Hub,
 1000 elsewhere. A pin that has fallen off the page is reported as
 ``truncated`` instead of ``ok`` - it may or may not be current, so it is not
-silently passed. On a newest-first page a pin that *is* on the page is proven
-current, since every newer tag was scanned.
+silently passed. On a newest-first page (Docker Hub, Quay) a pin that *is* on
+the page is proven current, since every newer tag was scanned. ghcr.io lists
+tags in lexical order, so there only a complete list proves anything.
 
 ``DOCKERHUB_USERNAME`` and ``DOCKERHUB_TOKEN`` are used, when set, to log in
 and lift the anonymous Docker Hub rate limit (the same variables
@@ -45,16 +46,15 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, Sequence
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+import role_defaults
+
+REPO_ROOT = role_defaults.REPO_ROOT
 ROLES_DIR = REPO_ROOT / "roles"
 TIMEOUT = 20
 USER_AGENT = "ansible-nas-image-check/1.0"
 HUB_LOGIN = "https://hub.docker.com/v2/users/login/"
 HUB_TAGS = "https://hub.docker.com/v2/repositories/{path}/tags?page_size=100&ordering=last_updated"
 
-ASSIGNMENT = re.compile(r"^(?P<key>[a-z0-9_]+):[ \t]*(?P<raw>.*)$")
-REPO_KEY = re.compile(r"^(?P<prefix>.+)_(?:image_name|docker_image_name|image|docker_image)$")
-VERSION_SUFFIXES = ("_image_version", "_image_tag")
 CHANNEL_PREFIX = re.compile(
     r"^(?P<prefix>version|develop|nightly|stable|release|edge|beta|alpha)-", re.I
 )
@@ -124,6 +124,9 @@ class TagPage:
 
     names: list[str]
     complete: bool
+    # Whether the registry returned the most recently pushed tags first. Only
+    # then does finding the pin on a truncated page prove nothing newer exists.
+    newest_first: bool = True
 
 
 @dataclass
@@ -136,65 +139,29 @@ class Result:
     detail: str = ""
 
 
-def _unquote(raw: str) -> str:
-    """Strip a YAML value's quotes and any trailing comment."""
-    raw = raw.strip()
-    if raw[:1] in ("'", '"'):
-        quote = raw[0]
-        end = raw.find(quote, 1)
-        return raw[1:end] if end != -1 else raw[1:]
-    return re.split(r"\s+#", raw, maxsplit=1)[0].strip()
-
-
-def _read_assignments(path: Path) -> dict[str, tuple[str, int]]:
-    """Map each top-level ``key: value`` in *path* to (value, line number)."""
-    assignments: dict[str, tuple[str, int]] = {}
-    for number, line in enumerate(path.read_text().splitlines(), start=1):
-        match = ASSIGNMENT.match(line)
-        if match:
-            assignments[match["key"]] = (_unquote(match["raw"]), number)
-    return assignments
-
-
-def _split_repo_tag(value: str) -> tuple[str, str]:
-    """Split ``repo:tag`` without breaking a ``host:port/repo`` reference."""
-    repo, separator, tag = value.rpartition(":")
-    if separator and "/" not in tag:
-        return repo, tag
-    return value, ""
-
-
-def _refs_in_role(role_dir: Path) -> list[ImageRef]:
+def _refs_in_role(role: role_defaults.Role) -> list[ImageRef]:
     """Find every image reference declared in one role's defaults."""
-    path = role_dir / "defaults" / "main.yml"
-    if not path.is_file():
-        return []
-    assignments = _read_assignments(path)
     refs: list[ImageRef] = []
-    for key, (value, line) in assignments.items():
-        match = REPO_KEY.match(key)
-        if not match or not value or "{{" in value:
+    for key, entry in role.defaults.items():
+        match = role_defaults.IMAGE_KEY.match(key)
+        if not match or not entry.text or "{{" in entry.text:
             continue
-        prefix = match["prefix"]
-        version_key = next(
-            (prefix + suffix for suffix in VERSION_SUFFIXES if prefix + suffix in assignments),
-            None,
-        )
+        version_key = role_defaults.version_key(role.defaults, match["prefix"])
         if version_key is not None:
-            version, version_line = assignments[version_key]
-            repo = value
+            repo, version = entry.text, role.text(version_key)
+            line = role.defaults[version_key].line
         else:
-            repo, version = _split_repo_tag(value)
-            version_line = line
+            repo, version = role_defaults.split_repo_tag(entry.text)
+            line = entry.line
         refs.append(
             ImageRef(
-                role=role_dir.name,
-                path=path,
+                role=role.name,
+                path=role.defaults_path,
                 repo_key=key,
                 version_key=version_key,
                 repo=repo,
                 version=version,
-                line=version_line,
+                line=line,
             )
         )
     return refs
@@ -202,13 +169,11 @@ def _refs_in_role(role_dir: Path) -> list[ImageRef]:
 
 def discover(only: Iterable[str] = ()) -> list[ImageRef]:
     """Collect the image references of every role (optionally filtered)."""
-    wanted = set(only)
-    refs: list[ImageRef] = []
-    for role_dir in sorted(p for p in ROLES_DIR.iterdir() if p.is_dir()):
-        if wanted and role_dir.name not in wanted:
-            continue
-        refs.extend(_refs_in_role(role_dir))
-    return refs
+    return [
+        ref
+        for role in role_defaults.discover(REPO_ROOT, only)
+        for ref in _refs_in_role(role)
+    ]
 
 
 def split_host(repo: str) -> tuple[str, str]:
@@ -270,15 +235,26 @@ def _fetch(
         request = urllib.request.Request(url, headers=headers, data=data)
         try:
             with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-                body = json.loads(response.read().decode())
-                return body, {name.lower(): value for name, value in response.headers.items()}
+                raw = response.read()
+                headers_out = {name.lower(): value for name, value in response.headers.items()}
         except urllib.error.HTTPError as exc:
             if exc.code not in (429, 500, 502, 503, 504):
                 raise RegistryError(f"HTTP {exc.code}", exc.code) from exc
             last_error = exc
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             last_error = exc
-        time.sleep(2**attempt)
+        else:
+            try:
+                body = json.loads(raw.decode())
+            except (UnicodeDecodeError, ValueError) as exc:
+                # A proxy or captive page answering 200 with HTML: fail this
+                # repository instead of the whole run.
+                raise RegistryError(f"non-JSON response from {url}") from exc
+            if not isinstance(body, dict):
+                raise RegistryError(f"unexpected JSON from {url}")
+            return body, headers_out
+        if attempt < 2:
+            time.sleep(2**attempt)
     raise RegistryError(str(last_error))
 
 
@@ -311,7 +287,12 @@ def _ghcr_tags(path: str) -> TagPage:
     scope = urllib.parse.quote(f"repository:{path}:pull", safe="")
     token = _fetch(f"https://ghcr.io/token?service=ghcr.io&scope={scope}")[0].get("token", "")
     payload, headers = _fetch(f"https://ghcr.io/v2/{path}/tags/list?n=1000", token=token)
-    return TagPage(payload.get("tags") or [], complete="next" not in headers.get("link", ""))
+    # The distribution API returns tags in lexical order, not by push date.
+    return TagPage(
+        payload.get("tags") or [],
+        complete='rel="next"' not in headers.get("link", ""),
+        newest_first=False,
+    )
 
 
 def _quay_tags(path: str) -> TagPage:
@@ -444,7 +425,7 @@ def _evaluate(
         return Result(ref, "update", latest=latest)
     # A newest-first page proves the pin current when the pin is on it: every
     # newer tag was scanned above. Otherwise the list may hide a newer tag.
-    if page.complete or ref.version in page.names:
+    if page.complete or (page.newest_first and ref.version in page.names):
         return Result(ref, "ok")
     return Result(ref, "truncated", detail="pinned tag not in the fetched page")
 
@@ -494,6 +475,7 @@ def patch(results: Iterable[Result]) -> list[str]:
         for item in sorted(items, key=lambda result: -result.ref.line):
             old, new = item.ref.version, item.latest
             index = item.ref.line - 1
+            before = lines[index]
             if item.ref.version_key is None:
                 lines[index] = lines[index].replace(f":{old}", f":{new}", 1)
             else:
@@ -508,6 +490,13 @@ def patch(results: Iterable[Result]) -> list[str]:
                         f"{lines[index][:match.start()]}{match['key']}"
                         f"{quote}{new}{quote}{lines[index][match.end():]}"
                     )
+            if lines[index] == before:
+                print(
+                    f"could not patch {path.relative_to(REPO_ROOT)}:{item.ref.line} "
+                    f"({old} -> {new}); edit it by hand",
+                    file=sys.stderr,
+                )
+                continue
             changes.append(
                 f"{path.relative_to(REPO_ROOT)}:{item.ref.line}  "
                 f"{item.ref.version_key or item.ref.repo_key}  {old} -> {new}"

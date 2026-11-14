@@ -2,7 +2,9 @@
 # Creates the matrix of roles for the GitHub Actions molecule job.
 #
 # On pull requests only the roles touched by the PR are tested, or every role
-# when the shared molecule config changes. Scheduled and manual runs test all roles.
+# when something every scenario depends on changes: the shared molecule config,
+# or requirements-dev.txt, which pins molecule and ansible-core. Scheduled and
+# manual runs test all roles.
 set -euo pipefail
 
 all_roles() {
@@ -15,7 +17,7 @@ all_roles() {
 if [[ "${GITHUB_EVENT_NAME:-}" == "pull_request" ]]; then
   changed=$(git diff --name-only "origin/${GITHUB_BASE_REF}...HEAD")
 
-  if grep -qE '^tests/molecule/' <<<"$changed"; then
+  if grep -qE '^(tests/molecule/|requirements-dev\.txt$)' <<<"$changed"; then
     roles=$(all_roles)
   else
     # roles/<name>/... -> roles/<name>, keeping only roles that still exist and have tests
@@ -30,4 +32,5 @@ fi
 
 matrix=$(jq -R -s -c 'split("\n") | map(select(length > 0))' <<<"$roles")
 echo "Roles to test: $matrix"
-echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+# Outside Actions (a local dry run) there is no step output file.
+echo "matrix=$matrix" >> "${GITHUB_OUTPUT:-/dev/null}"

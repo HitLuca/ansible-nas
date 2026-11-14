@@ -10,7 +10,7 @@ SHELL := /bin/bash
 # Roles that have a molecule scenario.
 ROLES := $(notdir $(patsubst %/molecule,%,$(wildcard roles/*/molecule)))
 
-.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images check-breaking test test-all guard-role
+.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images check-breaking test test-unit test-all guard-role
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
@@ -19,9 +19,9 @@ help: ## Show this help
 
 lint: ## Run every linter plus the enabled-flag, role-structure and changelog checks
 	uv run pre-commit run --all-files
-	tests/check-enabled-vars.sh
-	tests/check-role-structure.sh
-	tests/check-breaking-changes.sh
+	uv run python scripts/check_enabled_vars.py
+	uv run python scripts/check_role_structure.py
+	uv run python scripts/check_breaking_changes.py
 
 lint-yaml: ## Lint YAML only
 	uv run pre-commit run yamllint --all-files
@@ -37,22 +37,25 @@ lint-python: ## Lint Python only (pylint + mypy)
 	uv run pre-commit run mypy --all-files
 
 check-ports: ## Report host ports claimed by more than one role
-	tests/check-port-conflicts.sh
+	uv run python scripts/check_port_conflicts.py
 
 check-images: ## Report pinned image versions that are behind upstream
-	uv run python tests/check_image_versions.py --check
+	uv run python scripts/check_image_versions.py --check
 
 check-breaking: ## Report breaking changes since the last release (optional tag)
-	tests/check-breaking-changes.sh $(TAG)
+	uv run python scripts/check_breaking_changes.py $(TAG)
 
 update-images: ## Rewrite pinned image versions to the latest same-major tag
-	uv run python tests/check_image_versions.py --patch
+	uv run python scripts/check_image_versions.py --patch
 
 scan-images: ## Report pinned images with fixable vulnerabilities (needs trivy)
-	uv run python tests/scan_images.py --severity CRITICAL,HIGH
+	uv run python scripts/scan_images.py --severity CRITICAL,HIGH
 
 test: guard-role ## Run one role's molecule test, e.g. make test ROLE=loki
 	uv run pytest "tests/test_molecule.py::test_role[$(ROLE)]" -q
+
+test-unit: ## Run the unit tests of the scripts under tests/ (fast, no Docker)
+	uv run pytest tests --ignore=tests/test_molecule.py -q
 
 test-all: ## Run every role's molecule test (slow, needs Docker)
 	uv run pytest tests/test_molecule.py
