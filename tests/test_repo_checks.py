@@ -20,6 +20,7 @@ from pathlib import Path
 import pytest
 
 import check_role_structure
+import github_test_matrix
 
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 
@@ -263,13 +264,13 @@ def test_structure_reports_unpinned_image(repo: FakeRepo) -> None:
     assert "alpha_image_name has no alpha_image_version pin" in result.stdout
 
 
-# --- check-roles-md.sh ------------------------------------------------------
+# --- check_roles_md.py ------------------------------------------------------
 
 
 def test_roles_md_absent_is_skipped(repo: FakeRepo) -> None:
     """Without the local-only ROLES.md the check passes."""
     repo.role("alpha")
-    result = repo.run("check-roles-md.sh")
+    result = repo.run("check_roles_md.py")
     assert result.returncode == 0
     assert "skipping" in result.stdout
 
@@ -294,7 +295,7 @@ def test_roles_md_in_sync(repo: FakeRepo) -> None:
         | `alpha` | fine |
         """,
     )
-    result = repo.run("check-roles-md.sh")
+    result = repo.run("check_roles_md.py")
     assert result.returncode == 0, result.stdout
 
 
@@ -303,42 +304,55 @@ def test_roles_md_out_of_sync(repo: FakeRepo) -> None:
     repo.role("alpha")
     repo.role("beta")
     repo.write("ROLES.md", "## Media\n\n| `alpha` | candidate |\n")
-    result = repo.run("check-roles-md.sh")
+    result = repo.run("check_roles_md.py")
     assert result.returncode == 1
     assert "roles/alpha: still listed as a candidate" in result.stdout
     assert "roles/beta: not mentioned" in result.stdout
 
 
-# --- github-test-matrix.sh --------------------------------------------------
+# --- github_test_matrix.py --------------------------------------------------
 
 
-def test_matrix_lists_roles_with_molecule(repo: FakeRepo, tmp_path: Path) -> None:
+def _matrix(repo: FakeRepo, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+            event: str | None, base_ref: str | None = None) -> tuple[int, str, str]:
+    """Run the matrix generator in-process with the given GitHub event env."""
+    output = tmp_path / "github_output"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output))
+    if event is None:
+        monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
+    else:
+        monkeypatch.setenv("GITHUB_EVENT_NAME", event)
+    if base_ref is None:
+        monkeypatch.delenv("GITHUB_BASE_REF", raising=False)
+    else:
+        monkeypatch.setenv("GITHUB_BASE_REF", base_ref)
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        code = github_test_matrix.main([], root=repo.root)
+    return code, stdout.getvalue(), output.read_text()
+
+
+def test_matrix_lists_roles_with_molecule(repo: FakeRepo, tmp_path: Path,
+                                          monkeypatch: pytest.MonkeyPatch) -> None:
     """Outside a PR every role with a molecule scenario is tested."""
-    if shutil.which("jq") is None:
-        pytest.skip("jq not installed")
     repo.role("alpha")
     repo.role("beta", molecule=False)
-    output = tmp_path / "github_output"
-    result = repo.run(
-        "github-test-matrix.sh",
-        env={"GITHUB_EVENT_NAME": "schedule", "GITHUB_OUTPUT": str(output)},
-    )
-    assert result.returncode == 0, result.stderr
-    assert output.read_text() == 'matrix=["roles/alpha"]\n'
+    code, _, output = _matrix(repo, tmp_path, monkeypatch, "schedule")
+    assert code == 0
+    assert output == 'matrix=["roles/alpha"]\n'
 
 
-def test_matrix_runs_without_github_output(repo: FakeRepo) -> None:
+def test_matrix_runs_without_github_output(repo: FakeRepo,
+                                           monkeypatch: pytest.MonkeyPatch) -> None:
     """A local dry run without GITHUB_OUTPUT prints the matrix instead of failing."""
-    if shutil.which("jq") is None:
-        pytest.skip("jq not installed")
     repo.role("alpha")
-    env = {k: v for k, v in os.environ.items() if k not in ("GITHUB_OUTPUT", "GITHUB_EVENT_NAME")}
-    target = repo.root / "scripts" / "github-test-matrix.sh"
-    shutil.copy2(SCRIPTS_DIR / "github-test-matrix.sh", target)
-    result = subprocess.run([str(target)], cwd=repo.root, env=env, capture_output=True,
-                            text=True, check=False)
-    assert result.returncode == 0, result.stderr
-    assert '["roles/alpha"]' in result.stdout
+    monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
+    monkeypatch.delenv("GITHUB_OUTPUT", raising=False)
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        code = github_test_matrix.main([], root=repo.root)
+    assert code == 0
+    assert '["roles/alpha"]' in stdout.getvalue()
 
 
 # --- check_breaking_changes.py ----------------------------------------------
@@ -518,7 +532,7 @@ def test_real_repo_structure_passes() -> None:
         assert check_role_structure.main([]) == 0, out.getvalue()
 
 
-# --- github-test-matrix.sh on pull requests ---------------------------------
+# --- github_test_matrix.py on pull requests ---------------------------------
 
 
 @pytest.mark.parametrize(
@@ -532,11 +546,9 @@ def test_real_repo_structure_passes() -> None:
     ],
     ids=["one-role", "role-without-molecule", "shared-config", "requirements", "unrelated"],
 )
-def test_matrix_on_pull_request(repo: FakeRepo, tmp_path: Path, changed: str,
-                                expected: str) -> None:
+def test_matrix_on_pull_request(repo: FakeRepo, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+                                changed: str, expected: str) -> None:
     """A PR tests the roles it touches, or all of them when shared pins change."""
-    if shutil.which("jq") is None:
-        pytest.skip("jq not installed")
     repo.role("alpha")
     repo.role("beta", molecule=False)
     repo.role("gamma")
@@ -550,11 +562,6 @@ def test_matrix_on_pull_request(repo: FakeRepo, tmp_path: Path, changed: str,
     path.write_text(path.read_text() + "# changed\n" if path.exists() else "changed\n")
     repo.git("add", "-A")
     repo.git("commit", "-q", "-m", "change")
-    output = tmp_path / "github_output"
-    result = repo.run(
-        "github-test-matrix.sh",
-        env={"GITHUB_EVENT_NAME": "pull_request", "GITHUB_BASE_REF": "main",
-             "GITHUB_OUTPUT": str(output)},
-    )
-    assert result.returncode == 0, result.stderr
-    assert output.read_text() == f"matrix={expected}\n"
+    code, _, output = _matrix(repo, tmp_path, monkeypatch, "pull_request", "main")
+    assert code == 0
+    assert output == f"matrix={expected}\n"
