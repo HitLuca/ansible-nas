@@ -9,4 +9,4 @@ cloudflared_memory: 512MB
 # docker
 cloudflared_container_name: cloudflared
 cloudflared_image_name: "cloudflare/cloudflared"
-cloudflared_image_version: "2026.10.7"
+cloudflared_image_version: "2026.11.0"
