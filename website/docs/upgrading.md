@@ -10,6 +10,8 @@ git pull origin main
 
 ...to pull the latest updates from GitHub. If you've changed files outside of the inventory directory, you'll need to fix any merge conflicts.
 
+If you'd rather upgrade from a fixed point than from whatever is on `main`, pin a release tag instead: `git fetch --tags && git checkout v1.0.0`. Only breaking changes are listed in the [changelog](https://github.com/HitLuca/ansible-nas/blob/main/CHANGELOG.md), and a release only gets a new major version when something breaks, so a major version change is the cue to read it before running the playbook.
+
 To see the effect of running the latest version of Ansible-NAS against your Ubuntu server, you can run Ansible in check mode first:
 
 ```bash
