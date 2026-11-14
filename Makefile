@@ -10,17 +10,18 @@ SHELL := /bin/bash
 # Roles that have a molecule scenario.
 ROLES := $(notdir $(patsubst %/molecule,%,$(wildcard roles/*/molecule)))
 
-.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images test test-all guard-role
+.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images check-breaking test test-all guard-role
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}'
 
-lint: ## Run every linter plus the enabled-flag and role-structure checks
+lint: ## Run every linter plus the enabled-flag, role-structure and changelog checks
 	uv run pre-commit run --all-files
 	tests/check-enabled-vars.sh
 	tests/check-role-structure.sh
+	tests/check-breaking-changes.sh
 
 lint-yaml: ## Lint YAML only
 	uv run pre-commit run yamllint --all-files
@@ -40,6 +41,9 @@ check-ports: ## Report host ports claimed by more than one role
 
 check-images: ## Report pinned image versions that are behind upstream
 	uv run python tests/check_image_versions.py --check
+
+check-breaking: ## Report breaking changes since the last release (optional tag)
+	tests/check-breaking-changes.sh $(TAG)
 
 update-images: ## Rewrite pinned image versions to the latest same-major tag
 	uv run python tests/check_image_versions.py --patch
