@@ -16,7 +16,7 @@ traefik_port_ui: "8083"
 
 traefik_container_name: "traefik"
 traefik_image_name: "traefik"
-traefik_image_version: "v3.7.18"
+traefik_image_version: "v3.7.19"
 traefik_log_level: "INFO"
 
 # find the relevant name and environment variables for your DNS provider at https://go-acme.github.io/lego/dns/.
