@@ -15,7 +15,7 @@ homebridge_port: "8581"
 # docker
 homebridge_container_name: "homebridge"
 homebridge_image_name: "homebridge/homebridge"
-homebridge_image_version: "2026-10-23"
+homebridge_image_version: "2026-11-13"
 
 # specs
 homebridge_memory: "1g"
