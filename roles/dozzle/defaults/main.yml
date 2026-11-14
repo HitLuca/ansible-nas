@@ -32,7 +32,7 @@ dozzle_users: {}
 # docker
 dozzle_container_name: "dozzle"
 dozzle_image_name: "amir20/dozzle"
-dozzle_image_version: "v11.4.2"
+dozzle_image_version: "v11.4.3"
 
 # specs
 dozzle_memory: 1g
