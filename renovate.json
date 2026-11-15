@@ -1,11 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
   "customManagers": [
     {
       "customType": "regex",
       "description": "Pin <role>_image_version/_image_tag next to the image name in role defaults",
-      "managerFilePatterns": ["/^roles/[^/]+/defaults/main\\.yml$/"],
+      "managerFilePatterns": [
+        "/^roles/[^/]+/defaults/main\\.yml$/"
+      ],
       "matchStrings": [
         "(?:^|\\n) *[a-z0-9_]+_(?:image_name|docker_image_name|image): *\"?(?<depName>[^\"'\\s#]+)\"?\\n(?: *#[^\\n]*\\n)* *[a-z0-9_]+_(?:image_version|image_tag): *\"?(?<currentValue>[^\"'\\s#]+)\"?"
       ],
@@ -15,30 +19,64 @@
     {
       "customType": "regex",
       "description": "Pin images whose tag is written into the name (heimdall, minecraft-bedrock-server)",
-      "managerFilePatterns": ["/^roles/[^/]+/defaults/main\\.yml$/"],
+      "managerFilePatterns": [
+        "/^roles/[^/]+/defaults/main\\.yml$/"
+      ],
       "matchStrings": [
         "(?:^|\\n) *[a-z0-9_]+_(?:docker_image|image|docker_image_name|image_name): *\"?(?<depName>[^\"'\\s#:]+):(?<currentValue>[^\"'\\s#]+)\"?"
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "The molecule base image: upstream only publishes 'latest', so it is pinned by digest and Renovate proposes digest updates",
+      "managerFilePatterns": [
+        "/^tests/molecule/base\\.yml$/"
+      ],
+      "matchStrings": [
+        "image: *(?<depName>[^\\s:@]+):(?<currentValue>[^\\s@]+)@(?<currentDigest>sha256:[a-f0-9]+)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "The Docker SDK for Python that the molecule prepare playbook installs into the test instance",
+      "managerFilePatterns": [
+        "/^tests/molecule/resources/playbooks/prepare\\.yml$/"
+      ],
+      "matchStrings": [
+        "name: *\"?(?<depName>docker)==(?<currentValue>[^\"\\s]+)\"?"
+      ],
+      "datasourceTemplate": "pypi"
     }
   ],
   "packageRules": [
     {
       "description": "Name the role(s) an image bump touches in the title, e.g. 'firefly - Update mariadb Docker tag to v10.11', and list them in the PR body when a shared dependency lands in one branch. `upgrades` is the only place the full role list exists",
-      "matchManagers": ["custom.regex"],
-      "matchFileNames": ["roles/*/defaults/main.yml"],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "roles/*/defaults/main.yml"
+      ],
       "commitMessagePrefix": "{{#each (distinct (lookupArray upgrades 'packageFile'))}}{{replace '^roles/([^/]+)/.*$' '$1' this}}{{#unless @last}}, {{/unless}}{{/each}} -",
       "prHeader": "{{#if (containsString (toJSON (distinct (lookupArray upgrades 'packageFile'))) ',')}}Affected roles: {{#each (distinct (lookupArray upgrades 'packageFile'))}}{{replace '^roles/([^/]+)/.*$' '$1' this}}{{#unless @last}}, {{/unless}}{{/each}}\n\n{{/if}}"
     },
     {
       "description": "Date-tagged images parse as a bare year under docker versioning",
-      "matchPackageNames": ["homebridge/homebridge"],
+      "matchPackageNames": [
+        "homebridge/homebridge"
+      ],
       "versioning": "loose"
     },
     {
       "description": "One PR for the website deps, titled 'website - ...', pinned like Docusaurus already is; caret ranges there only ever produced lockfile-only PRs. The group topic override avoids 'website - Update website dependencies'",
-      "matchFileNames": ["website/package.json", "website/package-lock.json"],
+      "matchFileNames": [
+        "website/package.json",
+        "website/package-lock.json"
+      ],
       "commitMessagePrefix": "website -",
       "groupName": "website dependencies",
       "group": {
@@ -48,22 +86,41 @@
     },
     {
       "description": "pyproject.toml, uv.lock and requirements-dev.txt are the uv-managed tooling environment, so name it in the title: 'python env - Update dependency molecule to v26.11.0'",
-      "matchManagers": ["pep621", "pip_requirements"],
+      "matchManagers": [
+        "pep621",
+        "pip_requirements"
+      ],
       "commitMessagePrefix": "python env -"
     },
     {
       "description": "Galaxy roles and collections live in requirements.yml, so name it in the title: 'ansible requirements - Update dependency community.general to v13.5.1'",
-      "matchManagers": ["ansible-galaxy"],
+      "matchManagers": [
+        "ansible-galaxy"
+      ],
       "commitMessagePrefix": "ansible requirements -"
     },
     {
+      "description": "The molecule base image and the SDK it installs, so name them in the title: 'molecule - Update geerlingguy/docker-ubuntu2204-ansible:latest Docker digest to 0123abc'",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "tests/molecule/**"
+      ],
+      "commitMessagePrefix": "molecule -"
+    },
+    {
       "description": "Major upgrades are proposed but need approval on the dependency dashboard",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "dependencyDashboardApproval": true
     },
     {
       "description": "Pinned in four places (pyproject, pre-commit, ci.yml, integration.yml); Renovate only sees pyproject, so bumps must be manual",
-      "matchPackageNames": ["ansible-core"],
+      "matchPackageNames": [
+        "ansible-core"
+      ],
       "enabled": false
     },
     {

@@ -2,6 +2,11 @@
 - name: Prepare
   hosts: all
   tasks:
+    # Pinned so every run tests against the same SDK; Renovate bumps it (see
+    # renovate.json). The instance is a throwaway container, so installing
+    # over the system Python is fine, and break_system_packages keeps this
+    # working on Ubuntu 24.04+, whose Python refuses it otherwise (PEP 668).
     - name: Install docker python module
       ansible.builtin.pip:
-        name: docker
+        name: "docker==7.2.0"
+        break_system_packages: true

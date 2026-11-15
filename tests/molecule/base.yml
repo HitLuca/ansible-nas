@@ -5,7 +5,10 @@ driver:
   name: docker
 platforms:
   - name: instance
-    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    # Upstream only publishes "latest", so the digest is the pin. Renovate
+    # opens a PR when upstream rebuilds it (see renovate.json), and that PR
+    # runs every role's scenario before the new image is used.
+    image: geerlingguy/docker-ubuntu2204-ansible:latest@sha256:11e943a042e44674fa57bbc41c666f8e663f4c4ae21ced8a0ae23e09a8112773
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/run/docker.sock:/var/run/docker.sock

@@ -24,8 +24,8 @@ Start by looking at the `hello_world` example. Following this structure is the m
 A new application touches these places:
 
 * `roles/<name>/` - the role itself:
-  * `defaults/main.yml`, starting with `<name>_enabled: false` (the `tests/check-enabled-vars.sh` check fails without it), an `<name>_image_name` / `<name>_image_version` pair, and pinning `<name>_image_version` to a real release rather than `latest`.
-  * `tasks/main.yml`, with a start block gated on `when: <name>_enabled is true` and a stop block gated on `is false` that removes the container. Reference the image as `{{ <name>_image_name }}:{{ <name>_image_version }}` rather than writing it out — `tests/check-role-structure.sh` rejects a literal `image:`.
+  * `defaults/main.yml`, starting with `<name>_enabled: false` (the `scripts/check_enabled_vars.py` check fails without it), an `<name>_image_name` / `<name>_image_version` pair, and pinning `<name>_image_version` to a real release rather than `latest`.
+  * `tasks/main.yml`, with a start block gated on `when: <name>_enabled is true` and a stop block gated on `is false` that removes the container. Reference the image as `{{ <name>_image_name }}:{{ <name>_image_version }}` rather than writing it out — `scripts/check_role_structure.py` rejects a literal `image:`.
   * `templates/` and `files/`, if the application needs them.
   * `molecule/default/` - `molecule.yml`, `side_effect.yml`, `verify.yml` and `verify_stopped.yml`. Copy the layout from `hello_world` or any neighbouring role.
 * `nas.yml` - add `- role: <name>` with a matching tag, in alphabetical order.
@@ -33,7 +33,7 @@ A new application touches these places:
 * `website/docs/applications/<category>/<name>.md` - the documentation page, filed under the category folder that fits (see the existing folders). Start it with a `title:` frontmatter key.
 * `.ansible-lint-ignore` - only if the application's public variables genuinely cannot carry the role prefix.
 
-Nothing else needs editing. The molecule test matrix (`tests/github-test-matrix.sh`), the pytest harness (`tests/test_molecule.py`) and the docs sidebar (`website/sidebars.js`) all discover roles and pages automatically, and `group_vars/all.yml` holds no per-application settings.
+Nothing else needs editing. The molecule test matrix (`scripts/github_test_matrix.py`), the pytest harness (`tests/test_molecule.py`) and the docs sidebar (`website/sidebars.js`) all discover roles and pages automatically, and `group_vars/all.yml` holds no per-application settings.
 
 Before opening the PR, run the role's tests and the lint checks:
 
@@ -51,3 +51,5 @@ make check-images
 Run `make` on its own to list all available targets.
 
 Note that molecule expands `molecule.yml` with `string.Template`, so a literal `$` in that file (a bcrypt hash, for example) must be written as `$$`.
+
+The Integration workflow runs on `ubuntu-24.04`, pinned rather than `ubuntu-latest`: Ubuntu 26.04 no longer ships `/etc/timezone` or `/etc/localtime`, and several roles bind-mount those paths. On a host without them Docker creates a directory at the source and the container fails to start. New roles should set `TZ: "{{ ansible_nas_timezone }}"` instead, as most already do.

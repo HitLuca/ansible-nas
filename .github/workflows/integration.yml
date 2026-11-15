@@ -8,7 +8,8 @@ on:
     paths:
       - "roles/**"
       - "tests/molecule/**"
-      - "tests/github-test-matrix.sh"
+      - "scripts/github_test_matrix.py"
+      - "requirements-dev.txt"
       - ".github/workflows/integration.yml"
 
   # Test every role weekly, to catch upstream images that break or disappear
@@ -39,7 +40,7 @@ jobs:
       - name: Generate Test Matrix
         id: set-matrix
         shell: bash
-        run: "tests/github-test-matrix.sh"
+        run: "python3 scripts/github_test_matrix.py"
 
   test:
     # No matrix expression here: a skipped job would show it unexpanded.
@@ -48,7 +49,11 @@ jobs:
     needs: generate-matrix
     # A PR that only touches roles without molecule tests has nothing to run
     if: needs.generate-matrix.outputs.matrix != '[]'
-    runs-on: ubuntu-latest
+    # Pinned, not ubuntu-latest: 26.04 dropped /etc/timezone and /etc/localtime,
+    # which the roles that bind those files still expect (they split to a
+    # directory, and the container start fails). Move this forward only once
+    # those roles set TZ instead of bind-mounting the host's timezone files.
+    runs-on: ubuntu-24.04
     strategy:
       # Keep testing the other roles when one fails
       fail-fast: false
