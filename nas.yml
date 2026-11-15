@@ -405,6 +405,10 @@
       tags:
         - stats
 
+    - role: stirling-pdf
+      tags:
+        - stirling-pdf
+
     - role: syncthing
       tags:
         - syncthing

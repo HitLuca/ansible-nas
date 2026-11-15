@@ -159,6 +159,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Piwigo](https://piwigo.org/) | Photo gallery software |
 | [Silverbullet](https://silverbullet.md) | Note-taking application optimised for people with a hacker mindset |
 | [Spoolman](https://github.com/Donkie/Spoolman) | Keep track of your inventory of 3D-printer filament spools |
+| [Stirling PDF](https://github.com/Stirling-Tools/Stirling-PDF) | Merge, split, convert, OCR and sign PDFs locally |
 | [The Lounge](https://thelounge.chat) | Web based always-on IRC client |
 | [Traefik](https://traefik.io/) | Web proxy and SSL certificate manager |
 | [Virtual Desktop](https://github.com/RattyDAVE/docker-ubuntu-xrdp-mate-custom) | A virtual desktop running on your NAS |
