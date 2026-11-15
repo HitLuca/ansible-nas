@@ -51,3 +51,5 @@ make check-images
 Run `make` on its own to list all available targets.
 
 Note that molecule expands `molecule.yml` with `string.Template`, so a literal `$` in that file (a bcrypt hash, for example) must be written as `$$`.
+
+The Integration workflow runs on `ubuntu-24.04`, pinned rather than `ubuntu-latest`: Ubuntu 26.04 no longer ships `/etc/timezone` or `/etc/localtime`, and several roles bind-mount those paths. On a host without them Docker creates a directory at the source and the container fails to start. New roles should set `TZ: "{{ ansible_nas_timezone }}"` instead, as most already do.
