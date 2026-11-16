@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "ansible-core==2.21.4",
     "molecule==26.10.0",
-    "molecule-plugins[docker]==26.10.12",
+    "molecule-plugins[docker]==26.11.0",
     "pre-commit==4.7.0",
 ]
 
