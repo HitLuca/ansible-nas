@@ -117,6 +117,10 @@
       tags:
         - deluge
 
+    - role: dockhand
+      tags:
+        - dockhand
+
     - role: dokuwiki
       tags:
         - dokuwiki

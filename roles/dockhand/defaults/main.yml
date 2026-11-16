@@ -1,0 +1,21 @@
+---
+dockhand_enabled: false
+dockhand_available_externally: false
+
+# directories
+dockhand_data_directory: "{{ docker_home }}/dockhand"
+
+# network
+dockhand_port: "8099"
+dockhand_hostname: "dockhand"
+
+# docker
+dockhand_container_name: "dockhand"
+dockhand_image_name: "fnsys/dockhand"
+dockhand_image_version: "v1.0.58"
+
+# specs
+dockhand_memory: 1g
+
+# monitoring
+dockhand_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
