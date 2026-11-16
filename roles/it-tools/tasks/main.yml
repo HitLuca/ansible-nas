@@ -1,0 +1,35 @@
+---
+- name: Start IT-Tools
+  block:
+    - name: IT-Tools Docker Container
+      community.docker.docker_container:
+        name: "{{ it_tools_container_name }}"
+        image: "{{ it_tools_image_name }}:{{ it_tools_image_version }}"
+        pull: true
+        ports:
+          - "{{ it_tools_port }}:80"
+        restart_policy: unless-stopped
+        memory: "{{ it_tools_memory }}"
+        labels:
+          traefik.enable: "{{ it_tools_available_externally | string }}"
+          traefik.http.routers.it_tools.rule: "Host(`{{ it_tools_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.it_tools.tls.certresolver: "letsencrypt"
+          traefik.http.routers.it_tools.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.it_tools.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.it_tools.loadbalancer.server.port: "80"
+          kuma.it-tools.http.name: "IT-Tools"
+          kuma.it-tools.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ it_tools_port if it_tools_uptime_kuma_monitor else omit }}"
+          homepage.group: Development Tools
+          homepage.name: IT-Tools
+          homepage.icon: it-tools.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ it_tools_port }}"
+          homepage.description: Handy tools for developers
+  when: it_tools_enabled is true
+
+- name: Stop IT-Tools
+  block:
+    - name: Stop IT-Tools
+      community.docker.docker_container:
+        name: "{{ it_tools_container_name }}"
+        state: absent
+  when: it_tools_enabled is false

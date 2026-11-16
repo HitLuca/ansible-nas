@@ -209,6 +209,10 @@
       tags:
         - ispyagentdvr
 
+    - role: it-tools
+      tags:
+        - it-tools
+
     - role: jackett
       tags:
         - jackett

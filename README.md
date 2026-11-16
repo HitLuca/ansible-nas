@@ -53,6 +53,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Drone CI](https://drone.io) | Self-service continuous integration platform |
 | [Gitea](https://gitea.io/en-us/) | Simple self-hosted GitHub clone |
 | [GitLab](https://about.gitlab.com/features/) | Full-featured self-hosted GitHub clone |
+| [IT-Tools](https://it-tools.tech/) | Collection of handy online tools for developers |
 | [Nomad](https://www.nomadproject.io/) | Simple and flexible scheduler and software orchestrator |
 | [Woodpecker-CI](https://woodpecker-ci.org) | Simple CI engine with great extensibility, forked from Drone |
 
