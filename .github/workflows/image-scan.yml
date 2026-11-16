@@ -62,6 +62,10 @@ jobs:
         with:
           python-version: "3.13"
 
+      # The scan reads role defaults through role_defaults.py, which needs PyYAML.
+      - name: Install the script dependencies
+        run: pip3 install pyyaml==6.0.3
+
       - name: Install Trivy
         uses: aquasecurity/setup-trivy@v0.3.1
 
@@ -89,6 +93,11 @@ jobs:
           fi
           python3 scripts/scan_images.py "${args[@]}"
           status=$?
+          # A crash exits 1 too, which reads as "findings"; without a report
+          # there is nothing to put on the issue, so treat it as a scan failure.
+          if [ ! -f report.md ]; then
+            status=2
+          fi
           echo "status=$status" >> "$GITHUB_OUTPUT"
           if [ -f report.md ]; then
             cat report.md >> "$GITHUB_STEP_SUMMARY"
