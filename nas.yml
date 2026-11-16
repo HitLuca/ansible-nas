@@ -81,6 +81,10 @@
       tags:
         - calibreweb
 
+    - role: changedetection
+      tags:
+        - changedetection
+
     - role: cloudcmd
       tags:
         - cloudcmd

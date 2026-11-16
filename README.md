@@ -123,6 +123,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 
 | Application | Description |
 | --- | --- |
+| [Changedetection](https://github.com/dgtlmoon/changedetection.io) | Website change detection and monitoring |
 | [Glances](https://nicolargo.github.io/glances/) | See the state of your system via a web browser |
 | [Grafana](https://grafana.com/) | Query, visualise and alert on your data (via the stats role) |
 | [iSpy Agent DVR](https://www.ispyconnect.com/) | Video surveillance software |
