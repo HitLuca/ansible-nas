@@ -1,0 +1,57 @@
+---
+- name: Start Stirling PDF
+  block:
+    - name: Create Stirling PDF Directories
+      ansible.builtin.file:
+        path: "{{ stirling_pdf_data_directory }}/{{ item }}"
+        state: directory
+      with_items:
+        - configs
+        - logs
+        - customFiles
+        - pipeline
+        - storage
+        - tessdata
+
+    - name: Stirling PDF Docker Container
+      community.docker.docker_container:
+        name: "{{ stirling_pdf_container_name }}"
+        image: "{{ stirling_pdf_image_name }}:{{ stirling_pdf_image_version }}"
+        pull: true
+        volumes:
+          - "{{ stirling_pdf_data_directory }}/configs:/configs:rw"
+          - "{{ stirling_pdf_data_directory }}/logs:/logs:rw"
+          - "{{ stirling_pdf_data_directory }}/customFiles:/customFiles:rw"
+          - "{{ stirling_pdf_data_directory }}/pipeline:/pipeline:rw"
+          - "{{ stirling_pdf_data_directory }}/storage:/storage:rw"
+          - "{{ stirling_pdf_data_directory }}/tessdata:/usr/share/tessdata:rw"
+        ports:
+          - "{{ stirling_pdf_port }}:8080"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+          SECURITY_ENABLELOGIN: "{{ stirling_pdf_enable_login | string }}"
+        restart_policy: unless-stopped
+        memory: "{{ stirling_pdf_memory }}"
+        labels:
+          traefik.enable: "{{ stirling_pdf_available_externally | string }}"
+          traefik.http.routers.stirling_pdf.rule: "Host(`{{ stirling_pdf_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.stirling_pdf.tls.certresolver: "letsencrypt"
+          traefik.http.routers.stirling_pdf.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.stirling_pdf.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.stirling_pdf.loadbalancer.server.port: "8080"
+          kuma.stirling-pdf.http.name: "Stirling PDF"
+          kuma.stirling-pdf.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ stirling_pdf_port if stirling_pdf_uptime_kuma_monitor else omit }}"
+          homepage.group: Productivity
+          homepage.name: Stirling PDF
+          homepage.icon: stirling-pdf.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ stirling_pdf_port }}"
+          homepage.description: PDF tools
+  when: stirling_pdf_enabled is true
+
+- name: Stop Stirling PDF
+  block:
+    - name: Stop Stirling PDF
+      community.docker.docker_container:
+        name: "{{ stirling_pdf_container_name }}"
+        state: absent
+  when: stirling_pdf_enabled is false

@@ -1,0 +1,27 @@
+---
+stirling_pdf_enabled: false
+stirling_pdf_available_externally: false
+
+# directories
+stirling_pdf_data_directory: "{{ docker_home }}/stirling_pdf"
+
+# network
+stirling_pdf_port: "8060"
+stirling_pdf_hostname: "stirling-pdf"
+
+# application
+# Login is off by default, matching Stirling's own demo compose, so no default
+# admin / stirling account sits behind the port. Turn it on to require sign-in;
+# the first sign-in then asks to replace that built-in password.
+stirling_pdf_enable_login: false
+
+# docker
+stirling_pdf_container_name: "stirling-pdf"
+stirling_pdf_image_name: "stirlingtools/stirling-pdf"
+stirling_pdf_image_version: "3.3.0"
+
+# specs
+stirling_pdf_memory: 4g
+
+# monitoring
+stirling_pdf_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
