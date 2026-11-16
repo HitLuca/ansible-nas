@@ -1,0 +1,46 @@
+---
+- name: Start Dockhand
+  block:
+    - name: Create Dockhand Directories
+      ansible.builtin.file:
+        path: "{{ dockhand_data_directory }}"
+        state: directory
+
+    - name: Dockhand Docker Container
+      community.docker.docker_container:
+        name: "{{ dockhand_container_name }}"
+        image: "{{ dockhand_image_name }}:{{ dockhand_image_version }}"
+        pull: true
+        volumes:
+          # Read-write: Dockhand starts, stops and deploys containers and stacks.
+          - "/var/run/docker.sock:/var/run/docker.sock:rw"
+          - "{{ dockhand_data_directory }}:/app/data:rw"
+        ports:
+          - "{{ dockhand_port }}:3000"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ dockhand_memory }}"
+        labels:
+          traefik.enable: "{{ dockhand_available_externally | string }}"
+          traefik.http.routers.dockhand.rule: "Host(`{{ dockhand_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.dockhand.tls.certresolver: "letsencrypt"
+          traefik.http.routers.dockhand.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.dockhand.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.dockhand.loadbalancer.server.port: "3000"
+          kuma.dockhand.http.name: "Dockhand"
+          kuma.dockhand.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ dockhand_port if dockhand_uptime_kuma_monitor else omit }}"
+          homepage.group: System Tools
+          homepage.name: Dockhand
+          homepage.icon: dockhand.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ dockhand_port }}"
+          homepage.description: Docker management UI
+  when: dockhand_enabled is true
+
+- name: Stop Dockhand
+  block:
+    - name: Stop Dockhand
+      community.docker.docker_container:
+        name: "{{ dockhand_container_name }}"
+        state: absent
+  when: dockhand_enabled is false

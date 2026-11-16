@@ -174,6 +174,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Cloud Commander](https://cloudcmd.io/) | Dual panel file manager with integrated web console and text editor |
 | [Cloudflare DDNS](https://hub.docker.com/r/joshuaavalon/cloudflare-ddns/) | Automatically update Cloudflare with your IP address |
 | [DDNS Updater](https://github.com/qdm12/ddns-updater) | Dynamic DNS updater for several providers |
+| [Dockhand](https://dockhand.pro/) | Docker management UI with Compose stacks, terminals, logs and backups |
 | [Dozzle](https://dozzle.dev/) | Real-time log viewer for your Docker containers, in the browser |
 | [Duplicacy](https://duplicacy.com/) | Web UI for the Duplicacy cloud backup program, with lock-free deduplication backups to multiple providers |
 | [Duplicati](https://www.duplicati.com/) | For backing up your stuff |
