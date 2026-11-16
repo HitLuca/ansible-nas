@@ -1,0 +1,20 @@
+---
+# This is a Changedetection playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    - name: Try and stop and remove Changedetection
+      community.docker.docker_container:
+        name: "{{ changedetection_container_name }}"
+        state: absent
+      register: result
+
+    - name: Check Changedetection is stopped
+      ansible.builtin.assert:
+        that:
+          - not result.changed
