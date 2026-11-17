@@ -8,8 +8,8 @@ it_tools_hostname: "it-tools"
 
 # docker
 it_tools_container_name: "it-tools"
-it_tools_image_name: "corentinth/it-tools"
-it_tools_image_version: "2024.10.22-7ca5933"
+it_tools_image_name: "sharevb/it-tools"
+it_tools_image_version: "2026.10.25"
 
 # specs
 it_tools_memory: 1g

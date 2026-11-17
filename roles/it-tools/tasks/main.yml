@@ -7,7 +7,7 @@
         image: "{{ it_tools_image_name }}:{{ it_tools_image_version }}"
         pull: true
         ports:
-          - "{{ it_tools_port }}:80"
+          - "{{ it_tools_port }}:8080"
         restart_policy: unless-stopped
         memory: "{{ it_tools_memory }}"
         labels:
