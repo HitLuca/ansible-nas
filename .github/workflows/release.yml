@@ -1,0 +1,35 @@
+---
+name: Release
+
+# A pushed version tag opens a draft GitHub release from the changelog; review
+# and publish it by hand.
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write
+
+jobs:
+  draft:
+    name: Draft release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v7
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Build the release notes
+        run: python3 scripts/release_notes.py "$TAG" > release-notes.md
+        env:
+          TAG: ${{ github.ref_name }}
+
+      - name: Create the draft release
+        run: gh release create "$TAG" --draft --verify-tag --title "$TAG" --notes-file release-notes.md
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}

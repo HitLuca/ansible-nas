@@ -435,8 +435,13 @@ def test_breaking_ignores_safe_changes(released: FakeRepo, old: str, new: str) -
          "'alpha_image_version' major image bump 1.4.2 -> v2.0.0"),
         ('"vendor/side:2.0.0"', '"vendor/side:3.0.0"',
          "'alpha_side_image' major image bump 2.0.0 -> 3.0.0"),
+        ('alpha_image_name: "vendor/alpha"', 'alpha_image_name: "fork/alpha"',
+         "'alpha_image_name' image repository changed (vendor/alpha -> fork/alpha)"),
+        ('"vendor/side:2.0.0"', '"fork/side:2.0.0"',
+         "'alpha_side_image' image repository changed (vendor/side -> fork/side)"),
     ],
-    ids=["port", "data-dir", "config-dir", "deleted-key", "major-bump", "embedded-major"],
+    ids=["port", "data-dir", "config-dir", "deleted-key", "major-bump", "embedded-major",
+         "image-name", "embedded-repo"],
 )
 def test_breaking_reports_unrecorded(released: FakeRepo, old: str, new: str,
                                      expected: str) -> None:
@@ -565,3 +570,130 @@ def test_matrix_on_pull_request(repo: FakeRepo, tmp_path: Path, monkeypatch: pyt
     code, _, output = _matrix(repo, tmp_path, monkeypatch, "pull_request", "main")
     assert code == 0
     assert output == f"matrix={expected}\n"
+
+
+# --- release_notes.py --------------------------------------------------------
+
+CHANGELOG_TEXT = """
+    # Changelog
+
+    ## Unreleased
+
+    Nothing yet.
+
+    ## v2.0.0 — 2026-12-01
+
+    Added applications: Foo.
+
+    ### Breaking
+
+    - `alpha` — changed.
+
+    ## v1.0.0 — 2026-11-13
+
+    Old.
+    """
+
+
+@pytest.fixture(name="notes")
+def fixture_notes(repo: FakeRepo) -> FakeRepo:
+    """A repo with a changelog and a release footer."""
+    repo.write("CHANGELOG.md", CHANGELOG_TEXT)
+    repo.write(".github/release-footer.md", "## Footer\n")
+    return repo
+
+
+def test_release_notes_section_and_footer(notes: FakeRepo) -> None:
+    """The tag's section is printed with the footer, and neighbours are left out."""
+    result = notes.run("release_notes.py", "v2.0.0")
+    assert result.returncode == 0
+    assert result.stdout == (
+        "Added applications: Foo.\n\n### Breaking\n\n- `alpha` — changed.\n\n## Footer\n"
+    )
+
+
+@pytest.mark.parametrize("tag", ["v3.0.0", "v2.0", "Unreleased"])
+def test_release_notes_missing_or_empty_section_fails(notes: FakeRepo, tag: str) -> None:
+    """An unknown tag, a prefix of one, and a heading with no body all fail."""
+    if tag == "Unreleased":
+        notes.write("CHANGELOG.md", "## Unreleased\n\n## v1.0.0\n\nOld.\n")
+    result = notes.run("release_notes.py", tag)
+    assert result.returncode == 1
+
+
+# --- release.py ----------------------------------------------------------------
+
+
+def _commit(repo: FakeRepo) -> None:
+    repo.git("add", "-A")
+    repo.git("commit", "-q", "-m", "change")
+
+
+def _changelog(repo: FakeRepo, unreleased: str) -> None:
+    repo.write("CHANGELOG.md",
+               f"# Changelog\n\n## Unreleased\n\n{unreleased}\n\n## v1.0.0\n\nOld.\n")
+    _commit(repo)
+
+
+def _on_main(repo: FakeRepo) -> None:
+    repo.git("branch", "-M", "main")
+
+
+def test_release_renames_commits_and_tags(released: FakeRepo,
+                                          monkeypatch: pytest.MonkeyPatch) -> None:
+    """A valid release moves the entries under the new version and tags HEAD."""
+    for who in ("AUTHOR", "COMMITTER"):
+        monkeypatch.setenv(f"GIT_{who}_NAME", "test")
+        monkeypatch.setenv(f"GIT_{who}_EMAIL", "test@example.invalid")
+    _on_main(released)
+    _changelog(released, "- `alpha` — changed.")
+    result = released.run("release.py", "v1.1.0")
+    assert result.returncode == 0, result.stdout
+    text = (released.root / "CHANGELOG.md").read_text()
+    assert "## Unreleased\n\nNothing yet.\n\n## v1.1.0 — " in text
+    assert text.index("## v1.1.0") < text.index("- `alpha`") < text.index("## v1.0.0")
+    tags = subprocess.run(["git", "tag", "--points-at", "HEAD"], cwd=released.root,
+                          capture_output=True, text=True, check=True).stdout
+    assert tags.strip() == "v1.1.0"
+
+
+@pytest.mark.parametrize(
+    ("version", "unreleased", "dirty"),
+    [
+        ("v1.0.0", "- `alpha` — x.", False),
+        ("v0.9.0", "- `alpha` — x.", False),
+        ("2.0.0", "- `alpha` — x.", False),
+        ("v1.1.0", "Nothing yet.", False),
+        ("v1.1.0", "- `alpha` — x.", True),
+    ],
+    ids=["same", "older", "malformed", "empty", "dirty-tree"],
+)
+def test_release_refuses(released: FakeRepo, version: str, unreleased: str, dirty: bool) -> None:
+    """Bad versions, an empty section and a dirty tree change nothing."""
+    _on_main(released)
+    _changelog(released, unreleased)
+    if dirty:
+        released.write("untracked.txt", "x\n")
+    before = (released.root / "CHANGELOG.md").read_text()
+    assert released.run("release.py", version).returncode == 1
+    assert (released.root / "CHANGELOG.md").read_text() == before
+
+
+def test_release_breaking_needs_major(released: FakeRepo,
+                                      monkeypatch: pytest.MonkeyPatch) -> None:
+    """With a breaking change since the tag, a minor release is refused, a major goes."""
+    for who in ("AUTHOR", "COMMITTER"):
+        monkeypatch.setenv(f"GIT_{who}_NAME", "test")
+        monkeypatch.setenv(f"GIT_{who}_EMAIL", "test@example.invalid")
+    _on_main(released)
+    _edit_defaults(released, 'alpha_port: "8080"', 'alpha_port: "8081"')
+    _changelog(released, "- `alpha` — port moved.")
+    assert released.run("release.py", "v1.1.0").returncode == 1
+    assert released.run("release.py", "v2.0.0").returncode == 0
+
+
+def test_release_refuses_off_main(released: FakeRepo) -> None:
+    """A release from any branch other than main is refused."""
+    released.git("checkout", "-q", "-b", "feature")
+    _changelog(released, "- `alpha` — changed.")
+    assert released.run("release.py", "v1.1.0").returncode == 1

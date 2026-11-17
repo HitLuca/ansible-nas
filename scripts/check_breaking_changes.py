@@ -16,6 +16,9 @@ Breaking, for this repo:
   ``_image_tag`` pin or a tag embedded in an ``_image`` / ``_docker_image``
   value (app migrations are forward-only, so an operator cannot roll back by
   checking out the previous commit)
+* a role's image repository changed, in an ``_image_name`` default or an
+  ``_image`` / ``_docker_image`` value (a fork or a different build need not
+  read the existing data, whatever its version number says)
 
 Pass a tag to compare against something other than the last release::
 
@@ -37,6 +40,7 @@ CHANGELOG = "CHANGELOG.md"
 LOCATION_KEY = re.compile(r"(?:_port(?:_[a-z0-9]+)*|_directory)$")
 VERSION_KEY = re.compile(r"_image_(?:version|tag)$")
 EMBEDDED_IMAGE_KEY = re.compile(r"_(?:docker_)?image$")
+IMAGE_NAME_KEY = re.compile(r"_image_name$")
 MAJOR = re.compile(r"^[vV]?(\d+)")
 
 FOOTER = """
@@ -78,6 +82,12 @@ def _embedded_tag(text: str) -> str:
     return role_defaults.split_repo_tag(text)[1]
 
 
+def _embedded_repo(text: str) -> str:
+    if "{" in text:
+        return ""
+    return role_defaults.split_repo_tag(text)[0]
+
+
 def compare(old: dict[str, Entry], new: dict[str, Entry]) -> Iterator[str]:
     """The breaking differences between a role's defaults then and now."""
     for key, before in old.items():
@@ -95,6 +105,13 @@ def compare(old: dict[str, Entry], new: dict[str, Entry]) -> Iterator[str]:
                 f"defaults/main.yml: '{key}' default changed ({before.text} -> {after.text})"
                 " — an existing container is moved or remapped"
             )
+        if IMAGE_NAME_KEY.search(key) or EMBEDDED_IMAGE_KEY.search(key):
+            old_repo, new_repo = _embedded_repo(before.text), _embedded_repo(after.text)
+            if old_repo and new_repo and old_repo != new_repo:
+                yield (
+                    f"defaults/main.yml: '{key}' image repository changed"
+                    f" ({old_repo} -> {new_repo}) — the new image may not read the existing data"
+                )
         if VERSION_KEY.search(key):
             old_version, new_version = before.text, after.text
         elif EMBEDDED_IMAGE_KEY.search(key):
