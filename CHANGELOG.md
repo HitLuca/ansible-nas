@@ -1,12 +1,16 @@
 # Changelog
 
-Breaking changes only. Image bumps, new roles and bug fixes are not listed here — they are in `git log` and in the release notes on GitHub.
+Breaking changes and newly added applications. Image bumps and bug fixes are not listed here — they are in `git log` and in the release notes on GitHub.
 
 A release that contains any breaking change is a major release, so a new major version means "read this file before upgrading". Releases accumulate breaks rather than shipping one per change.
 
 ## Unreleased
 
-Nothing yet.
+Added applications: Changedetection, Dockhand, IT-Tools, Stirling PDF.
+
+### Breaking
+
+- `guacamole` now runs the official `guacamole/guacamole` image with its own `guacd` and PostgreSQL containers instead of `oznu/guacamole` — set `guacamole_db_password` (required, keep it once chosen); connections and users stored under `{{ guacamole_data_directory }}/config` are not migrated, so export them first and re-create them afterwards.
 
 ## v1.0.0 — 2026-11-13
 

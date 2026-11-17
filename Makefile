@@ -10,7 +10,7 @@ SHELL := /bin/bash
 # Roles that have a molecule scenario.
 ROLES := $(notdir $(patsubst %/molecule,%,$(wildcard roles/*/molecule)))
 
-.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images check-breaking test test-unit test-all guard-role
+.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images check-breaking release test test-unit test-all guard-role
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
@@ -44,6 +44,10 @@ check-images: ## Report pinned image versions that are behind upstream
 
 check-breaking: ## Report breaking changes since the last release (optional tag)
 	uv run python scripts/check_breaking_changes.py $(TAG)
+
+release: ## Rename Unreleased in the changelog, commit and tag (VERSION=vX.Y.Z); never pushes
+	@test -n "$(VERSION)" || { echo "usage: make release VERSION=vX.Y.Z"; exit 1; }
+	uv run python scripts/release.py $(VERSION)
 
 update-images: ## Rewrite pinned image versions to the latest same-major tag
 	uv run python scripts/check_image_versions.py --patch
