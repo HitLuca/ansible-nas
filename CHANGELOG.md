@@ -6,7 +6,11 @@ A release that contains any breaking change is a major release, so a new major v
 
 ## Unreleased
 
-Nothing yet.
+Added applications: Audiobookshelf.
+
+### Breaking
+
+- `booksonic` — role removed in favour of `audiobookshelf`, so an inventory that enables it no longer deploys that container; the audio files are untouched, but users and listening progress do not carry over. See [Migrating from Booksonic](website/docs/applications/media-serving/audiobookshelf.md).
 
 ## v2.0.0 — 2026-11-17
 

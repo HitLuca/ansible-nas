@@ -103,7 +103,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 
 | Application | Description |
 | --- | --- |
-| [Booksonic](https://booksonic.org/) | Self-hosted audiobook server |
+| [Audiobookshelf](https://www.audiobookshelf.org/) | Self-hosted audiobook and podcast server |
 | [Calibre](https://calibre-ebook.com) | Powerful and easy to use e-book manager |
 | [Calibre-web](https://github.com/janeczku/calibre-web) | Clean interface for browsing, reading and downloading eBooks from an existing Calibre database |
 | [Emby](https://emby.media/) | Media streaming and management |

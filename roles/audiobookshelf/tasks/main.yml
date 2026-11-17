@@ -1,0 +1,51 @@
+---
+- name: Start Audiobookshelf
+  block:
+    - name: Create Audiobookshelf Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ audiobookshelf_data_directory }}"
+        - "{{ audiobookshelf_data_directory }}/config"
+        - "{{ audiobookshelf_data_directory }}/metadata"
+
+    - name: Audiobookshelf Docker Container
+      community.docker.docker_container:
+        name: "{{ audiobookshelf_container_name }}"
+        image: "{{ audiobookshelf_image_name }}:{{ audiobookshelf_image_version }}"
+        pull: true
+        volumes:
+          - "{{ audiobookshelf_data_directory }}/config:/config:rw"
+          - "{{ audiobookshelf_data_directory }}/metadata:/metadata:rw"
+          - "{{ audiobookshelf_audiobooks_directory }}:/audiobooks:rw"
+          - "{{ audiobookshelf_podcasts_directory }}:/podcasts:rw"
+        ports:
+          - "{{ audiobookshelf_port }}:80"
+        env:
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ audiobookshelf_memory }}"
+        labels:
+          traefik.enable: "{{ audiobookshelf_available_externally | string }}"
+          traefik.http.routers.audiobookshelf.rule: "Host(`{{ audiobookshelf_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.audiobookshelf.tls.certresolver: "letsencrypt"
+          traefik.http.routers.audiobookshelf.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.audiobookshelf.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.audiobookshelf.loadbalancer.server.port: "80"
+          kuma.audiobookshelf.http.name: "Audiobookshelf"
+          kuma.audiobookshelf.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ audiobookshelf_port if audiobookshelf_uptime_kuma_monitor else omit }}"
+          homepage.group: Media
+          homepage.name: Audiobookshelf
+          homepage.icon: audiobookshelf.png
+          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ audiobookshelf_port }}"
+          homepage.description: Self-hosted audiobook and podcast server
+  when: audiobookshelf_enabled is true
+
+- name: Stop Audiobookshelf
+  block:
+    - name: Stop Audiobookshelf
+      community.docker.docker_container:
+        name: "{{ audiobookshelf_container_name }}"
+        state: absent
+  when: audiobookshelf_enabled is false

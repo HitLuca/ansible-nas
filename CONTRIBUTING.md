@@ -31,9 +31,17 @@ A new application touches these places:
 * `nas.yml` - add `- role: <name>` with a matching tag, in alphabetical order.
 * `README.md` - add the application to the "Available Applications" list, in alphabetical order.
 * `website/docs/applications/<category>/<name>.md` - the documentation page, filed under the category folder that fits (see the existing folders). Start it with a `title:` frontmatter key.
+* `CHANGELOG.md` - add the application to the `## Unreleased` "Added applications" line.
 * `.ansible-lint-ignore` - only if the application's public variables genuinely cannot carry the role prefix.
 
 Nothing else needs editing. The molecule test matrix (`scripts/github_test_matrix.py`), the pytest harness (`tests/test_molecule.py`) and the docs sidebar (`website/sidebars.js`) all discover roles and pages automatically, and `group_vars/all.yml` holds no per-application settings.
+
+Replacing one application with a different one (or removing it outright) touches everything above plus:
+
+* Delete the old `roles/<name>/` and its doc page.
+* `CHANGELOG.md` - add a `## Unreleased` "Breaking" bullet naming the removed role. `scripts/check_breaking_changes.py` fails `make lint` without it, and a removal makes the next release a major one.
+* `website/docs/differences-from-upstream.md` - add a "Removed roles" table row pointing at the migration guide.
+* Add a `# Migrating from <old>` section to the replacement's doc page, saying plainly which data does not carry over. `seerr.md` and `audiobookshelf.md` are the pattern.
 
 Before opening the PR, run the role's tests and the lint checks:
 

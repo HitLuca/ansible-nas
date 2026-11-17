@@ -12,6 +12,7 @@ Roles that exist in both projects keep their name, their `<role>_*` variables, t
 
 | Application | What it does |
 | --- | --- |
+| [Audiobookshelf](./applications/media-serving/audiobookshelf.md) | Self-hosted audiobook and podcast server |
 | [Authelia](./applications/system-tools/authelia.md) | Single sign-on and two-factor portal in front of your other applications |
 | Cloudflared | Cloudflare Tunnel client, which publishes services without opening a port |
 | [Dozzle](./applications/system-tools/dozzle.md) | Real-time log viewer for your running containers |
@@ -39,6 +40,16 @@ Two roles were renamed to match their upstream projects. An inventory that enabl
 | --- | --- | --- |
 | `overseerr` | `seerr` | [Migrating from the Overseerr role](./applications/download-tools/seerr.md#migrating-from-the-overseerr-role) |
 | `paperless_ng` | `paperless_ngx` | [Migrating from paperless-ng](./applications/other/paperless_ngx.md#migrating-from-paperless-ng) |
+
+## Removed roles
+
+One upstream role was removed and replaced by a different application:
+
+| Upstream role | Replaced by | Migration |
+| --- | --- | --- |
+| `booksonic` | `audiobookshelf` | [Migrating from Booksonic](./applications/media-serving/audiobookshelf.md#migrating-from-booksonic) |
+
+A removed role no longer manages anything, so `booksonic_enabled` is ignored and the old container keeps running until you remove it by hand. The migration guide covers the removal and the data that does not carry over.
 
 ## Applications not carried over
 

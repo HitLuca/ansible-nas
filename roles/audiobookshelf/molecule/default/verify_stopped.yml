@@ -6,13 +6,13 @@
     - ansible.builtin.include_vars:
         file: ../../defaults/main.yml
 
-    - name: Try and stop and remove Booksonic
+    - name: Try and stop and remove Audiobookshelf
       community.docker.docker_container:
-        name: "{{ booksonic_container_name }}"
+        name: "{{ audiobookshelf_container_name }}"
         state: absent
       register: result
 
-    - name: Check Booksonic is stopped
+    - name: Check Audiobookshelf is stopped
       ansible.builtin.assert:
         that:
           - not result.changed

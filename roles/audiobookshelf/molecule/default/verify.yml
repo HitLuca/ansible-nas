@@ -8,10 +8,10 @@
 
     - name: Get container state
       community.docker.docker_container_info:
-        name: "{{ booksonic_container_name }}"
+        name: "{{ audiobookshelf_container_name }}"
       register: result
 
-    - name: Check Booksonic is running
+    - name: Check Audiobookshelf is running
       ansible.builtin.assert:
         that:
           - result.container['State']['Status'] == "running"
