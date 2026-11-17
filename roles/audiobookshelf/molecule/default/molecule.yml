@@ -3,4 +3,4 @@ provisioner:
   inventory:
     group_vars:
       all:
-        booksonic_enabled: true
+        audiobookshelf_enabled: true

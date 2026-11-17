@@ -57,6 +57,10 @@
       tags:
         - apcupsd
 
+    - role: audiobookshelf
+      tags:
+        - audiobookshelf
+
     - role: authelia
       tags:
         - authelia
@@ -68,10 +72,6 @@
     - role: bitwarden
       tags:
         - bitwarden
-
-    - role: booksonic
-      tags:
-        - booksonic
 
     - role: calibre
       tags:
