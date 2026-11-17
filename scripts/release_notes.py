@@ -16,8 +16,9 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-import role_defaults
 
+# Stdlib only: the release workflow runs this without installing anything.
+REPO_ROOT = Path(__file__).resolve().parent.parent
 CHANGELOG = "CHANGELOG.md"
 FOOTER = ".github/release-footer.md"
 
@@ -36,7 +37,7 @@ def section(text: str, tag: str) -> str:
     return "\n".join(lines).strip()
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(argv: Sequence[str] | None = None, root: Path = REPO_ROOT) -> int:
     """Entry point."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("tag", help="release tag, e.g. v2.0.0")

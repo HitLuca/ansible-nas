@@ -14,6 +14,7 @@ import io
 import os
 import shutil
 import subprocess
+import sys
 import textwrap
 from pathlib import Path
 
@@ -697,3 +698,12 @@ def test_release_refuses_off_main(released: FakeRepo) -> None:
     released.git("checkout", "-q", "-b", "feature")
     _changelog(released, "- `alpha` — changed.")
     assert released.run("release.py", "v1.1.0").returncode == 1
+
+
+def test_release_notes_needs_only_the_stdlib() -> None:
+    """The release workflow has no PyYAML, so the script must not import it."""
+    code = ("import sys; sys.modules['yaml'] = None; sys.path.insert(0, sys.argv[1]);"
+            " import release_notes")
+    result = subprocess.run([sys.executable, "-c", code, str(SCRIPTS_DIR)],
+                            capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
