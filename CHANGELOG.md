@@ -6,6 +6,10 @@ A release that contains any breaking change is a major release, so a new major v
 
 ## Unreleased
 
+Nothing yet.
+
+## v2.0.0 — 2026-11-17
+
 Added applications: Changedetection, Dockhand, IT-Tools, Stirling PDF.
 
 ### Breaking
