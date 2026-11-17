@@ -1,0 +1,40 @@
+.hero { padding: 3rem 0; text-align: center; }
+.main { max-width: 52rem; padding-block: 2rem 4rem; }
+.lede { color: var(--ifm-color-emphasis-700); margin-bottom: 2rem; }
+.timeline { position: relative; }
+.timeline::before {
+  content: ''; position: absolute; left: 0.45rem; top: 0.5rem; bottom: 0;
+  width: 2px; background: var(--ifm-color-emphasis-300);
+}
+.release { display: flex; gap: 1.25rem; margin-bottom: 2rem; }
+.rail { flex: 0 0 1rem; position: relative; }
+.dot {
+  position: absolute; top: 1.4rem; left: 0; width: 1rem; height: 1rem; border-radius: 50%;
+  background: var(--ifm-background-color); border: 3px solid var(--ifm-color-emphasis-500);
+}
+.dotLatest { border-color: var(--ifm-color-primary); }
+.card {
+  flex: 1; min-width: 0; padding: 1.25rem 1.5rem; border-radius: 12px;
+  border: 1px solid var(--ifm-color-emphasis-300); background: var(--ifm-card-background-color);
+}
+.header { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem; }
+.version { margin: 0; font-size: 1.6rem; }
+.date { margin-left: auto; color: var(--ifm-color-emphasis-600); font-size: 0.9rem; }
+.badge { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.55rem; border-radius: 999px; }
+.latest { background: var(--ifm-color-primary); color: #fff; }
+.major { background: #e5484d; color: #fff; }
+.heading { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ifm-color-emphasis-600); margin: 1.25rem 0 0.5rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+.chips li a, .chips li span {
+  display: inline-block; padding: 0.25rem 0.8rem; border-radius: 999px; font-size: 0.9rem;
+  background: var(--ifm-color-emphasis-200); color: var(--ifm-font-color-base);
+}
+.chips li a:hover { background: var(--ifm-color-primary); color: #fff; text-decoration: none; }
+.breaking { margin-top: 1rem; padding: 0.1rem 1rem 0.5rem; border-left: 4px solid #e5484d; border-radius: 6px; background: rgba(229, 72, 77, 0.08); }
+.breaking .heading { color: #e5484d; margin-top: 0.75rem; }
+.breaking ul { margin: 0; padding-left: 1.2rem; }
+@media (max-width: 600px) {
+  .release { gap: 0.75rem; }
+  .card { padding: 1rem; }
+  .date { margin-left: 0; width: 100%; }
+}

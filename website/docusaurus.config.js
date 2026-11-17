@@ -32,7 +32,10 @@ const config = {
     locales: ['en'],
   },
 
-  plugins: [require.resolve('./plugins/applications-index')],
+  plugins: [
+    require.resolve('./plugins/applications-index'),
+    require.resolve('./plugins/changelog'),
+  ],
 
   presets: [
     [
@@ -80,6 +83,7 @@ const config = {
             position: 'left',
             label: 'Applications',
           },
+          {to: '/changelog', label: 'Changelog', position: 'left'},
           {to: '/blog', label: 'Blog', position: 'left'},
           {
             type: 'search',
