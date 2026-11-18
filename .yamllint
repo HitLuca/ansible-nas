@@ -19,5 +19,4 @@ ignore: |
   .cache
   .ansible
   .github/workflows/*.yml
-  roles/stats/files/dashboards/ansible-nas.yml
-  roles/stats/templates/prometheus.yml
+  roles/grafana/files/dashboards/ansible-nas.yml

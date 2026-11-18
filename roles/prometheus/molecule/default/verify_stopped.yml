@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    - name: Try and stop and remove Prometheus
+      community.docker.docker_container:
+        name: "{{ prometheus_container_name }}"
+        state: absent
+      register: result_prometheus
+
+    - name: Try and stop and remove Telegraf
+      community.docker.docker_container:
+        name: "{{ prometheus_telegraf_container_name }}"
+        state: absent
+      register: result_telegraf
+
+    - name: Try and stop and remove Smartctl
+      community.docker.docker_container:
+        name: "{{ prometheus_smartctl_container_name }}"
+        state: absent
+      register: result_smartctl
+
+    - name: Check if prometheus containers are stopped
+      ansible.builtin.assert:
+        that:
+          - not result_prometheus.changed
+          - not result_telegraf.changed
+          - not result_smartctl.changed

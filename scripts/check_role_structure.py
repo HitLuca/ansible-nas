@@ -33,7 +33,6 @@ NO_MOLECULE = (
     "loki",
     "minecraft-bedrock-server",
     "mumble",
-    "promtail",
 )
 NO_DEFAULTS = ("ansible-nas-users",)
 NO_ENABLED_FLAG = ("ansible-nas-docker", "ansible-nas-general")
@@ -42,7 +41,6 @@ NO_START_STOP_BLOCK = (
     "ansible-nas-general",
     "ansible-nas-users",
     "logging",
-    "stats",
 )
 # Roles whose enabled flag is not <role_name>_enabled.
 UNCONVENTIONAL_FLAG = ("healthchecks.io", "logging")

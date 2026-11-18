@@ -1,0 +1,26 @@
+---
+grafana_enabled: false
+grafana_available_externally: false
+
+# directories
+grafana_data_directory: "{{ docker_home }}/grafana/data"
+grafana_config_directory: "{{ docker_home }}/grafana/config"
+
+# network
+grafana_port: "3000"
+grafana_hostname: "grafana"
+
+# docker
+grafana_container_name: "grafana"
+grafana_image_name: "grafana/grafana"
+grafana_image_version: "13.3.1"
+
+# specs
+grafana_memory: 1g
+
+# security
+# Required. Set the Grafana admin password in your inventory.
+grafana_admin_password: ""
+
+# monitoring
+grafana_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

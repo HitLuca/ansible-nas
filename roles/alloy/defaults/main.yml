@@ -1,0 +1,16 @@
+---
+alloy_enabled: false
+
+# directories
+alloy_data_directory: "{{ docker_home }}/alloy"
+
+# config
+alloy_loki_url: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ loki_http_port }}/loki/api/v1/push
+
+# docker
+alloy_container_name: "alloy"
+alloy_image_name: "grafana/alloy"
+alloy_image_version: "v1.21.0"
+
+# specs
+alloy_memory: 1g

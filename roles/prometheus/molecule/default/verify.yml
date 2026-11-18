@@ -1,0 +1,29 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    - name: Get Prometheus container state
+      community.docker.docker_container_info:
+        name: "{{ prometheus_container_name }}"
+      register: result_prometheus
+
+    - name: Get Telegraf container state
+      community.docker.docker_container_info:
+        name: "{{ prometheus_telegraf_container_name }}"
+      register: result_telegraf
+
+    - name: Get Smartctl container state
+      community.docker.docker_container_info:
+        name: "{{ prometheus_smartctl_container_name }}"
+      register: result_smartctl
+
+    - name: Check if prometheus containers exist
+      ansible.builtin.assert:
+        that:
+          - result_prometheus.exists
+          - result_telegraf.exists
+          - result_smartctl.exists
