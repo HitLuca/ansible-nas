@@ -102,6 +102,8 @@ traefik.http.routers.<app>.middlewares: "authelia@docker"
 
 For example `traefik.http.routers.nextcloud.middlewares: "authelia@docker"`.
 
+Some applications expose a flag for this instead; Spoolman, for example, uses `spoolman_authelia_enabled: true` in your inventory.
+
 Restart that application for the new label to take effect. The middleware is named after the container (`authelia@docker`), so it is available to any router Traefik manages as long as the Authelia role is running.
 
 The application has to be routed through Traefik in the first place. In this repo that means setting its `<application>_available_externally` flag, which is what turns on `traefik.enable` for its container.

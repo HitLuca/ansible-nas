@@ -1,33 +1,61 @@
-# Ansible NAS
+<h1 align="center"><img src="website/static/img/ansible-nas-logo.png" alt="Ansible-NAS logo" width="200"><br>Ansible NAS</h1>
 
-![applications](https://img.shields.io/github/directory-file-count/HitLuca/ansible-nas/roles?label=applications&style=flat-square) [![CI](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/ci.yml?label=CI&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/ci.yml) [![integration](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/integration.yml?label=integration&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/integration.yml) [![CodeQL](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/codeql.yml?label=CodeQL&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/codeql.yml) [![release](https://img.shields.io/github/v/release/HitLuca/ansible-nas?style=flat-square)](https://github.com/HitLuca/ansible-nas/releases) ![last commit](https://img.shields.io/github/last-commit/HitLuca/ansible-nas?style=flat-square) ![Ubuntu 22.04 LTS](https://img.shields.io/badge/ubuntu-22.04%20LTS-E95420?style=flat-square) [![license](https://img.shields.io/github/license/HitLuca/ansible-nas.svg?style=flat-square)](LICENSE)
+<div align="center">
 
+<p><b>Turn a stock Ubuntu box into a self-hosted home server — one Ansible role per application, deployed as Docker containers.</b></p>
+
+<p><a href="https://hitluca.github.io/ansible-nas/">Docs</a> · <a href="#available-applications">Applications</a> · <a href="https://hitluca.github.io/ansible-nas/docs/getting-started/installation/">Installation</a> · <a href="CONTRIBUTING.md">Contributing</a></p>
+
+![applications](https://img.shields.io/github/directory-file-count/HitLuca/ansible-nas/roles?label=applications&style=flat-square) [![CI](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/ci.yml?label=CI&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/ci.yml) [![integration](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/integration.yml?label=integration&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/integration.yml) [![CodeQL](https://img.shields.io/github/actions/workflow/status/HitLuca/ansible-nas/codeql.yml?label=CodeQL&style=flat-square)](https://github.com/HitLuca/ansible-nas/actions/workflows/codeql.yml)<br>
+[![release](https://img.shields.io/github/v/release/HitLuca/ansible-nas?style=flat-square)](https://github.com/HitLuca/ansible-nas/releases) ![last commit](https://img.shields.io/github/last-commit/HitLuca/ansible-nas?style=flat-square) ![Ubuntu 22.04 LTS](https://img.shields.io/badge/ubuntu-22.04%20LTS-E95420?style=flat-square) [![license](https://img.shields.io/github/license/HitLuca/ansible-nas.svg?style=flat-square)](LICENSE)
+
+</div>
+
+> [!NOTE]
 > This is a maintained fork of [davestephens/ansible-nas](https://github.com/davestephens/ansible-nas), which is no longer actively maintained. All credit for the original project goes to David Stephens and its contributors.
 >
 > See [Differences from Upstream](https://hitluca.github.io/ansible-nas/docs/differences-from-upstream) for the applications this fork adds, the roles it renamed or dropped, and how to move an existing deployment onto it.
 
 After getting burned by broken FreeNAS updates one too many times, I figured I could do a much better job myself using just a stock Ubuntu install, some clever Ansible config and a bunch of Docker containers.
 
-## What Ansible-NAS Does
+## Highlights
 
-You can configure Ansible-NAS to set up any (or all!) of the applications listed below on your home server.
+* 🧩 **One role per application** — enable any (or all!) of the applications below with a single flag.
+* 🌐 **External access** — with a spare domain, applications get a sensible hostname, Traefik with Let's Encrypt, and DNS that follows your home IP.
+* 🔐 **Optional SSO** — put [Authelia](https://hitluca.github.io/ansible-nas/docs/applications/system-tools/authelia) in front of anything you expose.
+* ✅ **Tested** — every role has a Molecule scenario in CI, with pinned image versions and a weekly integration run.
 
-If you have a spare domain name you can configure applications to be accessible externally to your home LAN too; they'll be configured with a sensible hostname and DNS gets updated accordingly if your home IP address changes.
+## Quick Start
+
+```bash
+git clone https://github.com/HitLuca/ansible-nas.git && cd ansible-nas
+# create your inventory and enable the applications you want, then:
+ansible-playbook -i inventories/<your-inventory> nas.yml -b -K
+```
+
+The [installation guide](https://hitluca.github.io/ansible-nas/docs/getting-started/installation/) covers the inventory, required variables and first run.
+
+## Requirements
+
+* Ansible NAS is built and tested on Ubuntu Server 22.04 LTS. That is the supported release: newer LTS versions have not been tested and are unsupported for now.
+* You can run Ansible-NAS on whatever hardware you like, read the docs for more info.
 
 ## Available Applications
 
 Ansible-NAS deploys any (or all) of the applications below. They are grouped the same way as the [documentation](https://hitluca.github.io/ansible-nas/docs/applications/), which has the configuration details for each one.
 
-**Jump to:** [AI](#ai) · [Content Management](#content-management) · [Dashboards](#dashboards) · [Development Tools](#development-tools) · [Download Tools](#download-tools) · [Gaming](#gaming) · [Home Automation](#home-automation) · [Media Serving](#media-serving) · [Monitoring and Observability](#monitoring-and-observability) · [News](#news) · [Other](#other) · [System Tools](#system-tools)
-
-### AI
+<details>
+<summary><b>AI</b> (2)</summary>
 
 | Application | Description |
 | --- | --- |
 | [Ollama](https://ollama.com/) | Run large language models locally and serve them over an API |
 | [Open WebUI](https://openwebui.com/) | Self-hosted chat interface for Ollama and other LLM runtimes |
 
-### Content Management
+</details>
+
+<details>
+<summary><b>Content Management</b> (4)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -36,7 +64,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [TiddlyWiki](https://tiddlywiki.com) | Non-linear notebook for capturing, organising and sharing complex information |
 | [WordPress](https://wordpress.org/) | Open source content management system, with support for hosting multiple independent sites |
 
-### Dashboards
+</details>
+
+<details>
+<summary><b>Dashboards</b> (4)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -45,7 +76,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Homepage](https://gethomepage.dev/) | Highly customisable application dashboard with integrations for over 100 services |
 | [Organizr](https://organizr.app/) | One-stop shop for your server frontend |
 
-### Development Tools
+</details>
+
+<details>
+<summary><b>Development Tools</b> (7)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -57,7 +91,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Nomad](https://www.nomadproject.io/) | Simple and flexible scheduler and software orchestrator |
 | [Woodpecker-CI](https://woodpecker-ci.org) | Simple CI engine with great extensibility, forked from Drone |
 
-### Download Tools
+</details>
+
+<details>
+<summary><b>Download Tools</b> (17)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -79,7 +116,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Transmission](https://transmissionbt.com/) | BitTorrent client, with OpenVPN when you have a supported VPN provider |
 | [YouTubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material) | Self-hosted YouTube downloader built on Material Design |
 
-### Gaming
+</details>
+
+<details>
+<summary><b>Gaming</b> (3)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -87,7 +127,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Minecraft Java Server](https://www.minecraft.net/) | Java server edition of the popular building and exploring game |
 | [Valheim Server](https://github.com/mbround18/valheim-docker) | Valheim dedicated gameserver manager |
 
-### Home Automation
+</details>
+
+<details>
+<summary><b>Home Automation</b> (7)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -99,7 +142,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [openHAB](https://www.openhab.org/) | Vendor and technology agnostic open source home automation |
 | [Zigbee2MQTT](https://www.zigbee2mqtt.io/) | Use Zigbee devices without the vendor's bridge or gateway, exposed over MQTT |
 
-### Media Serving
+</details>
+
+<details>
+<summary><b>Media Serving</b> (16)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -120,7 +166,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Threadfin](https://github.com/Threadfin/Threadfin) | M3U proxy for Plex DVR and Emby/Jellyfin Live TV, based on xTeVe |
 | [Ubooquity](http://vaemendis.net/ubooquity/) | Book and comic server |
 
-### Monitoring and Observability
+</details>
+
+<details>
+<summary><b>Monitoring and Observability</b> (11)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -136,7 +185,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Uptime Kuma](https://github.com/louislam/uptime-kuma) | Self-hosted uptime monitoring with status pages and notifications |
 | [Wireshark](https://www.wireshark.org/) | Widely-used network protocol analyser |
 
-### News
+</details>
+
+<details>
+<summary><b>News</b> (3)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -144,7 +196,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Miniflux](https://miniflux.app/) | RSS news reader |
 | [RSS-Bridge](https://rss-bridge.github.io/rss-bridge/) | The RSS feed for websites missing it |
 
-### Other
+</details>
+
+<details>
+<summary><b>Other</b> (18)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -167,7 +222,10 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Wallabag](https://wallabag.org/) | Save and classify articles, read them later |
 | [ZNC](https://wiki.znc.in/ZNC) | IRC bouncer to stay connected to favourite IRC networks |
 
-### System Tools
+</details>
+
+<details>
+<summary><b>System Tools</b> (19)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -191,77 +249,21 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [TimeMachine](https://github.com/awlx/samba-timemachine) | Samba-based mac backup server |
 | [Watchtower](https://github.com/v2tec/watchtower) | Monitor your Docker containers and update them when a new version is available |
 
-## Securing Applications with Authelia
+</details>
 
-Authelia plugs into Traefik as a forward-auth middleware, so a login can be required before Traefik forwards a request to an application. It is optional per application: an application can be available externally without being protected.
+## Documentation and Help
 
-To protect an application:
+Read the docs at [hitluca.github.io/ansible-nas](https://hitluca.github.io/ansible-nas/), including [Securing Applications with Authelia](https://hitluca.github.io/ansible-nas/docs/applications/system-tools/authelia), the [Logging stack](https://hitluca.github.io/ansible-nas/docs/applications/stacks/logging/) and [migrating from FreeNAS](https://hitluca.github.io/ansible-nas/docs/further-configuration/migrating-from-freenas/). PRs for more documentation are always welcome. If you think you've found a bug, raise an [issue](https://github.com/HitLuca/ansible-nas/issues).
 
-1. Enable and configure the [Authelia](https://hitluca.github.io/ansible-nas/docs/applications/system-tools/authelia) role: `authelia_enabled: true`, the three required secrets and at least one user in your inventory.
-2. Enable external access for the application (`<application_name>_available_externally: true`) — the middleware only applies to routers Traefik manages.
-3. Attach the `authelia@docker` middleware to that application's router.
+## Scope
 
-For applications that expose a flag for it, set the flag in your inventory; Spoolman, for example, uses `spoolman_authelia_enabled: true`. For any other application, add the label to its `traefik.http.routers.<application_name>.middlewares` entry in `roles/<application_name>/tasks/main.yml`:
+Ansible-NAS can run anything that's in a Docker image, which is why Portainer is included. A NAS configuration is a pretty personal thing based on what you download, what media you view, how many photos you take...so it's difficult to please everyone. If specific functionality you want isn't included and you think others could benefit, add it and raise a PR!
 
-```yaml
-traefik.http.routers.<application_name>.middlewares: "authelia@docker"
-```
-
-Re-run the playbook so the container picks up the new label. Which domains and paths need one factor, two factors or no authentication at all is decided by the `access_control` rules in Authelia's configuration; the Authelia role's default protects `*.<ansible_nas_domain>` with one factor.
-
-## Preconfigured Application Stacks
-
-Ansible-NAS application [stacks](https://hitluca.github.io/ansible-nas/docs/category/stacks/) are a number of applications deployed together and preconfigured to perform a common goal.
-
-* [Logging](https://hitluca.github.io/ansible-nas/docs/applications/stacks/logging/) - application logging capture and search service based on Grafana Loki.
-
-## What This Could Do
-
-Ansible-NAS can run anything that's in a Docker image, which is why Portainer is included. A NAS configuration is a pretty personal thing based on what you download, what media you view, how many photos you take...so it's difficult to please everyone.
-
-That said, if specific functionality you want isn't included and you think others could benefit, add it and raise a PR!
-
-## What This Doesn't Do
-
-Ansible NAS doesn't set up your disk partitions, primarily because getting it wrong can be incredibly destructive. That aside, configuring partitions is usually a one-time (or very infrequent) event, so there's not much to be gained by automating it. Check out the [docs](https://hitluca.github.io/ansible-nas/docs/) for recommended setups.
-
-## Installation
-
-See [Installation](https://hitluca.github.io/ansible-nas/docs/getting-started/installation/).
-
-## Documentation
-
-You can read the docs at [hitluca.github.io/ansible-nas](https://hitluca.github.io/ansible-nas/). PRs for more documentation always welcome!
-
-## Migrating from FreeNAS
-
-Read the [migrating from FreeNAS](https://hitluca.github.io/ansible-nas/docs/further-configuration/migrating-from-freenas/) docs.
-
-## Requirements
-
-* Ansible NAS is built and tested on Ubuntu Server 22.04 LTS. That is the supported release: newer LTS versions have not been tested and are unsupported for now.
-* You can run Ansible-NAS on whatever hardware you like, read the docs for more info.
+It doesn't set up your disk partitions, primarily because getting it wrong can be incredibly destructive. That aside, configuring partitions is usually a one-time (or very infrequent) event, so there's not much to be gained by automating it. Check out the [docs](https://hitluca.github.io/ansible-nas/docs/) for recommended setups.
 
 ## How This Project Is Built
 
-Parts of this repository are written with the help of large language models, and it is worth being upfront about what that does and does not mean.
-
-Most of the work here is mechanical: porting a Docker Compose stack into a role's `defaults/main.yml` and `tasks/main.yml`, writing the matching molecule scenario, adding the entry to `nas.yml`, the README table and a docs page, then keeping a hundred image pins current. That is exactly the kind of repetitive, checkable work an LLM speeds up, and this project would be considerably smaller without it.
-
-What is not delegated:
-
-* **Every role is personally tested.** A role only lands after I have run it against the application it deploys, on my own hardware. The molecule scenarios also have to pass in CI before anything merges.
-* **Many new roles start from something real.** A good number of the applications added to this fork began as a working Docker Compose stack I was already running on my NAS, then got ported into an Ansible role. The Immich role, for example, was written to take over the multi-container stack I had running under Portainer — PostgreSQL and cache on their own volumes, optional GPU acceleration, extra library mounts — rather than a single generic container.
-* **The judgement calls are mine.** Which applications to support, how a role's variables are shaped, what gets pinned, and how an upgrade preserves an existing deployment's data are decisions that come from operating this box, not from a model.
-
-The test suite is what makes this checkable rather than a claim about how the YAML was produced: if a role is broken, the molecule scenario or the weekly integration run says so, whoever wrote it.
-
-## Getting Help
-
-Getting help is easy! You can:
-
-* Read the [docs](https://hitluca.github.io/ansible-nas/docs/)
-* Raise an [issue](https://github.com/HitLuca/ansible-nas/issues) if you think you've found a bug
+Parts of this repository are written with the help of large language models. Every role is personally tested against the application it deploys on my own hardware, and its molecule scenario has to pass in CI before anything merges. The [full explanation](https://hitluca.github.io/ansible-nas/docs/how-this-project-is-built) covers what is and isn't delegated.
 
 ## Contributing
 
