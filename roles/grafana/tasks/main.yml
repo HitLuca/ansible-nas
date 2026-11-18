@@ -1,0 +1,85 @@
+---
+- name: Start Grafana
+  block:
+    - name: Check Grafana admin password set
+      ansible.builtin.assert:
+        that: grafana_admin_password | length > 0
+        fail_msg: "grafana_admin_password is required. Set it in your inventory."
+
+    - name: Create Grafana Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "472"
+        recurse: yes
+      with_items:
+        - "{{ grafana_data_directory }}"
+        - "{{ grafana_config_directory }}"
+        - "{{ grafana_config_directory }}/dashboards"
+        - "{{ grafana_config_directory }}/provisioning/datasources"
+        - "{{ grafana_config_directory }}/provisioning/dashboards"
+
+    - name: Template Prometheus data source
+      ansible.builtin.template:
+        src: datasources/prometheus.yml
+        dest: "{{ grafana_config_directory }}/provisioning/datasources/prometheus.yml"
+      when: prometheus_enabled | default(false) | bool
+
+    - name: Template Loki data source
+      ansible.builtin.template:
+        src: datasources/loki.yml
+        dest: "{{ grafana_config_directory }}/provisioning/datasources/loki.yml"
+      when: loki_enabled | default(false) | bool
+
+    - name: Copy Grafana dashboards configuration
+      ansible.builtin.copy:
+        src: dashboards/ansible-nas.yml
+        dest: "{{ grafana_config_directory }}/provisioning/dashboards/ansible-nas.yml"
+      when: prometheus_enabled | default(false) | bool
+
+    - name: Copy Grafana Ansible-NAS dashboard
+      ansible.builtin.copy:
+        src: dashboards/ansible-nas-overview.json
+        dest: "{{ grafana_config_directory }}/dashboards/ansible-nas-overview.json"
+      when: prometheus_enabled | default(false) | bool
+
+    - name: Grafana Docker Container
+      community.docker.docker_container:
+        name: "{{ grafana_container_name }}"
+        image: "{{ grafana_image_name }}:{{ grafana_image_version }}"
+        pull: true
+        volumes:
+          - "{{ grafana_data_directory }}:/var/lib/grafana:rw"
+          - "{{ grafana_config_directory }}/provisioning:/etc/grafana/provisioning:ro"
+          - "{{ grafana_config_directory }}/dashboards:/etc/dashboards:ro"
+        ports:
+          - "{{ grafana_port }}:3000"
+        env:
+          GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
+          GF_UNIFIED_ALERTING_ENABLED: "true"
+          TZ: "{{ ansible_nas_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ grafana_memory }}"
+        labels:
+          traefik.enable: "{{ grafana_available_externally | string }}"
+          traefik.http.routers.grafana.rule: "Host(`{{ grafana_hostname }}.{{ ansible_nas_domain }}`)"
+          traefik.http.routers.grafana.tls.certresolver: "letsencrypt"
+          traefik.http.routers.grafana.tls.domains[0].main: "{{ ansible_nas_domain }}"
+          traefik.http.routers.grafana.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
+          traefik.http.services.grafana.loadbalancer.server.port: "3000"
+          homepage.group: Monitoring
+          homepage.name: Grafana
+          homepage.icon: grafana
+          homepage.href: "http://{{ ansible_facts.default_ipv4.address }}:{{ grafana_port }}"
+          homepage.description: Dashboards and centralized observability
+          kuma.grafana.http.name: "Grafana"
+          kuma.grafana.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ grafana_port if grafana_uptime_kuma_monitor else omit }}"
+  when: grafana_enabled is true
+
+- name: Stop Grafana
+  block:
+    - name: Stop Grafana
+      community.docker.docker_container:
+        name: "{{ grafana_container_name }}"
+        state: absent
+  when: grafana_enabled is false

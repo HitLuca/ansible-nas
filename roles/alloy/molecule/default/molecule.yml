@@ -1,0 +1,18 @@
+---
+platforms:
+  - name: instance
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp:rw
+    privileged: true
+    pre_build_image: true
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        alloy_enabled: true
+        alloy_loki_url: "http://127.0.0.1:3100/loki/api/v1/push"
+        ansible_nas_hostname: "ansible-nas"
+        alloy_data_directory: "/tmp/alloy"

@@ -124,16 +124,15 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 
 | Application | Description |
 | --- | --- |
+| [Alloy](https://grafana.com/docs/alloy/latest/) | Ships local logs to a Grafana Loki instance |
 | [Changedetection](https://github.com/dgtlmoon/changedetection.io) | Website change detection and monitoring |
 | [Glances](https://nicolargo.github.io/glances/) | See the state of your system via a web browser |
-| [Grafana](https://grafana.com/) | Query, visualise and alert on your data (via the stats role) |
+| [Grafana](https://grafana.com/) | Query, visualise and alert on your data |
 | [iSpy Agent DVR](https://www.ispyconnect.com/) | Video surveillance software |
 | [Loki](https://grafana.com/oss/loki/) | Horizontally scalable, highly available, multi-tenant log aggregation |
 | [Netdata](https://my-netdata.io/) | Comprehensive system monitoring |
-| [Prometheus](https://prometheus.io/) | Time series database and monitoring system (via the stats role) |
-| [Promtail](https://grafana.com/docs/loki/latest/clients/promtail/) | Ships local logs to a Grafana Loki instance |
+| [Prometheus](https://prometheus.io/) | Time series database and monitoring system |
 | [Speedtest-Tracker](https://github.com/alexjustesen/speedtest-tracker) | Continuously track your internet speed |
-| [Stats](https://hitluca.github.io/ansible-nas/docs/applications/monitoring/stats) | Monitor and visualise metrics about your NAS and internet connection with Grafana, Prometheus, Telegraf and more |
 | [Uptime Kuma](https://github.com/louislam/uptime-kuma) | Self-hosted uptime monitoring with status pages and notifications |
 | [Wireshark](https://www.wireshark.org/) | Widely-used network protocol analyser |
 

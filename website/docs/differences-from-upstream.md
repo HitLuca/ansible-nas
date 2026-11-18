@@ -34,12 +34,14 @@ Cloudflared has no documentation page yet; its variables are declared in `roles/
 
 ## Renamed roles
 
-Two roles were renamed to match their upstream projects. An inventory that enables them under the old name will fail with an unresolved role, so update the flag before running the playbook:
+These roles were renamed or split. An inventory that enables them under the old name will fail with an unresolved role, so update the flags before running the playbook:
 
 | Upstream role | This fork | Migration |
 | --- | --- | --- |
 | `overseerr` | `seerr` | [Migrating from the Overseerr role](./applications/download-tools/seerr.md#migrating-from-the-overseerr-role) |
 | `paperless_ng` | `paperless_ngx` | [Migrating from paperless-ng](./applications/other/paperless_ngx.md#migrating-from-paperless-ng) |
+| `promtail` | `alloy` | Set `alloy_enabled` instead of `promtail_enabled` (promtail reached end-of-life). |
+| `stats` | `grafana` + `prometheus` | Set `grafana_enabled` (plus `grafana_admin_password`) and `prometheus_enabled` instead of `stats_enabled`. |
 
 ## Removed roles
 

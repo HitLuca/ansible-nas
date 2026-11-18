@@ -1,14 +1,6 @@
 ---
 - name: Start Loki
   block:
-    - name: Check for Grafana installation
-      ansible.builtin.fail:
-        msg: "Loki requires Grafana (stats_enabled: true) enabled and running for visualisation, please set that up first."
-      when: stats_enabled is false
-
-    - name: Include Stats variables
-      ansible.builtin.include_vars: ../../stats/defaults/main.yml
-
     - name: Create Loki Directories
       ansible.builtin.file:
         path: "{{ item }}"
@@ -56,13 +48,6 @@
           prometheus.io/scrape: "true"
           prometheus.io/port: "3100"
           prometheus.io/path: "/metrics"
-
-    - name: Template Grafana Loki data source
-      ansible.builtin.template:
-        src: grafana-datasource.yml
-        dest: "{{ stats_grafana_config_directory }}/provisioning/datasources/loki.yml"
-        owner: "472"
-      notify: restart grafana
   when: loki_enabled is true
 
 - name: Stop loki

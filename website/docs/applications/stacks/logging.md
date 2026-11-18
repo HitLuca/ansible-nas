@@ -14,13 +14,15 @@ Which is equivalent to:
 
 ```yaml
 loki_enabled: true
-promtail_enabled: true
-grafana_enabled: true
+alloy_enabled: true
 ```
+
+To also view the logs in a dashboard, enable `grafana_enabled: true` and set a `grafana_admin_password`.
 
 Once set up, all container stdout logs will be captured and stored. You'll find the Loki data source available in Grafana.
 
 Read more:
 
 - [Grafana](../observability/grafana.md)
-- [Loki](../system-tools/loki.md)- [Promtail](../system-tools/promtail.md)
+- [Loki](../system-tools/loki.md)
+- [Alloy](../system-tools/alloy.md)

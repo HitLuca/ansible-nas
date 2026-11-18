@@ -1,0 +1,19 @@
+---
+platforms:
+  - name: instance
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp:rw
+    privileged: true
+    pre_build_image: true
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        grafana_enabled: true
+        grafana_admin_password: "test-password"
+        ansible_nas_hostname: "ansible-nas"
+        grafana_data_directory: "/tmp/grafana/data"
+        grafana_config_directory: "/tmp/grafana/config"

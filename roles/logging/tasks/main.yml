@@ -1,6 +1,6 @@
 ---
-# Turns on the roles that make up the logging stack. Grafana comes from the
-# stats role, which must be enabled separately (stats_enabled: true).
+# Turns on the roles that make up the logging stack (Loki + Alloy). Grafana
+# comes from its own role and must be enabled separately.
 #
 # There is deliberately no "disable" counterpart: set_fact outranks inventory
 # variables, so forcing these flags to false would silently override anyone
@@ -8,5 +8,5 @@
 - name: Enable logging roles
   ansible.builtin.set_fact:  # noqa: var-naming[no-role-prefix] - intentionally toggles other roles
     loki_enabled: true
-    promtail_enabled: true
+    alloy_enabled: true
   when: logging_stack_enabled is true

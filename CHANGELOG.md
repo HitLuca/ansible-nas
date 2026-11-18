@@ -6,10 +6,12 @@ A release that contains any breaking change is a major release, so a new major v
 
 ## Unreleased
 
-Added applications: Audiobookshelf.
+Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
 
 ### Breaking
 
+- `stats` — role removed and split into `grafana` and `prometheus`; set `grafana_enabled` (plus a required `grafana_admin_password`) and `prometheus_enabled` instead of `stats_enabled`. The hddtemp exporter is gone (the smartctl exporter already reports disk temperature), and the unused Telegraf InfluxDB listener was removed.
+- `promtail` — role removed in favour of `alloy` (promtail reached end-of-life); set `alloy_enabled` instead of `promtail_enabled`.
 - `booksonic` — role removed in favour of `audiobookshelf`, so an inventory that enables it no longer deploys that container; the audio files are untouched, but users and listening progress do not carry over. See [Migrating from Booksonic](website/docs/applications/media-serving/audiobookshelf.md).
 
 ## v2.0.0 — 2026-11-17
