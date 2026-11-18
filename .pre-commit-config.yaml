@@ -12,7 +12,7 @@ ci:
     - mypy
 repos:
   - repo: https://github.com/ansible-community/ansible-lint.git
-    rev: v26.10.1
+    rev: v26.11.0
     hooks:
       - id: ansible-lint
         # Lint the same scope as CI; a bare run also scans molecule test playbooks.
@@ -24,7 +24,7 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.49.1
+    rev: v0.50.0
     hooks:
       - id: markdownlint
   # Use the versions pinned in pyproject.toml/uv.lock instead of a separate pin.
