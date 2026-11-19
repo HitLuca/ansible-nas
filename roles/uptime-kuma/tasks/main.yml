@@ -69,10 +69,14 @@
           AUTOKUMA__KUMA__PASSWORD: "{{ uptime_kuma_discovery_password }}"
           AUTOKUMA__ON_DELETE: delete
           AUTOKUMA__DELETE_GRACE_PERIOD: "60"
+          # AutoKuma reads every line as `key: value`; `*` is the scope that
+          # covers all monitor types and the prefix is required (a dotless
+          # line is silently dropped). No comment lines may go inside.
           AUTOKUMA__DEFAULT_SETTINGS: |-
             http.interval: 300
             http.max_retries: 2
             http.timeout: 10
+            *.notification_id_list: {{ uptime_kuma_discovery_notification_ids | to_json }}
         restart_policy: unless-stopped
         memory: "{{ uptime_kuma_discovery_memory }}"
   when:

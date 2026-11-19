@@ -152,6 +152,34 @@ def test_evaluate_uses_truncation(page: civ.TagPage, expected: str) -> None:
     assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == expected
 
 
+def test_evaluate_reports_next_major_without_counting_it_behind() -> None:
+    """A newer major version is shown in the Latest cell but stays status ok."""
+    ref = _ref("1.2.3")
+    page = civ.TagPage(["2.0.0"], complete=True)
+    result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
+    assert (result.status, result.latest, result.newest) == ("ok", "", "2.0.0 (major)")
+
+
+def test_evaluate_does_not_repeat_a_minor_update_as_major() -> None:
+    """A newer tag within the same major is reported once, as the update."""
+    ref = _ref("1.21.0")
+    page = civ.TagPage(["1.22.0"], complete=True)
+    result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
+    assert (result.status, result.major_latest, result.newest) == ("update", "", "1.22.0")
+
+
+def test_evaluate_shows_major_next_to_a_minor_update() -> None:
+    """A minor update is applied; a newer major is shown beside it."""
+    ref = _ref("1.2.3")
+    page = civ.TagPage(["2.0.0", "1.9.9"], complete=True)
+    result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
+    assert (result.status, result.latest, result.newest) == (
+        "update",
+        "1.9.9",
+        "1.9.9 (+2.0.0 major)",
+    )
+
+
 def test_evaluate_flags_missing_pin_on_truncated_page() -> None:
     """A pin absent from a truncated page is not reported as current."""
     ref = _ref("1.2.3")
@@ -286,7 +314,7 @@ def test_fetch_non_json_is_a_registry_error(monkeypatch) -> None:
 
 def test_fetch_all_reports_errors_per_repo(monkeypatch) -> None:
     """A failing repository lands in errors while the others still resolve."""
-    def fake(repo: str) -> civ.TagPage:
+    def fake(repo: str, _pins=(), _allow_major=False) -> civ.TagPage:
         if repo == "bad/repo":
             raise civ.RegistryError("HTTP 404", 404)
         return civ.TagPage(["1.0.0"], complete=True)
@@ -295,3 +323,70 @@ def test_fetch_all_reports_errors_per_repo(monkeypatch) -> None:
     tags, errors = civ._fetch_all(["bad/repo", "good/repo"], jobs=2)
     assert list(tags) == ["good/repo"]
     assert errors == {"bad/repo": "HTTP 404"}
+
+
+def test_docker_hub_pages_past_a_fallen_off_pin(monkeypatch) -> None:
+    """A pin off page one is followed until found, then proven current."""
+    responses: list[tuple[dict, dict]] = [
+        ({"results": [{"name": "0.9.0"}], "next": "page-2"}, {}),
+        ({"results": [{"name": "1.2.3"}], "next": None}, {}),
+    ]
+    calls: list[str] = []
+
+    def fake_fetch(url, **_kw):
+        calls.append(url)
+        return responses[len(calls) - 1]
+
+    monkeypatch.setattr(civ, "_hub_authorization", lambda: None)
+    monkeypatch.setattr(civ, "_fetch", fake_fetch)
+    page = civ._docker_hub_tags("vendor/app", pins=["1.2.3"])
+    assert page.complete is True
+    assert page.names == ["0.9.0", "1.2.3"]
+    assert len(calls) == 2
+    ref = _ref("1.2.3")
+    assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == "ok"
+
+
+def test_docker_hub_stops_once_a_newer_tag_supersedes_the_pin(monkeypatch) -> None:
+    """A newer tag on page one resolves the pin without another request."""
+    responses: list[tuple[dict, dict]] = [
+        ({"results": [{"name": "1.3.0"}], "next": "page-2"}, {}),
+    ]
+    calls: list[str] = []
+
+    def fake_fetch(url, **_kw):
+        calls.append(url)
+        return responses[len(calls) - 1]
+
+    monkeypatch.setattr(civ, "_hub_authorization", lambda: None)
+    monkeypatch.setattr(civ, "_fetch", fake_fetch)
+    page = civ._docker_hub_tags("vendor/app", pins=["1.2.3"])
+    assert page.complete is False
+    assert page.names == ["1.3.0"]
+    assert len(calls) == 1
+    ref = _ref("1.2.3")
+    result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
+    assert (result.status, result.latest) == ("update", "1.3.0")
+
+
+def test_ghcr_walks_pages_until_complete(monkeypatch) -> None:
+    """A lexical tag list is walked to the end so nothing newer hides."""
+    pages: list[tuple[dict, dict]] = [
+        ({"tags": ["1.0.0", "1.1.0"]},
+         {"link": '</v2/vendor/app/tags/list?last=1.1.0&n=1000>; rel="next"'}),
+        ({"tags": ["2.0.0"]}, {}),
+    ]
+    calls: list[str] = []
+
+    def fake_fetch(url, **_kw):
+        calls.append(url)
+        if url.startswith("https://ghcr.io/token"):
+            return {"token": "t"}, {}
+        return pages[len(calls) - 2]
+
+    monkeypatch.setattr(civ, "_fetch", fake_fetch)
+    page = civ._ghcr_tags("vendor/app")
+    assert page.names == ["1.0.0", "1.1.0", "2.0.0"]
+    assert page.complete is True
+    assert len(calls) == 3
+    assert calls[2] == "https://ghcr.io/v2/vendor/app/tags/list?last=1.1.0&n=1000"

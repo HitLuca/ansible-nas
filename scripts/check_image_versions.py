@@ -5,7 +5,10 @@ Ansible-NAS pins each application's image in ``roles/<role>/defaults/main.yml``
 as a ``<role>_image_name`` / ``<role>_image_version`` pair (a few use
 ``_image_tag`` or embed the tag in a single ``_image`` value). This walks every
 role, asks the registry for its tags, and reports the newest tag of the same
-shape and major version.
+shape and major version. A newer tag of a different major version is shown in
+the Latest column too, as ``x.y.z (major)`` or ``a.b.c (+x.y.z major)`` next to
+an update: visible, but not counted as behind and never patched unless
+``--allow-major`` is given.
 
     scripts/check_image_versions.py             # report, exit 0
     scripts/check_image_versions.py --check     # report, exit 1 when behind
@@ -18,17 +21,17 @@ tags (``latest``) are reported but never changed. So are tags that name a
 channel (``beta``, ``alpine``), a commit, or a composite build such as Immich's
 ``14-vectorchord0.3.0-pgvectors0.2.0``: they are compared against nothing.
 
-Each repository is asked for one page of tags: the newest 100 for Docker Hub,
-1000 elsewhere. A pin that has fallen off the page is reported as
-``truncated`` instead of ``ok`` - it may or may not be current, so it is not
-silently passed. On a newest-first page (Docker Hub, Quay) a pin that *is* on
-the page is proven current, since every newer tag was scanned. ghcr.io lists
-tags in lexical order, so there only a complete list proves anything.
+Each repository's tag list is walked until it is complete, or - on Docker Hub
+- until every pinned tag has been found or superseded by a newer one, so a pin
+is proven current instead of reported ``truncated``. Docker Hub pages 100 tags
+newest-update-first, ghcr.io pages 1000 lexically. ``truncated`` stays as the
+fallback for any list that cannot be walked to a decision.
 
 ``DOCKERHUB_USERNAME`` and ``DOCKERHUB_TOKEN`` are used, when set, to log in
 and lift the anonymous Docker Hub rate limit (the same variables
 ``scan_images.py`` reads).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,7 +43,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -64,7 +67,9 @@ COMMIT_TAG = re.compile(r"^(?:version-)?(?=[0-9a-f]*[a-f])[0-9a-f]{7,40}$", re.I
 CHANNEL_TAG = re.compile(r"^[A-Za-z][A-Za-z0-9._-]*$")
 VARIANT_BUILD = re.compile(r"[._-]?(?P<build>\d+)$")
 DOTTED_NUMBER = re.compile(r"\d\.\d")
-PRERELEASE = re.compile(r"(alpha|beta|rc|dev|nightly|test|edge|unstable|snapshot|preview)", re.I)
+PRERELEASE = re.compile(
+    r"(alpha|beta|rc|dev|nightly|test|edge|unstable|snapshot|preview)", re.I
+)
 HARDCODED_IMAGE = re.compile(r"^\s*image:\s*(?P<value>[^\s#]+)", re.M)
 
 
@@ -136,7 +141,17 @@ class Result:
     ref: ImageRef
     status: str
     latest: str = ""
+    major_latest: str = ""
     detail: str = ""
+
+    @property
+    def newest(self) -> str:
+        """The Latest cell: the bump this script would apply, else the next major."""
+        if self.latest and self.major_latest:
+            return f"{self.latest} (+{self.major_latest} major)"
+        return self.latest or (
+            f"{self.major_latest} (major)" if self.major_latest else ""
+        )
 
 
 def _refs_in_role(role: role_defaults.Role) -> list[ImageRef]:
@@ -236,7 +251,9 @@ def _fetch(
         try:
             with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
                 raw = response.read()
-                headers_out = {name.lower(): value for name, value in response.headers.items()}
+                headers_out = {
+                    name.lower(): value for name, value in response.headers.items()
+                }
         except urllib.error.HTTPError as exc:
             if exc.code not in (429, 500, 502, 503, 504):
                 raise RegistryError(f"HTTP {exc.code}", exc.code) from exc
@@ -258,13 +275,16 @@ def _fetch(
     raise RegistryError(str(last_error))
 
 
-def _docker_hub_tags(path: str) -> TagPage:
-    """Return the newest tags of a Docker Hub repository, newest update first.
+def _docker_hub_tags(
+    path: str, pins: Iterable[str] = (), allow_major: bool = False
+) -> TagPage:
+    """Return Docker Hub tags newest-update-first, paging past a fallen-off pin.
 
-    One page of 100 is enough: the tags of each release cluster at the top, and
-    a pin that has fallen off the page is reported as ``truncated`` rather than
-    guessed at. Paginating instead is not an option - linuxserver/radarr alone
-    carries 19k tags - so the ordering is what makes a single page sufficient.
+    Ordering is by last update, not version, so 100 re-pushed tags can bury a
+    current pin off page one. Page until every *pins* is resolved (its tag
+    found, or a newer acceptable tag seen) or the list ends. A repo with 19k
+    tags (linuxserver/radarr) costs extra requests only when a pin has fallen
+    off page one, and a behind pin stops as soon as its successor appears.
     """
     if "/" not in path:
         path = f"library/{path}"
@@ -273,26 +293,57 @@ def _docker_hub_tags(path: str) -> TagPage:
     except RegistryError as exc:
         if exc.status != 401:
             raise
-        raise RegistryError("Docker Hub rejected DOCKERHUB_USERNAME/DOCKERHUB_TOKEN", 401) from exc
-    payload, _ = _fetch(HUB_TAGS.format(path=urllib.parse.quote(path, safe="/")),
-                        authorization=authorization)
-    return TagPage(
-        [entry["name"] for entry in payload.get("results", [])],
-        complete=not payload.get("next"),
-    )
+        raise RegistryError(
+            "Docker Hub rejected DOCKERHUB_USERNAME/DOCKERHUB_TOKEN", 401
+        ) from exc
+    remaining: dict[str, Tag] = {}
+    for pin in pins:
+        parsed = _parse_tag(pin)
+        if isinstance(parsed, Tag):
+            remaining[pin] = parsed
+    names: list[str] = []
+    url: str | None = HUB_TAGS.format(path=urllib.parse.quote(path, safe="/"))
+    while url:
+        payload, _ = _fetch(url, authorization=authorization)
+        names.extend(entry["name"] for entry in payload.get("results", []))
+        url = payload.get("next")
+        remaining = {
+            pin: current
+            for pin, current in remaining.items()
+            if pin not in names and _best_match(current, names, allow_major) is None
+        }
+        if not remaining:
+            break
+    return TagPage(names, complete=not url)
+
+
+def _next_link(link: str) -> str | None:
+    """The URL of the ``rel="next"`` entry in a Link header, or None."""
+    for part in link.split(","):
+        if 'rel="next"' in part:
+            start, end = part.find("<"), part.find(">")
+            if start != -1 and end != -1:
+                return part[start + 1 : end]
+    return None
 
 
 def _ghcr_tags(path: str) -> TagPage:
-    """Return the tags of a GitHub Container Registry repository."""
+    """Return every tag of a GitHub Container Registry repository."""
     scope = urllib.parse.quote(f"repository:{path}:pull", safe="")
-    token = _fetch(f"https://ghcr.io/token?service=ghcr.io&scope={scope}")[0].get("token", "")
-    payload, headers = _fetch(f"https://ghcr.io/v2/{path}/tags/list?n=1000", token=token)
-    # The distribution API returns tags in lexical order, not by push date.
-    return TagPage(
-        payload.get("tags") or [],
-        complete='rel="next"' not in headers.get("link", ""),
-        newest_first=False,
+    token = _fetch(f"https://ghcr.io/token?service=ghcr.io&scope={scope}")[0].get(
+        "token", ""
     )
+    names: list[str] = []
+    url: str | None = f"https://ghcr.io/v2/{path}/tags/list?n=1000"
+    while url:
+        payload, headers = _fetch(url, token=token)
+        names.extend(payload.get("tags") or [])
+        url = _next_link(headers.get("link", ""))
+        # ghcr returns the next link as a bare path, not an absolute URL.
+        if url:
+            url = urllib.parse.urljoin("https://ghcr.io", url)
+    # Lexical order here, but a complete list makes the order irrelevant.
+    return TagPage(names, complete=True, newest_first=False)
 
 
 def _quay_tags(path: str) -> TagPage:
@@ -305,17 +356,19 @@ def _quay_tags(path: str) -> TagPage:
     )
 
 
-def fetch_tags(repo: str) -> TagPage:
+def fetch_tags(
+    repo: str, pins: Iterable[str] = (), allow_major: bool = False
+) -> TagPage:
     """Return every tag of *repo*, mapping known registry mirrors."""
     host, path = split_host(repo)
     if host in ("docker.io", "index.docker.io", "registry-1.docker.io"):
-        return _docker_hub_tags(path)
+        return _docker_hub_tags(path, pins, allow_major)
     if host == "ghcr.io":
         return _ghcr_tags(path)
     if host in ("lscr.io", "docker.n8n.io"):
         # Both are proxies over Docker Hub; ghcr.io/linuxserver carries
         # arch-prefixed build tags (amd64-v1.2.3-ls4) instead.
-        return _docker_hub_tags(path)
+        return _docker_hub_tags(path, pins, allow_major)
     if host == "quay.io":
         return _quay_tags(path)
     raise RegistryError(f"unsupported registry {host}")
@@ -344,7 +397,7 @@ def _parse_tag(tag: str) -> Tag | Unversioned:
         return Unversioned("commit", "pinned to a commit")
     prefix_match = CHANNEL_PREFIX.match(text)
     prefix = f"{prefix_match['prefix'].lower()}-" if prefix_match else ""
-    core_match = TAG_CORE.match(text[len(prefix):])
+    core_match = TAG_CORE.match(text[len(prefix) :])
     if core_match is None:
         return _unversioned(text)
     parts = tuple(int(part) for part in re.split(r"[._-]", core_match["core"]))
@@ -356,7 +409,7 @@ def _parse_tag(tag: str) -> Tag | Unversioned:
         letter = REVISION_LETTER.match(rest)
         if letter:
             revision = ord(letter["letter"].lower()) - ord("a") + 1
-            rest = rest[letter.end():]
+            rest = rest[letter.end() :]
     shape, build = _variant_and_build(rest)
     if DOTTED_NUMBER.search(shape):
         # A version fragment in the suffix (vectorchord0.4.1) is a composite
@@ -385,7 +438,11 @@ def _acceptable(current: Tag, candidate: Tag, allow_major: bool) -> bool:
         return False
     if candidate.prerelease and not current.prerelease:
         return False
-    if not allow_major and not _is_date(current) and candidate.parts[0] != current.parts[0]:
+    if (
+        not allow_major
+        and not _is_date(current)
+        and candidate.parts[0] != current.parts[0]
+    ):
         return False
     return candidate.key > current.key
 
@@ -396,7 +453,9 @@ def _best_match(current: Tag, tags: Iterable[str], allow_major: bool) -> str | N
     name = ""
     for tag in tags:
         candidate = _parse_tag(tag)
-        if not isinstance(candidate, Tag) or not _acceptable(current, candidate, allow_major):
+        if not isinstance(candidate, Tag) or not _acceptable(
+            current, candidate, allow_major
+        ):
             continue
         if best is None or candidate.key > best.key:
             best = candidate
@@ -421,28 +480,59 @@ def _evaluate(
         return Result(ref, "error", detail=errors[ref.repo])
     page = tags_by_repo[ref.repo]
     latest = _best_match(current, page.names, allow_major)
+    # Shown next to the update, or alone when that is the only newer tag.
+    # Only a tag whose first component moves is a major bump; date pins have
+    # no major, their year is part of the release number.
+    major = ""
+    if not allow_major and not _is_date(current):
+        best = _best_match(current, page.names, True)
+        parsed = _parse_tag(best) if best is not None else None
+        if isinstance(parsed, Tag) and parsed.parts[0] != current.parts[0]:
+            major = best or ""
     if latest is not None:
-        return Result(ref, "update", latest=latest)
+        return Result(ref, "update", latest=latest, major_latest=major)
     # A newest-first page proves the pin current when the pin is on it: every
     # newer tag was scanned above. Otherwise the list may hide a newer tag.
     if page.complete or (page.newest_first and ref.version in page.names):
-        return Result(ref, "ok")
+        return Result(ref, "ok", major_latest=major)
     return Result(ref, "truncated", detail="pinned tag not in the fetched page")
 
 
-def _fetch_all(repos: list[str], jobs: int) -> tuple[dict[str, TagPage], dict[str, str]]:
+def _progress(done: int, total: int) -> None:
+    """Show fetch progress on stderr, only when it is a terminal (not in CI/pipes)."""
+    if not sys.stderr.isatty():
+        return
+    filled = "#" * (done * 20 // total)
+    print(
+        f"\rFetching tags [{filled:<20}] {done}/{total}",
+        end="\n" if done >= total else "",
+        file=sys.stderr,
+    )
+
+
+def _fetch_all(
+    repos: list[str],
+    jobs: int,
+    pins_by_repo: dict[str, list[str]] | None = None,
+    allow_major: bool = False,
+) -> tuple[dict[str, TagPage], dict[str, str]]:
     """Fetch each repository's tags once, returning (tags, errors)."""
+    pins_by_repo = pins_by_repo or {}
     tags: dict[str, TagPage] = {}
     errors: dict[str, str] = {}
 
     def _one(repo: str) -> tuple[str, TagPage | None, str | None]:
         try:
-            return repo, fetch_tags(repo), None
+            return repo, fetch_tags(repo, pins_by_repo.get(repo, ()), allow_major), None
         except (RegistryError, OSError) as exc:
             return repo, None, str(exc)
 
+    total = len(repos)
     with ThreadPoolExecutor(max_workers=max(1, jobs)) as pool:
-        for repo, found, error in pool.map(_one, repos):
+        futures = [pool.submit(_one, repo) for repo in repos]
+        for done, future in enumerate(as_completed(futures), 1):
+            repo, found, error = future.result()
+            _progress(done, total)
             if found is not None:
                 tags[repo] = found
             elif error is not None:
@@ -452,14 +542,15 @@ def _fetch_all(repos: list[str], jobs: int) -> tuple[dict[str, TagPage], dict[st
 
 def evaluate(refs: Sequence[ImageRef], allow_major: bool, jobs: int) -> list[Result]:
     """Evaluate every ref, querying each registry endpoint only once."""
-    queryable = {
-        ref.repo
-        for ref in refs
-        if ref.version
-        and ref.version.lower() != "latest"
-        and isinstance(_parse_tag(ref.version), Tag)
-    }
-    tags_by_repo, errors = _fetch_all(sorted(queryable), jobs)
+    pins_by_repo: dict[str, list[str]] = {}
+    for ref in refs:
+        if (
+            ref.version
+            and ref.version.lower() != "latest"
+            and isinstance(_parse_tag(ref.version), Tag)
+        ):
+            pins_by_repo.setdefault(ref.repo, []).append(ref.version)
+    tags_by_repo, errors = _fetch_all(sorted(pins_by_repo), jobs, pins_by_repo, allow_major)
     return [_evaluate(ref, tags_by_repo, errors, allow_major) for ref in refs]
 
 
@@ -521,8 +612,13 @@ def _hardcoded_images() -> list[tuple[str, str, str]]:
 def _print_table(results: list[Result]) -> None:
     """Print the results as an aligned table."""
     rows = [
-        (result.ref.role, result.ref.version_key or result.ref.repo_key,
-         result.ref.version or "-", result.latest or "-", result.status)
+        (
+            result.ref.role,
+            result.ref.version_key or result.ref.repo_key,
+            result.ref.version or "-",
+            result.newest or "-",
+            result.status,
+        )
         for result in results
     ]
     headers = ("Role", "Variable", "Current", "Latest", "Status")
@@ -543,7 +639,7 @@ def _print_markdown(results: list[Result]) -> None:
     for result in results:
         print(
             f"| {result.ref.role} | {result.ref.version_key or result.ref.repo_key} "
-            f"| {result.ref.version or '-'} | {result.latest or '-'} | {result.status} |"
+            f"| {result.ref.version or '-'} | {result.newest or '-'} | {result.status} |"
         )
     print()
     print(_summary(results))
@@ -570,6 +666,7 @@ def _report(results: list[Result], output: str, verbose: bool) -> None:
                 "repo": result.ref.repo,
                 "current": result.ref.version,
                 "latest": result.latest,
+                "major_latest": result.major_latest,
                 "status": result.status,
                 "detail": result.detail,
             }
@@ -599,14 +696,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--check", action="store_true", help="exit 1 when any pinned image is behind"
     )
-    parser.add_argument("--patch", action="store_true", help="rewrite the pinned versions in place")
+    parser.add_argument(
+        "--patch", action="store_true", help="rewrite the pinned versions in place"
+    )
     parser.add_argument(
         "--allow-major", action="store_true", help="consider major-version upgrades too"
     )
     parser.add_argument(
         "--role", action="append", default=[], metavar="ROLE", help="limit to one role"
     )
-    parser.add_argument("--format", choices=("table", "markdown", "json"), default="table")
+    parser.add_argument(
+        "--format", choices=("table", "markdown", "json"), default="table"
+    )
     parser.add_argument(
         "--jobs", type=int, default=6, help="registry requests in flight (default 6)"
     )
