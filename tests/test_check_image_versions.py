@@ -196,6 +196,33 @@ def test_evaluate_lexical_page_does_not_prove_current() -> None:
     assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == "truncated"
 
 
+def test_evaluate_reports_publish_dates() -> None:
+    """The Current and Latest columns carry the tags' publish dates."""
+    ref = _ref("1.2.3")
+    page = civ.TagPage(
+        ["1.2.3", "1.3.0"], complete=True,
+        dates={"1.2.3": "2020-01-01", "1.3.0": "2020-01-03"},
+    )
+    result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
+    assert (result.status, result.current_date, result.latest_date) == (
+        "update", "2020-01-01", "2020-01-03",
+    )
+
+
+@pytest.mark.parametrize(
+    ("entry", "expected"),
+    [
+        ({"last_updated": "2026-11-11T02:12:12.766273Z"}, "2026-11-11"),
+        ({"last_pushed": "2026-01-02T00:00:00Z"}, "2026-01-02"),
+        ({"last_modified": 1767225600}, "2026-01-01"),
+        ({}, ""),
+    ],
+)
+def test_published(entry: dict, expected: str) -> None:
+    """A registry timestamp normalises to a YYYY-MM-DD date, '' when absent."""
+    assert civ._published(entry) == expected
+
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -328,8 +355,16 @@ def test_fetch_all_reports_errors_per_repo(monkeypatch) -> None:
 def test_docker_hub_pages_past_a_fallen_off_pin(monkeypatch) -> None:
     """A pin off page one is followed until found, then proven current."""
     responses: list[tuple[dict, dict]] = [
-        ({"results": [{"name": "0.9.0"}], "next": "page-2"}, {}),
-        ({"results": [{"name": "1.2.3"}], "next": None}, {}),
+        (
+            {"results": [{"name": "0.9.0", "last_updated": "2020-01-01T00:00:00Z"}],
+             "next": "page-2"},
+            {},
+        ),
+        (
+            {"results": [{"name": "1.2.3", "last_updated": "2020-01-02T00:00:00Z"}],
+             "next": None},
+            {},
+        ),
     ]
     calls: list[str] = []
 
@@ -342,28 +377,28 @@ def test_docker_hub_pages_past_a_fallen_off_pin(monkeypatch) -> None:
     page = civ._docker_hub_tags("vendor/app", pins=["1.2.3"])
     assert page.complete is True
     assert page.names == ["0.9.0", "1.2.3"]
+    assert page.dates == {"0.9.0": "2020-01-01", "1.2.3": "2020-01-02"}
     assert len(calls) == 2
     ref = _ref("1.2.3")
     assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == "ok"
 
 
 def test_docker_hub_stops_once_a_newer_tag_supersedes_the_pin(monkeypatch) -> None:
-    """A newer tag on page one resolves the pin without another request."""
-    responses: list[tuple[dict, dict]] = [
-        ({"results": [{"name": "1.3.0"}], "next": "page-2"}, {}),
-    ]
-    calls: list[str] = []
-
+    """A newer tag on page one supersedes the pin; its date is backfilled."""
     def fake_fetch(url, **_kw):
-        calls.append(url)
-        return responses[len(calls) - 1]
+        if url.endswith("/tags/1.2.3"):
+            return {"name": "1.2.3", "last_updated": "2020-01-01T00:00:00Z"}, {}
+        return {
+            "results": [{"name": "1.3.0", "last_updated": "2020-01-03T00:00:00Z"}],
+            "next": "page-2",
+        }, {}
 
     monkeypatch.setattr(civ, "_hub_authorization", lambda: None)
     monkeypatch.setattr(civ, "_fetch", fake_fetch)
     page = civ._docker_hub_tags("vendor/app", pins=["1.2.3"])
     assert page.complete is False
     assert page.names == ["1.3.0"]
-    assert len(calls) == 1
+    assert page.dates == {"1.3.0": "2020-01-03", "1.2.3": "2020-01-01"}
     ref = _ref("1.2.3")
     result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
     assert (result.status, result.latest) == ("update", "1.3.0")

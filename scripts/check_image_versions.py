@@ -15,6 +15,10 @@ an update: visible, but not counted as behind and never patched unless
     scripts/check_image_versions.py --patch     # rewrite the pinned versions
     scripts/check_image_versions.py --format markdown > report.md
 
+The table shows the publish date of the current and latest tags where the
+registry reports one, so a source whose tags stopped updating (a moved or
+abandoned repository) stands out as two far-past dates.
+
 Only ``docker.io``, ``ghcr.io``, ``lscr.io`` (LinuxServer's ghcr mirror),
 ``docker.n8n.io`` (a Docker Hub proxy) and ``quay.io`` are queried. Floating
 tags (``latest``) are reported but never changed. So are tags that name a
@@ -44,7 +48,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -132,6 +136,9 @@ class TagPage:
     # Whether the registry returned the most recently pushed tags first. Only
     # then does finding the pin on a truncated page prove nothing newer exists.
     newest_first: bool = True
+    # tag -> YYYY-MM-DD publish date, where the registry reports one (ghcr
+    # lists only names, so its entries stay empty).
+    dates: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -143,6 +150,8 @@ class Result:
     latest: str = ""
     major_latest: str = ""
     detail: str = ""
+    current_date: str = ""
+    latest_date: str = ""
 
     @property
     def newest(self) -> str:
@@ -275,6 +284,44 @@ def _fetch(
     raise RegistryError(str(last_error))
 
 
+def _published(entry: dict) -> str:
+    """The ``YYYY-MM-DD`` a registry tag was published, or '' when unknown."""
+    for key in ("last_updated", "last_pushed", "last_modified"):
+        value = entry.get(key)
+        if not value:
+            continue
+        if isinstance(value, (int, float)):
+            return time.strftime("%Y-%m-%d", time.gmtime(value))
+        text = str(value)
+        if len(text) >= 10 and text[:4].isdigit() and text[4] == "-":
+            return text[:10]
+    return ""
+
+
+def _backfill_pin_dates(
+    path: str, pins: Iterable[str], dates: dict[str, str], authorization: str | None
+) -> None:
+    """Fill dates for pins superseded before their own tag was paged.
+
+    Docker Hub lists newest-first, so a behind pin is dropped from the paging
+    queue as soon as a newer tag appears - often before its own entry. Fetch
+    each such pin individually to keep the Current date populated.
+    """
+    base = f"https://hub.docker.com/v2/repositories/{urllib.parse.quote(path, safe='/')}/tags/"
+    for pin in pins:
+        if pin in dates:
+            continue
+        try:
+            detail, _ = _fetch(
+                base + urllib.parse.quote(pin, safe=""), authorization=authorization
+            )
+            published = _published(detail)
+            if published:
+                dates[pin] = published
+        except RegistryError:
+            pass
+
+
 def _docker_hub_tags(
     path: str, pins: Iterable[str] = (), allow_major: bool = False
 ) -> TagPage:
@@ -302,10 +349,16 @@ def _docker_hub_tags(
         if isinstance(parsed, Tag):
             remaining[pin] = parsed
     names: list[str] = []
+    dates: dict[str, str] = {}
     url: str | None = HUB_TAGS.format(path=urllib.parse.quote(path, safe="/"))
     while url:
         payload, _ = _fetch(url, authorization=authorization)
-        names.extend(entry["name"] for entry in payload.get("results", []))
+        for entry in payload.get("results", []):
+            name = entry["name"]
+            names.append(name)
+            published = _published(entry)
+            if published:
+                dates[name] = published
         url = payload.get("next")
         remaining = {
             pin: current
@@ -314,7 +367,8 @@ def _docker_hub_tags(
         }
         if not remaining:
             break
-    return TagPage(names, complete=not url)
+    _backfill_pin_dates(path, pins, dates, authorization)
+    return TagPage(names, complete=not url, dates=dates)
 
 
 def _next_link(link: str) -> str | None:
@@ -350,10 +404,15 @@ def _quay_tags(path: str) -> TagPage:
     """Return the active tags of a Quay repository."""
     url = f"https://quay.io/api/v1/repository/{path}/tag/?limit=100&onlyActiveTags=true"
     payload, _ = _fetch(url)
-    return TagPage(
-        [entry["name"] for entry in payload.get("tags", [])],
-        complete=not payload.get("has_additional"),
-    )
+    names: list[str] = []
+    dates: dict[str, str] = {}
+    for entry in payload.get("tags", []):
+        name = entry["name"]
+        names.append(name)
+        published = _published(entry)
+        if published:
+            dates[name] = published
+    return TagPage(names, complete=not payload.get("has_additional"), dates=dates)
 
 
 def fetch_tags(
@@ -489,12 +548,20 @@ def _evaluate(
         parsed = _parse_tag(best) if best is not None else None
         if isinstance(parsed, Tag) and parsed.parts[0] != current.parts[0]:
             major = best or ""
+    current_date = page.dates.get(ref.version, "")
+    latest_date = page.dates.get(latest or major, "")
     if latest is not None:
-        return Result(ref, "update", latest=latest, major_latest=major)
+        return Result(
+            ref, "update", latest=latest, major_latest=major,
+            current_date=current_date, latest_date=latest_date,
+        )
     # A newest-first page proves the pin current when the pin is on it: every
     # newer tag was scanned above. Otherwise the list may hide a newer tag.
     if page.complete or (page.newest_first and ref.version in page.names):
-        return Result(ref, "ok", major_latest=major)
+        return Result(
+            ref, "ok", major_latest=major,
+            current_date=current_date, latest_date=latest_date,
+        )
     return Result(ref, "truncated", detail="pinned tag not in the fetched page")
 
 
@@ -616,12 +683,14 @@ def _print_table(results: list[Result]) -> None:
             result.ref.role,
             result.ref.version_key or result.ref.repo_key,
             result.ref.version or "-",
+            result.current_date,
             result.newest or "-",
+            result.latest_date,
             result.status,
         )
         for result in results
     ]
-    headers = ("Role", "Variable", "Current", "Latest", "Status")
+    headers = ("Role", "Variable", "Current", "Date", "Latest", "Date", "Status")
     widths = [max(len(row[i]) for row in (*rows, headers)) for i in range(len(headers))]
     line = "  ".join(header.ljust(width) for header, width in zip(headers, widths))
     print(line)
@@ -634,12 +703,13 @@ def _print_markdown(results: list[Result]) -> None:
     """Print the results as a Markdown summary for a workflow step."""
     print("## Pinned image versions")
     print()
-    print("| Role | Variable | Current | Latest | Status |")
-    print("| --- | --- | --- | --- | --- |")
+    print("| Role | Variable | Current | Date | Latest | Date | Status |")
+    print("| --- | --- | --- | --- | --- | --- | --- |")
     for result in results:
         print(
             f"| {result.ref.role} | {result.ref.version_key or result.ref.repo_key} "
-            f"| {result.ref.version or '-'} | {result.newest or '-'} | {result.status} |"
+            f"| {result.ref.version or '-'} | {result.current_date} "
+            f"| {result.newest or '-'} | {result.latest_date} | {result.status} |"
         )
     print()
     print(_summary(results))
@@ -665,7 +735,9 @@ def _report(results: list[Result], output: str, verbose: bool) -> None:
                 "variable": result.ref.version_key or result.ref.repo_key,
                 "repo": result.ref.repo,
                 "current": result.ref.version,
+                "current_date": result.current_date,
                 "latest": result.latest,
+                "latest_date": result.latest_date,
                 "major_latest": result.major_latest,
                 "status": result.status,
                 "detail": result.detail,
