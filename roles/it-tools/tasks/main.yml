@@ -16,7 +16,7 @@
           traefik.http.routers.it_tools.tls.certresolver: "letsencrypt"
           traefik.http.routers.it_tools.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.it_tools.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
-          traefik.http.services.it_tools.loadbalancer.server.port: "80"
+          traefik.http.services.it_tools.loadbalancer.server.port: "8080"
           kuma.it-tools.http.name: "IT-Tools"
           kuma.it-tools.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ it_tools_port if it_tools_uptime_kuma_monitor else omit }}"
           homepage.group: Development Tools

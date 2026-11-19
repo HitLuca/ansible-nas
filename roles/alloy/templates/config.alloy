@@ -12,7 +12,7 @@ loki.write "default" {
   endpoint {
     url = "{{ alloy_loki_url }}"
     headers = {
-      "X-Scope-OrgID" = "1"
+      "X-Scope-OrgID" = "1",
     }
   }
 }
