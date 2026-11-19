@@ -37,3 +37,8 @@ uptime_kuma_discovery_image_name: "ghcr.io/bigboot/autokuma"
 # strands monitors for containers that no longer exist.
 uptime_kuma_discovery_image_version: "2.1.0-rc.2"
 uptime_kuma_discovery_memory: "256m"
+# Uptime Kuma notification IDs AutoKuma attaches to every monitor it creates,
+# as { "<id>": true } — the numeric id of a notification made in the web UI
+# (e.g. your Telegram bot). Empty attaches none. A role's own
+# kuma.<id>.http.notification_id_list label replaces this for that monitor.
+uptime_kuma_discovery_notification_ids: {}
