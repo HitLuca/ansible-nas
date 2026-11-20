@@ -42,11 +42,11 @@ repos:
         entry: uv run mypy
         language: system
         types: [python]
-        # CI (GitHub's ubuntu-26.04 runner) hits a mypy internal error while
-        # writing the incremental cache after a clean check; --no-incremental
-        # skips that write. --show-traceback exposes the real traceback if it
-        # ever crashes somewhere else.
-        args: [--no-incremental, --show-traceback]
+        # pre-commit runs this hook's file batches in parallel; two mypy
+        # processes racing on .mypy_cache/cache.db fail with
+        # "OperationalError: database is locked". Run batches serially.
+        require_serial: true
+        args: [--show-traceback]
       - id: black
         name: black
         entry: uv run black
