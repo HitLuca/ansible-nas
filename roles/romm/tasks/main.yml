@@ -1,6 +1,18 @@
 ---
 - name: Start Romm
   block:
+    # romm_igdb_client_secret is optional: it only enables IGDB metadata.
+    - name: Check Romm secrets are set
+      ansible.builtin.assert:
+        that:
+          - romm_database_password | length > 0
+          - romm_database_root_password | length > 0
+          - romm_auth_secret_key | length > 0
+          - romm_auth_password | length > 0
+        fail_msg: >-
+          romm_database_password, romm_database_root_password, romm_auth_secret_key
+          and romm_auth_password are required. Generate the key with openssl rand -hex 32.
+
     - name: Create Romm Directories
       ansible.builtin.file:
         path: "{{ item }}"

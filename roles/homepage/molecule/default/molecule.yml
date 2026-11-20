@@ -1,0 +1,8 @@
+---
+provisioner:
+  inventory:
+    group_vars:
+      all:
+        homepage_enabled: true
+        # Defined by the ansible-nas-general role, which molecule doesn't run.
+        ansible_nas_hostname: ansible-nas

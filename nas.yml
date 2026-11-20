@@ -45,9 +45,11 @@
     ### Stacks
     ###
 
+    # always: otherwise `--tags loki` skips the flags and loki's stop block removes it
     - role: logging
       tags:
         - logging
+        - always
 
 
     ###
@@ -56,6 +58,7 @@
     - role: alloy
       tags:
         - alloy
+        - logging
 
     - role: apcupsd
       tags:
@@ -252,6 +255,7 @@
     - role: loki
       tags:
         - loki
+        - logging
 
     - role: mealie
       tags:

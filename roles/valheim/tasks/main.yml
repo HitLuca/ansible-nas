@@ -1,6 +1,11 @@
 ---
 - name: Start Valheim
   block:
+    - name: Check Valheim password is set
+      ansible.builtin.assert:
+        that: valheim_password | length >= 5
+        fail_msg: valheim_password is required and must be at least 5 characters (a Valheim server rule).
+
     - name: Create Valheim Directories
       ansible.builtin.file:
         path: "{{ item }}"

@@ -1,6 +1,11 @@
 ---
 - name: Start Transmission with OpenVPM
   block:
+    - name: Check OpenVPN password is set
+      ansible.builtin.assert:
+        that: openvpn_password | length > 0
+        fail_msg: openvpn_password is required (your VPN provider's password).
+
     - name: Create Transmission Directories
       ansible.builtin.file:
         path: "{{ item }}"

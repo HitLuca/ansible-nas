@@ -1,8 +1,9 @@
 ---
 ci:
   autofix_commit_msg: ":rotating_light: pre-commit fixes"
-  # No autoupdate: these revs are pinned in step with the versions ci.yml and
-  # the docs workflows install, so a bump has to move all of them together.
+  # No autoupdate: the markdownlint rev is pinned in step with the version the
+  # docs workflows install, so a bump has to move both. ci.yml runs these
+  # hooks itself through `make lint`.
   # pylint/mypy/black run `uv run` against the local environment, which
   # pre-commit.ci does not have. ansible-lint needs `ansible-galaxy install`,
   # and pre-commit.ci hooks have no network access.

@@ -1,6 +1,11 @@
 ---
 - name: Start Krusader
   block:
+    - name: Check Krusader VNC password is set
+      ansible.builtin.assert:
+        that: krusader_vnc_password | length > 0
+        fail_msg: krusader_vnc_password is required; without it anyone on the network can open Krusader.
+
     - name: Krusader Directory
       ansible.builtin.file:
         path: "{{ item }}"
@@ -13,7 +18,6 @@
         name: "{{ krusader_container_name }}"
         image: "{{ krusader_image_name }}:{{ krusader_image_version }}"
         pull: true
-        privileged: true
         volumes:
           - "{{ krusader_config_directory }}:/config:rw"
           - "{{ krusader_browse_directory }}:/mnt/fs"

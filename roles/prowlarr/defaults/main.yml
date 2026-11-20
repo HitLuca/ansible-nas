@@ -15,8 +15,8 @@ prowlarr_hostname: prowlarr
 
 # docker
 prowlarr_container_name: prowlarr
-prowlarr_image_name: ghcr.io/linuxserver/prowlarr
-prowlarr_image_version: develop-0.1.0.768-ls12
+prowlarr_image_name: linuxserver/prowlarr
+prowlarr_image_version: 3.0.2
 
 # specs
 prowlarr_memory: 1g

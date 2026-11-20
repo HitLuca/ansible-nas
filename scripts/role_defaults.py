@@ -1,4 +1,4 @@
-"""Load each role's ``defaults/main.yml`` once, for every check under tests/.
+"""Load each role's ``defaults/main.yml`` once, for every check under scripts/.
 
 The checks used to grep these files with a regex each, and every regex drifted
 a little: one missed unquoted ports, another counted a requoted value as a

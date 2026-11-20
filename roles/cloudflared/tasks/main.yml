@@ -1,6 +1,11 @@
 ---
 - name: Start Cloudflared
   block:
+    - name: Check Cloudflared token is set
+      ansible.builtin.assert:
+        that: cloudflared_token | length > 0
+        fail_msg: cloudflared_token is required. Copy the tunnel token from the Cloudflare Zero Trust dashboard.
+
     - name: Cloudflared Container
       community.docker.docker_container:
         name: "{{ cloudflared_container_name }}"
