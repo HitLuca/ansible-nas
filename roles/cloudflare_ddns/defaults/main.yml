@@ -1,12 +1,12 @@
 ---
 cloudflare_ddns_enabled: false
-cloudflare_data_directory: '{{ docker_home }}/cloudflare_ddns'
-cloudflare_zone: '{{ ansible_nas_domain }}'
-cloudflare_host: '*.{{ cloudflare_zone }}'
-cloudflare_token: ''
-cloudflare_proxy: false
-cloudflare_type: A
-cloudflare_memory: 512MB
-cloudflare_container_name: cloudflare-ddns
-cloudflare_image_name: joshava/cloudflare-ddns
-cloudflare_image_version: 2.9.3
+cloudflare_ddns_data_directory: '{{ docker_home }}/cloudflare_ddns'
+cloudflare_ddns_zone: '{{ ansible_nas_domain }}'
+cloudflare_ddns_host: '*.{{ cloudflare_ddns_zone }}'
+cloudflare_ddns_token: ''
+cloudflare_ddns_proxy: false
+cloudflare_ddns_type: A
+cloudflare_ddns_memory: 512MB
+cloudflare_ddns_container_name: cloudflare-ddns
+cloudflare_ddns_image_name: joshava/cloudflare-ddns
+cloudflare_ddns_image_version: 2.9.3
