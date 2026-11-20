@@ -10,7 +10,7 @@ esphome_user_id: "1000"
 esphome_group_id: "1000"
 
 # network
-esphome_hostname: "esphome"
+esphome_hostname: esphome
 esphome_port: "6052"
 
 # specs
@@ -18,8 +18,8 @@ esphome_memory: 1g
 
 # docker
 esphome_container_name: esphome
-esphome_image_name: "esphome/esphome"
-esphome_image_version: "2026.10.2"
+esphome_image_name: esphome/esphome
+esphome_image_version: 2026.10.2
 
 # monitoring
 esphome_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

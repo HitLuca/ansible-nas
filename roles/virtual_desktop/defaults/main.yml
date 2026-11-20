@@ -1,9 +1,9 @@
 ---
 virtual_desktop_enabled: false
-virtual_desktop_users: ''
-virtual_desktop_user_id: '0'
-virtual_desktop_group_id: '0'
-virtual_desktop_data_directory: '{{ docker_home }}/virtual_desktop'
+virtual_desktop_users: ""
+virtual_desktop_user_id: "0"
+virtual_desktop_group_id: "0"
+virtual_desktop_data_directory: "{{ docker_home }}/virtual_desktop"
 virtual_desktop_rdp_port: 3389
 virtual_desktop_memory: 2g
 virtual_desktop_container_name: virtual_desktop

@@ -4,4 +4,4 @@ provisioner:
     group_vars:
       all:
         cloudflare_ddns_enabled: true
-        cloudflare_ddns_token: "test-cloudflare-token-1234567890"
+        cloudflare_ddns_token: test-cloudflare-token-1234567890

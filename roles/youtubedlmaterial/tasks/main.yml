@@ -25,7 +25,7 @@
           - "{{ youtubedlmaterial_dl_audio_directory }}:/app/audio:rw"
           - "{{ youtubedlmaterial_dl_video_directory }}:/app/video:rw"
           - "{{ youtubedlmaterial_dl_subscriptions_directory }}:/app/subscriptions:rw"
-        network_mode: "bridge"
+        network_mode: bridge
         ports:
           - "{{ youtubedlmaterial_port_http }}:17442"
         env:
@@ -35,17 +35,17 @@
         memory: "{{ youtubedlmaterial_memory }}"
         labels:
           traefik.enable: "{{ youtubedlmaterial_available_externally | string }}"
-          traefik.http.routers.youtubedlmaterial.rule: "Host(`{{ youtubedlmaterial_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.youtubedlmaterial.tls.certresolver: "letsencrypt"
+          traefik.http.routers.youtubedlmaterial.rule: Host(`{{ youtubedlmaterial_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.youtubedlmaterial.tls.certresolver: letsencrypt
           traefik.http.routers.youtubedlmaterial.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.youtubedlmaterial.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.youtubedlmaterial.loadbalancer.server.port: "17442"
-          kuma.youtubedlmaterial.http.name: "YouTubeDL-Material"
+          kuma.youtubedlmaterial.http.name: YouTubeDL-Material
           kuma.youtubedlmaterial.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ youtubedlmaterial_port_http if youtubedlmaterial_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: YoutubeDL Material
           homepage.icon: youtubedl.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ youtubedlmaterial_port_http }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ youtubedlmaterial_port_http }}
           homepage.description: Youtube downloader client
   when: youtubedlmaterial_enabled is true
 

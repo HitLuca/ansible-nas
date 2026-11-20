@@ -8,7 +8,7 @@ watchtower_cron_schedule: 0 0 5 * * *
 # notifications or not, some examples are provided below. See https://containrrr.dev/watchtower/arguments/ for more options.
 
 # No notifications
-watchtower_command: "--schedule '{{ watchtower_cron_schedule }}'"
+watchtower_command: --schedule '{{ watchtower_cron_schedule }}'
 
 # Email notifications
 # watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --notifications 'email' --notification-email-from 'ansible@nas.com' --notification-email-to '{{ ansible_nas_email }}' --notification-email-server 'my.email.server.com' --notification-email-server-port '25' --notification-email-server-user 'email_username' --notification-email-server-password 'top-secret'"
@@ -19,6 +19,6 @@ watchtower_command: "--schedule '{{ watchtower_cron_schedule }}'"
 # specs
 watchtower_memory: 1g
 
-watchtower_container_name: "watchtower"
-watchtower_image_name: "containrrr/watchtower"
-watchtower_image_version: "1.7.1"
+watchtower_container_name: watchtower
+watchtower_image_name: containrrr/watchtower
+watchtower_image_version: 1.7.1

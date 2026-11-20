@@ -40,19 +40,19 @@
 
     - name: Create WordPress site networks
       community.docker.docker_network:
-        name: "wordpress-{{ item.name }}"
+        name: wordpress-{{ item.name }}
       loop: "{{ wordpress_sites }}"
       loop_control:
         label: "{{ item.name }}"
 
     - name: WordPress database containers
       community.docker.docker_container:
-        name: "wordpress-{{ item.name }}-db"
+        name: wordpress-{{ item.name }}-db
         image: "{{ wordpress_db_image_name }}:{{ wordpress_db_image_version }}"
         pull: true
         networks:
-          - name: "wordpress-{{ item.name }}"
-        network_mode: "wordpress-{{ item.name }}"
+          - name: wordpress-{{ item.name }}
+        network_mode: wordpress-{{ item.name }}
         volumes:
           - "{{ websites_root }}/{{ item.name }}/db:/var/lib/mysql:rw"
         env:
@@ -68,18 +68,18 @@
 
     - name: WordPress containers
       community.docker.docker_container:
-        name: "wordpress-{{ item.name }}"
+        name: wordpress-{{ item.name }}
         image: "{{ wordpress_image_name }}:{{ wordpress_image_version }}"
         pull: true
         networks:
-          - name: "wordpress-{{ item.name }}"
-        network_mode: "wordpress-{{ item.name }}"
+          - name: wordpress-{{ item.name }}
+        network_mode: wordpress-{{ item.name }}
         volumes:
           - "{{ websites_root }}/{{ item.name }}/wp-content:/var/www/html/wp-content:rw"
         ports:
           - "{{ item.port }}:80"
         env:
-          WORDPRESS_DB_HOST: "wordpress-{{ item.name }}-db:3306"
+          WORDPRESS_DB_HOST: wordpress-{{ item.name }}-db:3306
           WORDPRESS_DB_NAME: "{{ item.db_name | default('wordpress') }}"
           WORDPRESS_DB_USER: "{{ item.db_user | default('wordpress') }}"
           WORDPRESS_DB_PASSWORD: "{{ item.db_password }}"
@@ -112,16 +112,16 @@
 
     - name: WordPress phpMyAdmin containers
       community.docker.docker_container:
-        name: "wordpress-{{ item.name }}-phpmyadmin"
+        name: wordpress-{{ item.name }}-phpmyadmin
         image: "{{ wordpress_phpmyadmin_image_name }}:{{ wordpress_phpmyadmin_image_version }}"
         pull: true
         networks:
-          - name: "wordpress-{{ item.name }}"
-        network_mode: "wordpress-{{ item.name }}"
+          - name: wordpress-{{ item.name }}
+        network_mode: wordpress-{{ item.name }}
         ports:
           - "{{ item.phpmyadmin_port }}:80"
         env:
-          PMA_HOST: "wordpress-{{ item.name }}-db"
+          PMA_HOST: wordpress-{{ item.name }}-db
         restart_policy: unless-stopped
         memory: "{{ wordpress_phpmyadmin_memory }}"
       loop: "{{ wordpress_sites }}"
@@ -134,7 +134,7 @@
   block:
     - name: Stop WordPress phpMyAdmin containers
       community.docker.docker_container:
-        name: "wordpress-{{ item.name }}-phpmyadmin"
+        name: wordpress-{{ item.name }}-phpmyadmin
         state: absent
       loop: "{{ wordpress_sites }}"
       loop_control:
@@ -142,7 +142,7 @@
 
     - name: Stop WordPress containers
       community.docker.docker_container:
-        name: "wordpress-{{ item.name }}"
+        name: wordpress-{{ item.name }}
         state: absent
       loop: "{{ wordpress_sites }}"
       loop_control:
@@ -150,7 +150,7 @@
 
     - name: Stop WordPress database containers
       community.docker.docker_container:
-        name: "wordpress-{{ item.name }}-db"
+        name: wordpress-{{ item.name }}-db
         state: absent
       loop: "{{ wordpress_sites }}"
       loop_control:

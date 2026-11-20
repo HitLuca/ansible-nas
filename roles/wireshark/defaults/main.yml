@@ -11,15 +11,15 @@ wireshark_user_id: "1000"
 wireshark_group_id: "1000"
 
 # network
-wireshark_hostname: "wireshark"
+wireshark_hostname: wireshark
 
 # docker
-wireshark_container_name: "wireshark"
-wireshark_image_name: "linuxserver/wireshark"
-wireshark_image_version: "4.6.9"
+wireshark_container_name: wireshark
+wireshark_image_name: linuxserver/wireshark
+wireshark_image_version: 4.6.9
 
 # specs
-wireshark_memory: "512m"
+wireshark_memory: 512m
 
 # monitoring
 wireshark_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

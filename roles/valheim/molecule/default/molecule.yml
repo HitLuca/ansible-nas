@@ -4,4 +4,4 @@ provisioner:
     group_vars:
       all:
         valheim_enabled: true
-        valheim_password: "test-password-123"
+        valheim_password: test-password-123

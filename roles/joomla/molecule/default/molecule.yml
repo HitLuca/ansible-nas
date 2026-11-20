@@ -4,4 +4,4 @@ provisioner:
     group_vars:
       all:
         joomla_enabled: true
-        joomla_database_password: "test-password-123"
+        joomla_database_password: test-password-123

@@ -13,16 +13,16 @@ pihole_host_ip: "{{ ansible_facts.default_ipv4.address }}"
 pihole_dns_bind_address: "{{ pihole_host_ip }}"
 pihole_dns_port: "53"
 pihole_web_port: "8072"
-pihole_hostname: "pihole"
+pihole_hostname: pihole
 
 # docker
-pihole_container_name: "pihole"
-pihole_image_name: "pihole/pihole"
-pihole_image_version: "2026.11.0"
+pihole_container_name: pihole
+pihole_image_name: pihole/pihole
+pihole_image_version: 2026.11.0
 
 # web
 # The admin UI is served under /admin; the web root answers 404.
-pihole_web_path: "/admin"
+pihole_web_path: /admin
 # Empty leaves the admin password unset: Pi-hole generates a random one and
 # prints it in the container log. Set a value here to pin it instead.
 pihole_web_password: ""

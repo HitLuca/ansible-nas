@@ -8,10 +8,10 @@
         pull: true
         env:
           TZ: "{{ ansible_nas_timezone }}"
-        command: "tunnel --no-autoupdate run --token {{ cloudflared_token }}"
+        command: tunnel --no-autoupdate run --token {{ cloudflared_token }}
         restart_policy: unless-stopped
         memory: "{{ cloudflared_memory }}"
-        network_mode: "host"
+        network_mode: host
         labels:
   when: cloudflared_enabled is true
 

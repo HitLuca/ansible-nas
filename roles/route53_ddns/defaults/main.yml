@@ -22,6 +22,6 @@ route53_ddns_schedule: "*/30 * * * *"
 
 # Container
 route53_ddns_memory: 512MB
-route53_ddns_container_name: "route53-ddns"
-route53_ddns_image_name: "crazymax/ddns-route53"
-route53_ddns_image_version: "2.16.1"
+route53_ddns_container_name: route53-ddns
+route53_ddns_image_name: crazymax/ddns-route53
+route53_ddns_image_version: 2.16.1

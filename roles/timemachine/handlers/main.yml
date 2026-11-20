@@ -3,4 +3,4 @@
   ansible.builtin.service:
     name: avahi-daemon
     state: reloaded
-  listen: "reload avahi configuration"
+  listen: reload avahi configuration

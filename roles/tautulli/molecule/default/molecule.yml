@@ -4,4 +4,4 @@ provisioner:
     group_vars:
       all:
         tautulli_enabled: true
-        plex_logs: "/tmp/log"
+        plex_logs: /tmp/log

@@ -30,7 +30,7 @@ wordpress_sites: []
 #   use_request_host: derive WP_HOME/WP_SITEURL from the request host (default)
 #   stored_siteurl:   define neither, so WordPress uses the siteurl/home stored
 #                     in the database and the Settings fields stay editable
-wordpress_config_extra_mode: "use_request_host"
+wordpress_config_extra_mode: use_request_host
 
 # Derives WP_HOME/WP_SITEURL from the request host, so one install answers on
 # every hostname it is reached by (both local ip:port and Traefik domain).
@@ -49,12 +49,12 @@ wordpress_default_config_extra: "{{ wordpress_request_host_config if wordpress_c
 # stored under {{ websites_root }}/{{ site.name }}.
 
 # docker
-wordpress_image_name: "wordpress"
-wordpress_image_version: "7.1.4"
-wordpress_db_image_name: "mariadb"
-wordpress_db_image_version: "11.8.9"
-wordpress_phpmyadmin_image_name: "phpmyadmin"
-wordpress_phpmyadmin_image_version: "5.2.3"
+wordpress_image_name: wordpress
+wordpress_image_version: 7.1.4
+wordpress_db_image_name: mariadb
+wordpress_db_image_version: 11.8.9
+wordpress_phpmyadmin_image_name: phpmyadmin
+wordpress_phpmyadmin_image_version: 5.2.3
 
 # specs
 wordpress_memory: 1g

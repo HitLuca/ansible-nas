@@ -10,7 +10,7 @@ SHELL := /bin/bash
 # Roles that have a molecule scenario.
 ROLES := $(notdir $(patsubst %/molecule,%,$(wildcard roles/*/molecule)))
 
-.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images update-images scan-images check-breaking release test test-unit test-all guard-role
+.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images check-yaml-unchanged update-images scan-images check-breaking release test test-unit test-all guard-role
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
@@ -42,6 +42,9 @@ check-ports: ## Report host ports claimed by more than one role
 
 check-images: ## Report pinned image versions that are behind upstream
 	uv run python scripts/check_image_versions.py --check
+
+check-yaml-unchanged: ## Fail if a YAML file's parsed data differs from git (BASE=HEAD); for bulk reformats
+	uv run python scripts/check_yaml_unchanged.py $(BASE)
 
 check-breaking: ## Report breaking changes since the last release (optional tag)
 	uv run python scripts/check_breaking_changes.py $(TAG)

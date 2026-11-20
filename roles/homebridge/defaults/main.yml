@@ -7,18 +7,18 @@ homebridge_available_externally: false
 homebridge_config_directory: "{{ docker_home }}/homebridge/config"
 
 # network
-homebridge_hostname: "homebridge"
+homebridge_hostname: homebridge
 # Port of the Homebridge UI. The image reads it from config.json in the config
 # directory (default 8581 on new installs); keep this in sync with that file.
 homebridge_port: "8581"
 
 # docker
-homebridge_container_name: "homebridge"
-homebridge_image_name: "homebridge/homebridge"
+homebridge_container_name: homebridge
+homebridge_image_name: homebridge/homebridge
 homebridge_image_version: "2026-10-23"
 
 # specs
-homebridge_memory: "1g"
+homebridge_memory: 1g
 
 # monitoring
 homebridge_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

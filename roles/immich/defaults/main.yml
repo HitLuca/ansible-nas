@@ -1,23 +1,23 @@
 ---
 immich_enabled: false
 immich_available_externally: false
-immich_data_directory: '{{ docker_home }}/immich'
-immich_config_directory: '{{ immich_data_directory }}/config'
-immich_postgres_directory: '{{ immich_data_directory }}/postgres_data'
-immich_photos_directory: '{{ photos_root }}'
+immich_data_directory: "{{ docker_home }}/immich"
+immich_config_directory: "{{ immich_data_directory }}/config"
+immich_postgres_directory: "{{ immich_data_directory }}/postgres_data"
+immich_photos_directory: "{{ photos_root }}"
 immich_libraries: []
-immich_port: '8039'
+immich_port: "8039"
 immich_hostname: immich
 immich_network_name: immich
 immich_db_username: postgres
-immich_db_password: ''
+immich_db_password: ""
 immich_db_name: immich
-immich_db_port: '5432'
+immich_db_port: "5432"
 immich_db_storage_type: HDD
-immich_redis_port: '6379'
-immich_redis_password: ''
-immich_user_id: '1000'
-immich_group_id: '1000'
+immich_redis_port: "6379"
+immich_redis_password: ""
+immich_user_id: "1000"
+immich_group_id: "1000"
 immich_nvidia_gpu: false
 immich_container_name: immich
 immich_image_name: ghcr.io/imagegenius/immich
@@ -31,5 +31,4 @@ immich_valkey_image_version: 8.1.3-bookworm
 immich_memory: 6g
 immich_postgres_memory: 2g
 immich_valkey_memory: 1g
-immich_uptime_kuma_monitor: '{{ uptime_kuma_monitor_all_services | default(false)
-  }}'
+immich_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

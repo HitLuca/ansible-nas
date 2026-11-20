@@ -90,17 +90,17 @@
         memory: "{{ immich_memory }}"
         labels:
           traefik.enable: "{{ immich_available_externally | string }}"
-          traefik.http.routers.immich.rule: "Host(`{{ immich_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.immich.tls.certresolver: "letsencrypt"
+          traefik.http.routers.immich.rule: Host(`{{ immich_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.immich.tls.certresolver: letsencrypt
           traefik.http.routers.immich.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.immich.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.immich.loadbalancer.server.port: "8080"
-          kuma.immich.http.name: "Immich"
+          kuma.immich.http.name: Immich
           kuma.immich.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ immich_port if immich_uptime_kuma_monitor else omit }}"
           homepage.group: Photos
           homepage.name: Immich
           homepage.icon: immich.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ immich_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ immich_port }}
           homepage.description: Photo and video backup
       vars:
         immich_volumes:
@@ -118,15 +118,15 @@
           REDIS_HOSTNAME: "{{ immich_valkey_container_name }}"
           REDIS_PORT: "{{ immich_redis_port }}"
           REDIS_PASSWORD: "{{ immich_redis_password }}"
-          SERVER_HOST: "0.0.0.0"
+          SERVER_HOST: 0.0.0.0
           SERVER_PORT: "8080"
-          MACHINE_LEARNING_HOST: "0.0.0.0"
+          MACHINE_LEARNING_HOST: 0.0.0.0
           MACHINE_LEARNING_PORT: "3003"
           MACHINE_LEARNING_WORKERS: "1"
           MACHINE_LEARNING_WORKER_TIMEOUT: "120"
         immich_nvidia_env:
-          NVIDIA_VISIBLE_DEVICES: "all"
-          NVIDIA_DRIVER_CAPABILITIES: "compute,video,utility"
+          NVIDIA_VISIBLE_DEVICES: all
+          NVIDIA_DRIVER_CAPABILITIES: compute,video,utility
   when: immich_enabled is true
 
 - name: Stop Immich

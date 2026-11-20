@@ -30,7 +30,7 @@
         argv:
           - pgrep
           - -f
-          - "Tdarr_Node/Tdarr_Node$"
+          - Tdarr_Node/Tdarr_Node$
       register: tdarr_node_process
       changed_when: false
       failed_when: false

@@ -7,7 +7,7 @@ spoolman_data_directory: "{{ docker_home }}/spoolman"
 
 # network
 spoolman_port: "7912"
-spoolman_hostname: "spoolman"
+spoolman_hostname: spoolman
 
 # traefik
 # Puts the Authelia forward-auth middleware in front of the router, so the app
@@ -16,9 +16,9 @@ spoolman_hostname: "spoolman"
 spoolman_authelia_enabled: false
 
 # docker
-spoolman_container_name: "spoolman"
-spoolman_image_name: "donkieyo/spoolman"
-spoolman_image_version: "0.27.1"
+spoolman_container_name: spoolman
+spoolman_image_name: donkieyo/spoolman
+spoolman_image_version: 0.27.1
 
 # specs
 spoolman_memory: 1g

@@ -14,15 +14,15 @@ ispyagentdvr_group_id: "1000"
 # network
 ispyagentdvr_webui_port: "8097"
 ispyagentdvr_turn_port: "3478"
-ispyagentdvr_agentdvr_host_port: "50000-50010"
+ispyagentdvr_agentdvr_host_port: 50000-50010
 
 # specs
 ispyagentdvr_memory: 1g
 
 # docker
 ispyagentdvr_container_name: ispyagentdvr
-ispyagentdvr_image_name: "mekayelanik/ispyagentdvr"
-ispyagentdvr_image_version: "8.2.7.0"
+ispyagentdvr_image_name: mekayelanik/ispyagentdvr
+ispyagentdvr_image_version: 8.2.7.0
 
 # monitoring
 ispyagentdvr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

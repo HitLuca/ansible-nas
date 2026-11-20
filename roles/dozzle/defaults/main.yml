@@ -7,14 +7,14 @@ dozzle_data_directory: "{{ docker_home }}/dozzle"
 
 # network
 dozzle_port: "8888"
-dozzle_hostname: "dozzle"
+dozzle_hostname: dozzle
 
 # application
 # "none" leaves Dozzle open to anyone who can reach it. Since it reads every
 # container's logs, set "simple" and define dozzle_users if others can reach it.
-dozzle_auth_provider: "none"
+dozzle_auth_provider: none
 # How long a login stays valid, e.g. "24h". Only s, m and h are accepted.
-dozzle_auth_ttl: "24h"
+dozzle_auth_ttl: 24h
 # Login entries for dozzle_auth_provider: "simple". Each password must be a
 # bcrypt hash; generate one with (it prompts for the password, so it stays out
 # of your shell history):
@@ -30,9 +30,9 @@ dozzle_auth_ttl: "24h"
 dozzle_users: {}
 
 # docker
-dozzle_container_name: "dozzle"
-dozzle_image_name: "amir20/dozzle"
-dozzle_image_version: "v11.4.2"
+dozzle_container_name: dozzle
+dozzle_image_name: amir20/dozzle
+dozzle_image_version: v11.4.2
 
 # specs
 dozzle_memory: 1g

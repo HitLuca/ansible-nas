@@ -7,16 +7,16 @@ homepage_available_externally: false
 homepage_data_directory: "{{ docker_home }}/homepage"
 
 # network
-homepage_hostname: "homepage"
+homepage_hostname: homepage
 homepage_port: "11111"
 
 # docker
-homepage_container_name: "homepage"
-homepage_image_name: "ghcr.io/gethomepage/homepage"
-homepage_image_version: "v2.8.0"
+homepage_container_name: homepage
+homepage_image_name: ghcr.io/gethomepage/homepage
+homepage_image_version: v2.8.0
 
 # specs
-homepage_memory: "1g"
+homepage_memory: 1g
 
 # settings
 homepage_title: Ansible-NAS Homepage

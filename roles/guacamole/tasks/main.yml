@@ -97,17 +97,17 @@
         memory: "{{ guacamole_memory }}"
         labels:
           traefik.enable: "{{ guacamole_available_externally | string }}"
-          traefik.http.routers.guacamole.rule: "Host(`{{ guacamole_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.guacamole.tls.certresolver: "letsencrypt"
+          traefik.http.routers.guacamole.rule: Host(`{{ guacamole_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.guacamole.tls.certresolver: letsencrypt
           traefik.http.routers.guacamole.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.guacamole.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.guacamole.loadbalancer.server.port: "8080"
-          kuma.guacamole.http.name: "Guacamole"
+          kuma.guacamole.http.name: Guacamole
           kuma.guacamole.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ guacamole_port if guacamole_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: Guacamole
           homepage.icon: guacamole.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ guacamole_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ guacamole_port }}
           homepage.description: Remote desktop gateway
 
     - name: Check Guacamole database schema
@@ -120,7 +120,7 @@
           - -d
           - "{{ guacamole_db_name }}"
           - -tAc
-          - "SELECT to_regclass('public.guacamole_entity') IS NOT NULL"
+          - SELECT to_regclass('public.guacamole_entity') IS NOT NULL
       register: guacamole_schema
       changed_when: false
 

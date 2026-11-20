@@ -12,15 +12,15 @@ nzbget_group_id: "0"
 
 # network
 nzbget_port: "6789"
-nzbget_hostname: "nzbget"
+nzbget_hostname: nzbget
 
 # docker
-nzbget_container_name: "nzbget"
-nzbget_image_name: "linuxserver/nzbget"
-nzbget_image_version: "v26.3-ls271"
+nzbget_container_name: nzbget
+nzbget_image_name: linuxserver/nzbget
+nzbget_image_version: v26.3-ls271
 
 # specs
-nzbget_memory: "1g"
+nzbget_memory: 1g
 
 # monitoring
 nzbget_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

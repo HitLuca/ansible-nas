@@ -20,14 +20,14 @@
         volumes:
           - "{{ timemachine_data_directory }}/data:/backups"
         ulimits:
-          - "nofile:1048576:1048576"
+          - nofile:1048576:1048576
         network_mode: bridge
         restart_policy: unless-stopped
         memory: "{{ timemachine_memory }}"
 
     - name: Install avahi
       ansible.builtin.apt:
-        name: "avahi-daemon"
+        name: avahi-daemon
         state: present
         update_cache: yes
       register: timemachine_result
@@ -36,7 +36,7 @@
     - name: Setup timemachine service for avahi
       ansible.builtin.template:
         src: timemachine.service
-        dest: "/etc/avahi/services/timemachine.service"
+        dest: /etc/avahi/services/timemachine.service
       notify: reload avahi configuration
   when: timemachine_enabled is true
 

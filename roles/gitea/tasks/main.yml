@@ -18,10 +18,10 @@
         volumes:
           - "{{ gitea_data_directory }}/mysql:/var/lib/mysql:rw"
         env:
-          MYSQL_DATABASE: "gitea"
-          MYSQL_USER: "gitea"
-          MYSQL_PASSWORD: "gitea"
-          MYSQL_ROOT_PASSWORD: "gitea"
+          MYSQL_DATABASE: gitea
+          MYSQL_USER: gitea
+          MYSQL_PASSWORD: gitea
+          MYSQL_ROOT_PASSWORD: gitea
         restart_policy: unless-stopped
         memory: "{{ gitea_mysql_memory }}"
 
@@ -38,32 +38,32 @@
         links:
           - gitea-mysql:db
         env:
-          DB_TYPE: "mysql"
-          DB_HOST: "db:3306"
-          DB_NAME: "gitea"
-          DB_USER: "gitea"
-          DB_PASSWD: "gitea"
-          RUN_MODE: "prod"
+          DB_TYPE: mysql
+          DB_HOST: db:3306
+          DB_NAME: gitea
+          DB_USER: gitea
+          DB_PASSWD: gitea
+          RUN_MODE: prod
           SSH_DOMAIN: "{{ ansible_nas_hostname }}"
           SSH_PORT: "22"
-          ROOT_URL: "http://{{ gitea_hostname }}:{{ gitea_port_http }}/"
+          ROOT_URL: http://{{ gitea_hostname }}:{{ gitea_port_http }}/
           USER_UID: "1000"
           USER_GID: "1000"
         restart_policy: unless-stopped
         memory: "{{ gitea_memory }}"
         labels:
           traefik.enable: "{{ gitea_available_externally | string }}"
-          traefik.http.routers.gitea.rule: "Host(`{{ gitea_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.gitea.tls.certresolver: "letsencrypt"
+          traefik.http.routers.gitea.rule: Host(`{{ gitea_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.gitea.tls.certresolver: letsencrypt
           traefik.http.routers.gitea.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.gitea.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.gitea.loadbalancer.server.port: "3000"
-          kuma.gitea.http.name: "Gitea"
+          kuma.gitea.http.name: Gitea
           kuma.gitea.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ gitea_port_http if gitea_uptime_kuma_monitor else omit }}"
           homepage.group: Productivity
           homepage.name: Gitea
           homepage.icon: gitea.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ gitea_port_http }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ gitea_port_http }}
           homepage.description: Git server
   when: gitea_enabled is true
 

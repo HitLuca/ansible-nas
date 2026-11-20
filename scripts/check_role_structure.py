@@ -132,6 +132,23 @@ def images(role: Role) -> list[str]:
     return out
 
 
+def versions(role: Role) -> list[str]:
+    """An image version must load as a string, not a number.
+
+    ``1.10`` is read as the float 1.1 and ``2024`` as an int, so Docker would
+    pull a different tag. yamllint's quoted-strings rule only flags quotes that
+    are not needed; it never flags a missing one.
+    """
+    return [
+        f"{key} is unquoted and loads as {type(entry.value).__name__} "
+        f"({entry.text}); quote it"
+        for key, entry in role.defaults.items()
+        if key.endswith(role_defaults.VERSION_SUFFIXES)
+        and entry.value is not None
+        and not isinstance(entry.value, str)
+    ]
+
+
 def _flag_or_empty(role: Role) -> str:
     return role.flag or ""
 
@@ -183,7 +200,7 @@ def main(
     messages = [
         f"roles/{role.name}: {problem}"
         for role in roles
-        for problem in (*anatomy(role), *images(role))
+        for problem in (*anatomy(role), *images(role), *versions(role))
     ]
     messages += [
         f"scripts/check_role_structure.py {m}" for m in stale_exemptions(roles)

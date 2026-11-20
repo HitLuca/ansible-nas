@@ -13,12 +13,12 @@ radarr_group_id: "0"
 
 # network
 radarr_port: "7878"
-radarr_hostname: "radarr"
+radarr_hostname: radarr
 
 # docker
-radarr_container_name: "radarr"
-radarr_image_name: "linuxserver/radarr"
-radarr_image_version: "6.4.4"
+radarr_container_name: radarr
+radarr_image_name: linuxserver/radarr
+radarr_image_version: 6.4.4
 
 # specs
 radarr_memory: 1g

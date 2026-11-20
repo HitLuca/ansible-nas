@@ -1,9 +1,9 @@
 ---
 joomla_enabled: false
 joomla_available_externally: false
-joomla_database_password: ''
-joomla_data_directory: '{{ docker_home }}/joomla'
-joomla_port: '8181'
+joomla_database_password: ""
+joomla_data_directory: "{{ docker_home }}/joomla"
+joomla_port: "8181"
 joomla_hostname: joomla
 joomla_network_name: joomla
 joomla_container_name: joomla
@@ -11,8 +11,7 @@ joomla_image_name: joomla
 joomla_image_version: 6.2.0
 joomla_db_container_name: joomla-db
 joomla_db_image_name: mysql
-joomla_db_image_version: '5.7'
+joomla_db_image_version: "5.7"
 joomla_memory: 1g
 joomla_db_memory: 1g
-joomla_uptime_kuma_monitor: '{{ uptime_kuma_monitor_all_services | default(false)
-  }}'
+joomla_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

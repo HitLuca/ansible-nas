@@ -18,7 +18,7 @@
           - "{{ romm_db_data_directory }}/db:/var/lib/mysql"
         env:
           MYSQL_ROOT_PASSWORD: "{{ romm_database_root_password }}"
-          MYSQL_DATABASE: "romm"
+          MYSQL_DATABASE: romm
           MYSQL_USER: "{{ romm_database_username }}"
           MYSQL_PASSWORD: "{{ romm_database_password }}"
         restart_policy: unless-stopped
@@ -43,16 +43,16 @@
         ports:
           - "{{ romm_port }}:8080"
         env:
-          ROMM_DB_DRIVER: "mariadb"
-          DB_HOST: "db"
+          ROMM_DB_DRIVER: mariadb
+          DB_HOST: db
           DB_PORT: "3306"
           DB_USER: "{{ romm_database_username }}"
           DB_PASSWD: "{{ romm_database_password }}"
-          DB_NAME: "romm"
+          DB_NAME: romm
           ROMM_AUTH_ENABLED: "true"
           ROMM_AUTH_SECRET_KEY: "{{ romm_auth_secret_key }}"
           ENABLE_EXPERIMENTAL_REDIS: "true"
-          REDIS_HOST: "redis"
+          REDIS_HOST: redis
           REDIS_PORT: "6379"
           IGDB_CLIENT_ID: "{{ romm_igdb_client_id }}"
           IGDB_CLIENT_SECRET: "{{ romm_igdb_client_secret }}"
@@ -67,12 +67,12 @@
           - "{{ romm_redis_container_name }}:redis"
         labels:
           traefik.enable: "{{ romm_available_externally | string }}"
-          traefik.http.routers.romm.rule: "Host(`{{ romm_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.romm.tls.certresolver: "letsencrypt"
+          traefik.http.routers.romm.rule: Host(`{{ romm_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.romm.tls.certresolver: letsencrypt
           traefik.http.routers.romm.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.romm.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.romm.loadbalancer.server.port: "8080"
-          kuma.romm.http.name: "Romm"
+          kuma.romm.http.name: Romm
           kuma.romm.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ romm_port if romm_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Romm

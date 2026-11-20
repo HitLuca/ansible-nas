@@ -5,13 +5,13 @@
   tasks:
     - name: Try and stop and remove WordPress container
       community.docker.docker_container:
-        name: "wordpress-test"
+        name: wordpress-test
         state: absent
       register: wordpress_app
 
     - name: Try and stop and remove WordPress database container
       community.docker.docker_container:
-        name: "wordpress-test-db"
+        name: wordpress-test-db
         state: absent
       register: wordpress_db
 

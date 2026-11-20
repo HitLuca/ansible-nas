@@ -7,15 +7,15 @@ dashy_data_directory: "{{ docker_home }}/dashy"
 
 # network
 dashy_port: "8082"
-dashy_hostname: "dashy"
+dashy_hostname: dashy
 
 # specs
 dashy_memory: 1g
 
 # docker
 dashy_container_name: dashy
-dashy_image_name: "lissy93/dashy"
-dashy_image_version: "4.9.17"
+dashy_image_name: lissy93/dashy
+dashy_image_version: 4.9.17
 
 # monitoring
 dashy_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -13,8 +13,8 @@ provisioner:
     group_vars:
       all:
         prometheus_enabled: true
-        ansible_nas_hostname: "ansible-nas"
-        prometheus_data_directory: "/tmp/prometheus/data"
-        prometheus_config_directory: "/tmp/prometheus/config"
-        prometheus_telegraf_config_directory: "/tmp/telegraf/config"
+        ansible_nas_hostname: ansible-nas
+        prometheus_data_directory: /tmp/prometheus/data
+        prometheus_config_directory: /tmp/prometheus/config
+        prometheus_telegraf_config_directory: /tmp/telegraf/config
         prometheus_collection_interval: 15s

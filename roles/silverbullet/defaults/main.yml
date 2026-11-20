@@ -1,7 +1,7 @@
 ---
 silverbullet_enabled: false
 silverbullet_available_externally: false
-silverbullet_data_directory: '{{ docker_home }}/silverbullet'
+silverbullet_data_directory: "{{ docker_home }}/silverbullet"
 silverbullet_port: 3002
 silverbullet_hostname: silverbullet
 silverbullet_container_name: silverbullet
@@ -9,6 +9,5 @@ silverbullet_image_name: zefhemel/silverbullet
 silverbullet_image_version: 2.12.1
 silverbullet_memory: 1g
 silverbullet_username: admin
-silverbullet_password: ''
-silverbullet_uptime_kuma_monitor: '{{ uptime_kuma_monitor_all_services | default(false)
-  }}'
+silverbullet_password: ""
+silverbullet_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

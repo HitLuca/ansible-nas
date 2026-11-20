@@ -1,18 +1,18 @@
 ---
 znc_enabled: false
 znc_available_externally: false
-znc_data_directory: '{{ docker_home }}/znc'
-znc_user_id: '0'
-znc_group_id: '0'
+znc_data_directory: "{{ docker_home }}/znc"
+znc_user_id: "0"
+znc_group_id: "0"
 znc_hostname: znc
-znc_port: '6677'
+znc_port: "6677"
 znc_container_name: znc
 znc_image_name: znc
 znc_image_version: 1.10.3
 znc_memory: 1g
-znc_user_password: ''
+znc_user_password: ""
 znc_user_nick: user
 znc_user_altnick: user_
 znc_user_ident: user
 znc_user_real_name: User Name
-znc_uptime_kuma_monitor: '{{ uptime_kuma_monitor_all_services | default(false) }}'
+znc_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

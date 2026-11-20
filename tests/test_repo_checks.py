@@ -804,3 +804,70 @@ def test_release_notes_needs_only_the_stdlib() -> None:
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+# --- image versions load as strings -----------------------------------------
+
+
+@pytest.mark.parametrize("version", ["1.10", "2024", "1.0"])
+def test_structure_reports_numeric_image_version(repo: FakeRepo, version: str) -> None:
+    """An unquoted version that YAML reads as a number would pull another tag."""
+    repo.role(
+        "alpha",
+        defaults=(
+            "---\nalpha_enabled: false\n"
+            f'alpha_image_name: "x/y"\nalpha_image_version: {version}\n'
+        ),
+    )
+    result = repo.run("check_role_structure.py")
+    assert result.returncode == 1
+    assert "alpha_image_version is unquoted and loads as" in result.stdout
+    assert f"({version})" in result.stdout
+
+
+def test_structure_accepts_unquoted_semver(repo: FakeRepo) -> None:
+    """0.6.27 is not a number to YAML, so it needs no quotes."""
+    repo.role(
+        "alpha",
+        defaults=(
+            "---\nalpha_enabled: false\n"
+            'alpha_image_name: "x/y"\nalpha_image_version: 0.6.27\n'
+        ),
+    )
+    assert repo.run("check_role_structure.py").returncode == 0
+
+
+# --- check_yaml_unchanged.py -------------------------------------------------
+
+
+def _committed(repo: FakeRepo, path: str, content: str) -> None:
+    repo.write(path, content)
+    repo.git("init", "-q")
+    repo.git("add", "-A")
+    repo.git("commit", "-q", "-m", "init")
+
+
+def test_yaml_unchanged_allows_requoting(repo: FakeRepo) -> None:
+    """Quote-style and whitespace changes do not change the data."""
+    _committed(repo, "a.yml", "---\nname: 'x'\nport: \"80\"\n")
+    repo.write("a.yml", '---\nname: x\nport: "80"\n')
+    result = repo.run("check_yaml_unchanged.py")
+    assert result.returncode == 0, result.stdout
+
+
+def test_yaml_unchanged_reports_changed_value(repo: FakeRepo) -> None:
+    """Dropping quotes from \"80\" or \"0.10\" changes the type, so it is reported."""
+    _committed(repo, "a.yml", '---\nport: "80"\nversion: "0.10"\n')
+    repo.write("a.yml", "---\nport: 80\nversion: 0.10\n")
+    result = repo.run("check_yaml_unchanged.py")
+    assert result.returncode == 1
+    assert "a.yml: parsed data differs from HEAD" in result.stdout
+
+
+def test_yaml_unchanged_skips_templates(repo: FakeRepo) -> None:
+    """Jinja templates are not plain YAML, so they are listed, not compared."""
+    _committed(repo, "t.yml", "---\nproxied: {{ x | bool }}\n")
+    repo.write("t.yml", "---\nproxied: {{ y | bool }}\n")
+    result = repo.run("check_yaml_unchanged.py")
+    assert result.returncode == 0
+    assert "skipped" in result.stdout and "t.yml" in result.stdout

@@ -34,7 +34,7 @@
         volumes:
           - "{{ piwigo_data_directory }}/mysql:/var/lib/mysql:rw"
         env:
-          MYSQL_DATABASE: "piwigo"
+          MYSQL_DATABASE: piwigo
           MYSQL_USER: "{{ piwigo_mysql_user }}"
           MYSQL_PASSWORD: "{{ piwigo_mysql_password }}"
           MYSQL_ROOT_PASSWORD: "{{ piwigo_mysql_root_password }}"
@@ -66,17 +66,17 @@
         network_mode: "{{ piwigo_network_name }}"
         labels:
           traefik.enable: "{{ piwigo_available_externally | string }}"
-          traefik.http.routers.piwigo.rule: "Host(`{{ piwigo_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.piwigo.tls.certresolver: "letsencrypt"
+          traefik.http.routers.piwigo.rule: Host(`{{ piwigo_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.piwigo.tls.certresolver: letsencrypt
           traefik.http.routers.piwigo.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.piwigo.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.piwigo.loadbalancer.server.port: "80"
-          kuma.piwigo.http.name: "Piwigo"
+          kuma.piwigo.http.name: Piwigo
           kuma.piwigo.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ piwigo_port if piwigo_uptime_kuma_monitor else omit }}"
           homepage.group: Photos
           homepage.name: Piwigo
           homepage.icon: piwigo.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ piwigo_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ piwigo_port }}
           homepage.description: Photos client
   when: piwigo_enabled is true
 

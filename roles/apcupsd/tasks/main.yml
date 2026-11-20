@@ -9,7 +9,7 @@
       with_items:
         - "{{ apcupsd_data_directory }}"
 
-    - name: "Check if Apcupsd config exists"
+    - name: Check if Apcupsd config exists
       ansible.builtin.stat:
         path: "{{ apcupsd_data_directory }}/apcupsd.conf"
       register: apcupsd_config_path
@@ -27,7 +27,7 @@
         pull: true
         privileged: true
         volumes:
-          - "/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket"
+          - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
           - "{{ apcupsd_data_directory }}/apcupsd.conf:/etc/apcupsd/apcupsd.conf"
         ports:
           - "{{ apcupsd_port }}:3551"

@@ -15,9 +15,9 @@
         pull: true
         ports:
           - "{{ syncthing_port }}:8384"
-          - "21027:21027/udp"
-          - "22000:22000/udp"
-          - "22000:22000/tcp"
+          - 21027:21027/udp
+          - 22000:22000/udp
+          - 22000:22000/tcp
         env:
           PUID: "{{ syncthing_user_id | string }}"
           PGID: "{{ syncthing_group_id | string }}"
@@ -26,17 +26,17 @@
         memory: "{{ syncthing_memory }}"
         labels:
           traefik.enable: "{{ syncthing_available_externally | string }}"
-          traefik.http.routers.syncthing.rule: "Host(`{{ syncthing_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.syncthing.tls.certresolver: "letsencrypt"
+          traefik.http.routers.syncthing.rule: Host(`{{ syncthing_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.syncthing.tls.certresolver: letsencrypt
           traefik.http.routers.syncthing.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.syncthing.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.syncthing.loadbalancer.server.port: "8384"
-          kuma.syncthing.http.name: "Syncthing"
+          kuma.syncthing.http.name: Syncthing
           kuma.syncthing.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ syncthing_port if syncthing_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: Syncthing
           homepage.icon: syncthing.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ syncthing_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ syncthing_port }}
           homepage.description: File synchronization
   when: syncthing_enabled is true
 

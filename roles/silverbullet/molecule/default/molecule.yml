@@ -4,4 +4,4 @@ provisioner:
     group_vars:
       all:
         silverbullet_enabled: true
-        silverbullet_password: "test-password-123"
+        silverbullet_password: test-password-123

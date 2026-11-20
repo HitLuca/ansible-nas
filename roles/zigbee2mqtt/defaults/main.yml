@@ -12,16 +12,16 @@ zigbee2mqtt_data_directory: "{{ docker_home }}/zigbee2mqtt"
 zigbee2mqtt_device_path: ""
 
 # network
-zigbee2mqtt_hostname: "zigbee2mqtt"
+zigbee2mqtt_hostname: zigbee2mqtt
 zigbee2mqtt_port: "8080"
 
 # docker
-zigbee2mqtt_container_name: "zigbee2mqtt"
-zigbee2mqtt_image_name: "koenkk/zigbee2mqtt"
-zigbee2mqtt_image_version: "2.14.3"
+zigbee2mqtt_container_name: zigbee2mqtt
+zigbee2mqtt_image_name: koenkk/zigbee2mqtt
+zigbee2mqtt_image_version: 2.14.3
 
 # specs
-zigbee2mqtt_memory: "512MB"
+zigbee2mqtt_memory: 512MB
 
 # monitoring
 zigbee2mqtt_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

@@ -14,20 +14,20 @@ calibre_comics_directory: "{{ comics_root }}"
 # network
 calibre_port: "8093"
 calibre_webserver_port: "8094"
-calibre_hostname: "calibre"
+calibre_hostname: calibre
 
 # env
 calibre_password: ""
 calibre_cli_args: ""
-calibre_security_opts: "seccomp=unconfined" # For why this is here, see https://github.com/linuxserver/docker-calibre/issues/102
+calibre_security_opts: seccomp=unconfined # For why this is here, see https://github.com/linuxserver/docker-calibre/issues/102
 
 # specs
 calibre_memory: 1g
 
 # docker
 calibre_container_name: calibre
-calibre_image_name: "linuxserver/calibre"
-calibre_image_version: "9.18.0"
+calibre_image_name: linuxserver/calibre
+calibre_image_version: 9.18.0
 
 # monitoring
 calibre_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

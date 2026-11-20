@@ -5,4 +5,4 @@
     image: gitea/gitea:latest
     state: started
     restart: true
-  listen: "restart gitea"
+  listen: restart gitea

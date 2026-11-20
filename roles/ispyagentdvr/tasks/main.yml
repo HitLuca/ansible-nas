@@ -33,17 +33,17 @@
         memory: "{{ ispyagentdvr_memory }}"
         labels:
           traefik.enable: "{{ ispyagentdvr_available_externally | string }}"
-          traefik.http.routers.ispyagentdvr.rule: "Host(`ispyagentdvr.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.ispyagentdvr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.ispyagentdvr.rule: Host(`ispyagentdvr.{{ ansible_nas_domain }}`)
+          traefik.http.routers.ispyagentdvr.tls.certresolver: letsencrypt
           traefik.http.routers.ispyagentdvr.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.ispyagentdvr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.ispyagentdvr.loadbalancer.server.port: "8097"
-          kuma.ispyagentdvr.http.name: "iSpy Agent DVR"
+          kuma.ispyagentdvr.http.name: iSpy Agent DVR
           kuma.ispyagentdvr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ ispyagentdvr_webui_port if ispyagentdvr_uptime_kuma_monitor else omit }}"
           homepage.group: Monitoring
           homepage.name: iSpy AgentDVR
           homepage.icon: ispy.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ ispyagentdvr_webui_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ ispyagentdvr_webui_port }}
           homepage.description: Camera Monitoring software
   when: ispyagentdvr_enabled is true
 

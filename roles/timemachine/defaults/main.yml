@@ -1,11 +1,11 @@
 ---
 timemachine_enabled: false
-timemachine_volume_size_limit: '0'
-timemachine_password: ''
+timemachine_volume_size_limit: "0"
+timemachine_password: ""
 timemachine_share_name: Data
 timemachine_log_level: error
-timemachine_data_directory: '{{ docker_home }}/timemachine'
-timemachine_port: '10445'
+timemachine_data_directory: "{{ docker_home }}/timemachine"
+timemachine_port: "10445"
 timemachine_memory: 1g
 timemachine_container_name: timemachine
 timemachine_image_name: awlnx/samba-timemachine

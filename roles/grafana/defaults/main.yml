@@ -8,12 +8,12 @@ grafana_config_directory: "{{ docker_home }}/grafana/config"
 
 # network
 grafana_port: "3000"
-grafana_hostname: "grafana"
+grafana_hostname: grafana
 
 # docker
-grafana_container_name: "grafana"
-grafana_image_name: "grafana/grafana"
-grafana_image_version: "13.3.1"
+grafana_container_name: grafana
+grafana_image_name: grafana/grafana
+grafana_image_version: 13.3.1
 
 # specs
 grafana_memory: 1g

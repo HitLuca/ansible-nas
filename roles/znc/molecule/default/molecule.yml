@@ -4,8 +4,8 @@ provisioner:
     group_vars:
       all:
         znc_enabled: true
-        znc_user_password: "test-password-123"
-        znc_data_directory: "/tmp/znc"
+        znc_user_password: test-password-123
+        znc_data_directory: /tmp/znc
 platforms:
   - name: instance
     image: geerlingguy/docker-ubuntu2204-ansible:latest

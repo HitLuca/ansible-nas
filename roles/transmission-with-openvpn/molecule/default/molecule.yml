@@ -4,4 +4,4 @@ provisioner:
     group_vars:
       all:
         transmission_with_openvpn_enabled: true
-        openvpn_password: "test-password-123"
+        openvpn_password: test-password-123

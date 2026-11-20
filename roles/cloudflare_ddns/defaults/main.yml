@@ -1,9 +1,9 @@
 ---
 cloudflare_ddns_enabled: false
-cloudflare_ddns_data_directory: '{{ docker_home }}/cloudflare_ddns'
-cloudflare_ddns_zone: '{{ ansible_nas_domain }}'
-cloudflare_ddns_host: '*.{{ cloudflare_ddns_zone }}'
-cloudflare_ddns_token: ''
+cloudflare_ddns_data_directory: "{{ docker_home }}/cloudflare_ddns"
+cloudflare_ddns_zone: "{{ ansible_nas_domain }}"
+cloudflare_ddns_host: "*.{{ cloudflare_ddns_zone }}"
+cloudflare_ddns_token: ""
 cloudflare_ddns_proxy: false
 cloudflare_ddns_type: A
 cloudflare_ddns_memory: 512MB

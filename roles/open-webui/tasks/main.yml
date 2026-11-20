@@ -30,17 +30,17 @@
         memory: "{{ open_webui_memory }}"
         labels:
           traefik.enable: "{{ open_webui_available_externally | string }}"
-          traefik.http.routers.open_webui.rule: "Host(`{{ open_webui_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.open_webui.tls.certresolver: "letsencrypt"
+          traefik.http.routers.open_webui.rule: Host(`{{ open_webui_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.open_webui.tls.certresolver: letsencrypt
           traefik.http.routers.open_webui.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.open_webui.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.open_webui.loadbalancer.server.port: "8080"
-          kuma.open-webui.http.name: "Open WebUI"
+          kuma.open-webui.http.name: Open WebUI
           kuma.open-webui.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ open_webui_port if open_webui_uptime_kuma_monitor else omit }}"
           homepage.group: AI
           homepage.name: Open WebUI
           homepage.icon: open-webui.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ open_webui_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ open_webui_port }}
           homepage.description: Chat UI for Ollama models
   when: open_webui_enabled is true
 
