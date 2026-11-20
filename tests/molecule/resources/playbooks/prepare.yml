@@ -8,5 +8,5 @@
     # working on Ubuntu 24.04+, whose Python refuses it otherwise (PEP 668).
     - name: Install docker python module
       ansible.builtin.pip:
-        name: "docker==7.2.0"
+        name: docker==7.2.0
         break_system_packages: true
