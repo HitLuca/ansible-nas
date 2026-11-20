@@ -8,4 +8,4 @@ mumble_hostname: mumble
 mumble_server_password: ""
 mumble_container_name: mumble-server
 mumble_image_name: mumblevoip/mumble-server
-mumble_image_version: v1.5.939
+mumble_image_version: v1.6.1001
