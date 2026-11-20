@@ -1,0 +1,20 @@
+---
+# This is a Homepage playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+
+    - name: Try and stop and remove Homepage
+      community.docker.docker_container:
+        name: "{{ homepage_container_name }}"
+        state: absent
+      register: result
+
+    - name: Check Homepage is stopped
+      ansible.builtin.assert:
+        that:
+          - not result.changed

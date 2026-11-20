@@ -24,16 +24,14 @@ from role_defaults import Role
 # Roles that legitimately deviate from the standard anatomy. Keep each list
 # sorted so exemptions are easy to audit.
 NO_MOLECULE = (
-    "ansible-nas-docker",
-    "ansible-nas-general",
-    "ansible-nas-users",
-    "ddns_updater",
-    "duplicati",
-    "homepage",
-    "logging",
-    "loki",
-    "minecraft-bedrock-server",
-    "mumble",
+    "ansible-nas-docker",  # host setup, no container
+    "ansible-nas-general",  # host setup, no container
+    "ansible-nas-users",  # host setup, no container
+    "ddns_updater",  # needs a real DNS provider config to start
+    "duplicati",  # no reason recorded; add a scenario
+    "logging",  # only sets other roles' flags
+    "minecraft-bedrock-server",  # no reason recorded; add a scenario
+    "mumble",  # no reason recorded; add a scenario
 )
 NO_DEFAULTS = ("ansible-nas-users",)
 NO_ENABLED_FLAG = ("ansible-nas-docker", "ansible-nas-general")

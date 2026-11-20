@@ -11,6 +11,15 @@
         msg: Missing Gitea Oauth2 config! Read https://woodpecker-ci.org/docs/administration/forges/gitea and set woodpecker_ci_gitea_client and woodpecker_ci_gitea_secret.
       when: woodpecker_ci_gitea_client == "notset"
 
+    - name: Check Woodpecker-CI secrets are set
+      ansible.builtin.assert:
+        that:
+          - woodpecker_ci_agent_secret | length > 0
+          - woodpecker_ci_gitea_secret | length > 0
+        fail_msg: >-
+          woodpecker_ci_agent_secret and woodpecker_ci_gitea_secret are required.
+          Generate the agent secret with openssl rand -hex 32.
+
     - name: Create Woodpecker-CI Directories
       ansible.builtin.file:
         path: "{{ item }}"

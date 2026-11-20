@@ -1,6 +1,11 @@
 ---
 - name: Start ZNC
   block:
+    - name: Check ZNC user password is set
+      ansible.builtin.assert:
+        that: znc_user_password | length > 0
+        fail_msg: znc_user_password is required.
+
     - name: Create ZNC Directories
       ansible.builtin.file:
         path: "{{ item }}"

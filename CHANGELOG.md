@@ -25,6 +25,7 @@ Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
 - `immich` — `immich_db_password` and `immich_redis_password` now default to empty string; must be set in inventory.
 - `joomla` — `joomla_database_password` now defaults to empty string; must be set in inventory.
 - `krusader` — `krusader_vnc_password` now defaults to empty string; must be set in inventory.
+- `calibre` — `calibre_password` is now required (an empty one left the Calibre desktop open to the network); set it in inventory.
 - `mumble` — `mumble_server_password` now defaults to empty string; must be set in inventory.
 - `miniflux` — `miniflux_admin_password` now defaults to empty string; must be set in inventory.
 - `nextcloud` — `nextcloud_sql_password` and `nextcloud_sql_root_password` now default to empty string; must be set in inventory.
@@ -41,6 +42,7 @@ Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
 - `znc` — `znc_user_password` now defaults to empty string; must be set in inventory.
 - `route53_ddns` — fixed role variable names in defaults.yml
 - `cloudflare_ddns`  — fixed role variable names in defaults.yml
+- `prowlarr` — moved to the official `linuxserver/prowlarr` dockerhub image, and bumped to the latest release
 
 ## v2.0.0 — 2026-11-17
 

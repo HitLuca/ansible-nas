@@ -27,34 +27,15 @@ jobs:
           # last release tag, which a shallow clone does not have.
           fetch-depth: 0
 
-      - name: Set up Python 3
-        uses: actions/setup-python@v7
+      # Tool versions come from uv.lock and .pre-commit-config.yaml, the same
+      # ones `make lint` uses locally, so CI and local runs cannot drift.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10
         with:
           python-version: "3.13"
 
-      # Keep ansible-core in step with the version used to deploy, and these
-      # pins in step with the revs in .pre-commit-config.yaml.
-      - name: Install test dependencies
-        run: pip3 install ansible-core==2.21.4 ansible-lint==26.10.1 yamllint==1.38.0
+      - name: Lint (pre-commit hooks and repo checks)
+        run: make lint
 
-      - name: Ansible-lint
-        run: ansible-lint nas.yml
-
-      - name: Lint yaml files
-        run: yamllint .
-
-      - name: Check role enabled flags
-        run: python3 scripts/check_enabled_vars.py
-
-      - name: Check role structure
-        run: python3 scripts/check_role_structure.py
-
-      - name: Check breaking changes are in the changelog
-        run: python3 scripts/check_breaking_changes.py
-
-      # The checks above and the image scripts have their own tests; keep the
-      # pytest pin in step with uv.lock.
-      - name: Unit tests for the test scripts
-        run: |
-          pip3 install pytest==9.2.0
-          python3 -m pytest tests --ignore=tests/test_molecule.py -q
+      - name: Unit tests for the scripts
+        run: make test-unit

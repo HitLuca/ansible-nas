@@ -1,6 +1,11 @@
 ---
 - name: Start Miniflux
   block:
+    - name: Check Miniflux admin password is set
+      ansible.builtin.assert:
+        that: miniflux_admin_password | length > 0
+        fail_msg: miniflux_admin_password is required.
+
     - name: Create Miniflux Directories
       ansible.builtin.file:
         path: "{{ item }}"

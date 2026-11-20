@@ -1,6 +1,11 @@
 ---
 - name: Start Time Machine
   block:
+    - name: Check Time Machine password is set
+      ansible.builtin.assert:
+        that: timemachine_password | length > 0
+        fail_msg: timemachine_password is required.
+
     - name: Time Machine Directories
       ansible.builtin.file:
         path: "{{ timemachine_data_directory }}"

@@ -4,3 +4,5 @@ provisioner:
     group_vars:
       all:
         cloudflared_enabled: true
+        # Test-only value, not a real tunnel token.
+        cloudflared_token: test-token-123

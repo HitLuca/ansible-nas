@@ -1,6 +1,11 @@
 ---
 - name: Start Calibre
   block:
+    - name: Check Calibre password is set
+      ansible.builtin.assert:
+        that: calibre_password | length > 0
+        fail_msg: calibre_password is required; without it anyone on the network can open the Calibre desktop.
+
     - name: Create Calibre Directories
       ansible.builtin.file:
         path: "{{ item }}"
