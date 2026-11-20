@@ -8,6 +8,12 @@
       with_items:
         - "{{ silverbullet_data_directory }}"
 
+    - name: Check silverbullet_password is set
+      ansible.builtin.assert:
+        that: silverbullet_password | length >= 8
+        fail_msg: >
+          silverbullet_password is required. Silverbullet password
+
     - name: Silverbullet Docker Container
       community.docker.docker_container:
         name: "{{ silverbullet_container_name }}"

@@ -14,6 +14,12 @@
       with_items:
         - "{{ bitwarden_data_directory }}"
 
+    - name: Check bitwarden_admin_token is set
+      ansible.builtin.assert:
+        that: bitwarden_admin_token | length >= 10
+        fail_msg: >
+          bitwarden_admin_token is required. Admin token for Bitwarden admin area. Generate with: openssl rand -base64 48
+
     - name: Bitwarden Docker Container
       community.docker.docker_container:
         name: "{{ bitwarden_container_name }}"

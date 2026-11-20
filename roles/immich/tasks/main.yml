@@ -14,6 +14,12 @@
       community.docker.docker_network:
         name: "{{ immich_network_name }}"
 
+    - name: Check immich_db_password is set
+      ansible.builtin.assert:
+        that: immich_db_password | length >= 8
+        fail_msg: >
+          immich_db_password is required. PostgreSQL password for Immich database
+
     - name: Immich Postgres Docker Container
       community.docker.docker_container:
         name: "{{ immich_postgres_container_name }}"

@@ -3,7 +3,7 @@ speedtest_tracker_enabled: false
 speedtest_tracker_available_externally: false
 
 # directories
-speedtest_data_directory: "{{ docker_home }}/speedtest_tracker"
+speedtest_tracker_data_directory: "{{ docker_home }}/speedtest_tracker"
 
 # uid / gid
 speedtest_tracker_user_id: "0"
@@ -23,9 +23,9 @@ speedtest_tracker_app_url: "http://{{ ansible_facts.default_ipv4.address }}:{{ s
 speedtest_tracker_schedule: "0 */6 * * *"
 
 # docker
-speedtest_container_name: "speedtest-tracker"
-speedtest_image_name: "lscr.io/linuxserver/speedtest-tracker"
-speedtest_image_version: "v1.15.1-ls177"
+speedtest_tracker_container_name: "speedtest-tracker"
+speedtest_tracker_image_name: "lscr.io/linuxserver/speedtest-tracker"
+speedtest_tracker_image_version: "v1.15.1-ls177"
 
 # specs
 speedtest_tracker_memory: 1g

@@ -14,6 +14,18 @@
       community.docker.docker_network:
         name: "{{ piwigo_network_name }}"
 
+    - name: Check piwigo_mysql_password is set
+      ansible.builtin.assert:
+        that: piwigo_mysql_password | length >= 8
+        fail_msg: >
+          piwigo_mysql_password is required. Piwigo database password
+
+    - name: Check piwigo_mysql_root_password is set
+      ansible.builtin.assert:
+        that: piwigo_mysql_root_password | length >= 8
+        fail_msg: >
+          piwigo_mysql_root_password is required. MariaDB root password
+
     - name: Create MySQL container for Piwigo
       community.docker.docker_container:
         name: "{{ piwigo_db_container_name }}"

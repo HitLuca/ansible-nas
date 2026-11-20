@@ -9,6 +9,12 @@
         - "{{ couchdb_data_directory }}/config"
         - "{{ couchdb_data_directory }}/data"
 
+    - name: Check couchdb_admin_password is set
+      ansible.builtin.assert:
+        that: couchdb_admin_password | length >= 8
+        fail_msg: >
+          couchdb_admin_password is required. CouchDB admin password
+
     - name: CouchDB Container
       community.docker.docker_container:
         name: "{{ couchdb_container_name }}"

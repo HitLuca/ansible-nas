@@ -13,6 +13,18 @@
       community.docker.docker_network:
         name: "{{ nextcloud_network_name }}"
 
+    - name: Check nextcloud_sql_password is set
+      ansible.builtin.assert:
+        that: nextcloud_sql_password | length >= 8
+        fail_msg: >
+          nextcloud_sql_password is required. Nextcloud database password
+
+    - name: Check nextcloud_sql_root_password is set
+      ansible.builtin.assert:
+        that: nextcloud_sql_root_password | length >= 8
+        fail_msg: >
+          nextcloud_sql_root_password is required. MariaDB root password
+
     - name: Nextcloud Mysql Docker Container
       community.docker.docker_container:
         name: "{{ nextcloud_db_container_name }}"

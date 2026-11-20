@@ -3,8 +3,12 @@ heimdall_enabled: false
 heimdall_available_externally: false
 
 # directories
-heimdall_docker_image: linuxserver/heimdall:2.8.4
 heimdall_data_directory: "{{ docker_home }}/heimdall"
+
+# docker
+heimdall_container_name: heimdall
+heimdall_image_name: linuxserver/heimdall
+heimdall_image_version: "2.8.4"
 
 # network
 heimdall_port_http: "11112"
@@ -12,8 +16,6 @@ heimdall_hostname: heimdall
 
 # specs
 heimdall_memory: 1g
-
-heimdall_container_name: heimdall
 
 # monitoring
 heimdall_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

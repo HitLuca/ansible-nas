@@ -13,6 +13,12 @@
       community.docker.docker_network:
         name: "{{ joomla_network_name }}"
 
+    - name: Check joomla_database_password is set
+      ansible.builtin.assert:
+        that: joomla_database_password | length >= 8
+        fail_msg: >
+          joomla_database_password is required. Joomla database password
+
     - name: MySQL Docker Container for Joomla
       community.docker.docker_container:
         name: "{{ joomla_db_container_name }}"

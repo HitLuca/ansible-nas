@@ -23,7 +23,7 @@
     - name: Create Homepage Docker Container
       community.docker.docker_container:
         name: "{{ homepage_container_name }}"
-        image: "{{ homepage_image_name }}:{{ homepage_image_tag }}"
+        image: "{{ homepage_image_name }}:{{ homepage_image_version }}"
         pull: true
         volumes:
           - "{{ homepage_data_directory }}:/app/config"

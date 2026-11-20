@@ -7,8 +7,8 @@
         file: ../../defaults/main.yml
 
     - name: Get speedtest container state
-      community.docker.docker_container:
-        name: "{{ speedtest_container_name }}"
+      community.docker.docker_container_info:
+        name: "{{ speedtest_tracker_container_name }}"
       register: result
 
     - name: Check if speedtest containers are running

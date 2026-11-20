@@ -53,10 +53,7 @@
         memory: "{{ authelia_memory }}"
         recreate: "{{ authelia_template_config is changed or authelia_template_users is changed }}"
         labels:
-          # Always registered with Traefik: the forward-auth middleware below
-          # only exists while this container is exposed to the provider, and the
-          # portal router is what login redirects point at.
-          traefik.enable: "true"
+          traefik.enable: "{{ authelia_available_externally | string }}"
           traefik.http.routers.authelia.rule: "Host(`{{ authelia_hostname }}.{{ ansible_nas_domain }}`)"
           traefik.http.routers.authelia.tls.certresolver: "letsencrypt"
           traefik.http.routers.authelia.tls.domains[0].main: "{{ ansible_nas_domain }}"

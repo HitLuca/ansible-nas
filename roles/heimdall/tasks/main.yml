@@ -12,7 +12,7 @@
     - name: Create Heimdall container
       community.docker.docker_container:
         name: "{{ heimdall_container_name }}"
-        image: "{{ heimdall_docker_image }}"
+        image: "{{ heimdall_image_name }}:{{ heimdall_image_version }}"
         pull: true
         volumes:
           - "{{ heimdall_data_directory }}:/config:rw"

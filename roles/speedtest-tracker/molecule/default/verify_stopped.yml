@@ -8,7 +8,7 @@
 
     - name: Try and stop and remove speedtest
       community.docker.docker_container:
-        name: "{{ speedtest_container_name }}"
+        name: "{{ speedtest_tracker_container_name }}"
         state: absent
       register: result
 

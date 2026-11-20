@@ -37,6 +37,18 @@
       community.docker.docker_network:
         name: "{{ paperless_ngx_network_name }}"
 
+    - name: Check paperless_ngx_db_password is set
+      ansible.builtin.assert:
+        that: paperless_ngx_db_password | length >= 8
+        fail_msg: >
+          paperless_ngx_db_password is required. Paperless-ngx database password
+
+    - name: Check paperless_ngx_secret_key is set
+      ansible.builtin.assert:
+        that: paperless_ngx_secret_key | length >= 10
+        fail_msg: >
+          paperless_ngx_secret_key is required. Paperless-ngx secret key. Generate with: openssl rand -hex 32
+
     - name: Paperless-ngx Postgres Docker Container
       community.docker.docker_container:
         name: "{{ paperless_ngx_postgres_container_name }}"

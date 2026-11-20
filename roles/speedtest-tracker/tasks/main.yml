@@ -14,15 +14,15 @@
         state: directory
       with_items:
         # Separate from the old henrywhitaker3 image's "config" folder, whose data isn't compatible.
-        - "{{ speedtest_data_directory }}/data"
+        - "{{ speedtest_tracker_data_directory }}/data"
 
     - name: Speedtest-Tracker Docker Container
       community.docker.docker_container:
-        name: "{{ speedtest_container_name }}"
-        image: "{{ speedtest_image_name }}:{{ speedtest_image_version }}"
+        name: "{{ speedtest_tracker_container_name }}"
+        image: "{{ speedtest_tracker_image_name }}:{{ speedtest_tracker_image_version }}"
         pull: true
         volumes:
-          - "{{ speedtest_data_directory }}/data:/config:rw"
+          - "{{ speedtest_tracker_data_directory }}/data:/config:rw"
         ports:
           - "{{ speedtest_tracker_port }}:80"
         env:
@@ -56,6 +56,6 @@
   block:
     - name: Stop Speedtest-Tracker
       community.docker.docker_container:
-        name: "{{ speedtest_container_name }}"
+        name: "{{ speedtest_tracker_container_name }}"
         state: absent
   when: speedtest_tracker_enabled is false

@@ -26,8 +26,8 @@ emby_memory: 1g
 
 # docker
 emby_container_name: emby
-emby_image: emby/embyserver
-emby_image_tag: beta
+emby_image_name: emby/embyserver
+emby_image_version: beta
 
 # Device mappings for the docker container. E.g. To enable hardware transcoding:
 # emby_devices:

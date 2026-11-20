@@ -13,6 +13,32 @@ Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
 - `stats` — role removed and split into `grafana` and `prometheus`; set `grafana_enabled` (plus a required `grafana_admin_password`) and `prometheus_enabled` instead of `stats_enabled`. The hddtemp exporter is gone (the smartctl exporter already reports disk temperature), and the unused Telegraf InfluxDB listener was removed.
 - `promtail` — role removed in favour of `alloy` (promtail reached end-of-life); set `alloy_enabled` instead of `promtail_enabled`.
 - `booksonic` — role removed in favour of `audiobookshelf`, so an inventory that enables it no longer deploys that container; the audio files are untouched, but users and listening progress do not carry over. See [Migrating from Booksonic](website/docs/applications/media-serving/audiobookshelf.md).
+- `emby` — renamed image variables from `emby_image` + `emby_image_tag` to `emby_image_name` + `emby_image_version`; update inventory overrides accordingly.
+- `heimdall` — renamed image variable from `heimdall_docker_image` to `heimdall_image_name` + `heimdall_image_version`; update inventory overrides accordingly.
+- `homepage` — renamed image variable from `homepage_image_tag` to `homepage_image_version`; update inventory overrides accordingly.
+- `minecraft-bedrock-server` — renamed image variable from `minecraft_bedrock_server_image` to `minecraft_bedrock_server_image_name` + `minecraft_bedrock_server_image_version`; update inventory overrides accordingly.
+- `speedtest-tracker` — renamed variables from `speedtest_*` prefix to `speedtest_tracker_*` prefix (affects `speedtest_container_name`, `speedtest_data_directory`, `speedtest_image_name`, `speedtest_image_version`); update inventory overrides accordingly.
+- `bitwarden` — `bitwarden_admin_token` now defaults to empty string; must be set in inventory (generate with `openssl rand -base64 48`).
+- `cloudflare_ddns` — `cloudflare_token` now defaults to empty string; must be set in inventory (create at dash.cloudflare.com/profile/api-tokens).
+- `drone-ci` — `drone_ci_agent_secret` and `drone_ci_gitea_client_secret` now default to empty string; must be set in inventory (generate with `openssl rand -hex 16`).
+- `couchdb` — `couchdb_admin_password` now defaults to empty string; must be set in inventory.
+- `immich` — `immich_db_password` and `immich_redis_password` now default to empty string; must be set in inventory.
+- `joomla` — `joomla_database_password` now defaults to empty string; must be set in inventory.
+- `krusader` — `krusader_vnc_password` now defaults to empty string; must be set in inventory.
+- `mumble` — `mumble_server_password` now defaults to empty string; must be set in inventory.
+- `miniflux` — `miniflux_admin_password` now defaults to empty string; must be set in inventory.
+- `nextcloud` — `nextcloud_sql_password` and `nextcloud_sql_root_password` now default to empty string; must be set in inventory.
+- `n8n` — `n8n_basic_auth_password` now defaults to empty string; must be set in inventory.
+- `piwigo` — `piwigo_mysql_password` and `piwigo_mysql_root_password` now default to empty string; must be set in inventory.
+- `paperless_ngx` — `paperless_ngx_db_password`, `paperless_ngx_secret_key`, and `paperless_ngx_admin_password` now default to empty string; `paperless_ngx_db_password` and `paperless_ngx_secret_key` must be set in inventory (generate with `openssl rand -hex 32`).
+- `romm` — `romm_database_password`, `romm_database_root_password`, `romm_igdb_client_secret`, `romm_auth_secret_key`, and `romm_auth_password` now default to empty string; must be set in inventory (generate `romm_auth_secret_key` with `openssl rand -hex 32`).
+- `silverbullet` — `silverbullet_password` now defaults to empty string; must be set in inventory.
+- `timemachine` — `timemachine_password` now defaults to empty string; must be set in inventory.
+- `transmission-with-openvpn` — `openvpn_password` now defaults to empty string; must be set in inventory.
+- `valheim` — `valheim_password` and `valheim_set_key` now default to empty string; `valheim_password` must be set in inventory.
+- `virtual_desktop` — `virtual_desktop_users[0].password` now defaults to empty string; must be set in inventory.
+- `woodpecker-ci` — `woodpecker_ci_agent_secret` and `woodpecker_ci_gitea_secret` now default to empty string; must be set in inventory (generate with `openssl rand -hex 32`).
+- `znc` — `znc_user_password` now defaults to empty string; must be set in inventory.
 
 ## v2.0.0 — 2026-11-17
 

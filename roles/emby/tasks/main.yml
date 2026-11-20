@@ -11,7 +11,7 @@
     - name: Emby Docker Container
       community.docker.docker_container:
         name: "{{ emby_container_name }}"
-        image: "{{ emby_image }}:{{ emby_image_tag }}"
+        image: "{{ emby_image_name }}:{{ emby_image_version }}"
         pull: true
         volumes:
           - "{{ emby_config_directory }}:/config:rw"

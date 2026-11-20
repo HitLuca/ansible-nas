@@ -30,8 +30,6 @@
         command: "-config.file=/etc/loki/config.yml"
         ports:
           - "{{ loki_http_port }}:3100"
-          - 7946
-          - 9095
         volumes:
           - "{{ loki_data_directory }}/config.yml:/etc/loki/config.yml"
           - "{{ loki_data_directory }}/data:/loki/data"

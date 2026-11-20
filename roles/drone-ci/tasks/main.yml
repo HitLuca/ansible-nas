@@ -18,6 +18,18 @@
       with_items:
         - "{{ drone_ci_data_directory }}"
 
+    - name: Check drone_ci_agent_secret is set
+      ansible.builtin.assert:
+        that: drone_ci_agent_secret | length >= 10
+        fail_msg: >
+          drone_ci_agent_secret is required. Drone CI agent shared secret. Generate with: openssl rand -hex 16
+
+    - name: Check drone_ci_gitea_client_secret is set
+      ansible.builtin.assert:
+        that: drone_ci_gitea_client_secret | length >= 10
+        fail_msg: >
+          drone_ci_gitea_client_secret is required. Gitea OAuth client secret for Drone CI
+
     - name: Create Drone-CI container
       community.docker.docker_container:
         name: "{{ drone_ci_container_name }}"
