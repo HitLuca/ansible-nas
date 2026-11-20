@@ -16,9 +16,9 @@
         ports:
           - "{{ netdata_port }}:19999"
         volumes:
-          - "/proc:/host/proc:ro"
-          - "/sys:/host/sys:ro"
-          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          - /proc:/host/proc:ro
+          - /sys:/host/sys:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
         env:
           PGID: "{{ netdata_docker_group.gid | string }}"
         capabilities:
@@ -29,17 +29,17 @@
         memory: "{{ netdata_memory }}"
         labels:
           traefik.enable: "{{ netdata_available_externally | string }}"
-          traefik.http.routers.netdata.rule: "Host(`{{ netdata_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.netdata.tls.certresolver: "letsencrypt"
+          traefik.http.routers.netdata.rule: Host(`{{ netdata_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.netdata.tls.certresolver: letsencrypt
           traefik.http.routers.netdata.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.netdata.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.netdata.loadbalancer.server.port: "19999"
-          kuma.netdata.http.name: "Netdata"
+          kuma.netdata.http.name: Netdata
           kuma.netdata.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ netdata_port if netdata_uptime_kuma_monitor else omit }}"
           homepage.group: Monitoring
           homepage.name: Netdata
           homepage.icon: netdata.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ netdata_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ netdata_port }}
           homepage.description: System monitoring
   when: netdata_enabled is true
 

@@ -8,6 +8,7 @@ heading. The footer is .github/release-footer.md. Fails when the section is
 missing or empty, so a tag pushed before the changelog was renamed publishes
 nothing instead of an empty release.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,7 +16,6 @@ import re
 import sys
 from pathlib import Path
 from typing import Sequence
-
 
 # Stdlib only: the release workflow runs this without installing anything.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -45,7 +45,9 @@ def main(argv: Sequence[str] | None = None, root: Path = REPO_ROOT) -> int:
 
     body = section((root / CHANGELOG).read_text(), args.tag)
     if not body:
-        print(f"{CHANGELOG} has no '## {args.tag}' section with content.", file=sys.stderr)
+        print(
+            f"{CHANGELOG} has no '## {args.tag}' section with content.", file=sys.stderr
+        )
         return 1
     footer = (root / FOOTER).read_text().strip()
     print(f"{body}\n\n{footer}")

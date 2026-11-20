@@ -11,7 +11,7 @@
     - name: Minecraft Bedrock Server Docker Container
       community.docker.docker_container:
         name: "{{ minecraft_bedrock_server_container_name }}"
-        image: "{{ minecraft_bedrock_server_image }}"
+        image: "{{ minecraft_bedrock_server_image_name }}:{{ minecraft_bedrock_server_image_version }}"
         pull: true
         volumes:
           - "{{ minecraft_bedrock_server_data_directory }}:/data:rw"

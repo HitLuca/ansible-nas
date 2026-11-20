@@ -4,8 +4,8 @@ provisioner:
     group_vars:
       all:
         octoprint_enabled: true
-        octoprint_printer_mountpoint: "/dev/null"
-        octoprint_webcam_mountpoint: "/dev/null"
+        octoprint_printer_mountpoint: /dev/null
+        octoprint_webcam_mountpoint: /dev/null
 platforms:
   - name: instance
     image: geerlingguy/docker-ubuntu2204-ansible:latest

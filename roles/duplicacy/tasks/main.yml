@@ -32,17 +32,17 @@
         memory: "{{ duplicacy_memory }}"
         labels:
           traefik.enable: "{{ duplicacy_available_externally | string }}"
-          traefik.http.routers.duplicacy.rule: "Host(`{{ duplicacy_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.duplicacy.tls.certresolver: "letsencrypt"
+          traefik.http.routers.duplicacy.rule: Host(`{{ duplicacy_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.duplicacy.tls.certresolver: letsencrypt
           traefik.http.routers.duplicacy.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.duplicacy.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.duplicacy.loadbalancer.server.port: "3875"
-          kuma.duplicacy.http.name: "Duplicacy"
+          kuma.duplicacy.http.name: Duplicacy
           kuma.duplicacy.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ duplicacy_port if duplicacy_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: Duplicacy
           homepage.icon: duplicacy.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ duplicacy_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ duplicacy_port }}
           homepage.description: Backup
   when: duplicacy_enabled is true
 

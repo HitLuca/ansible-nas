@@ -10,16 +10,16 @@ tautulli_user_id: "0"
 tautulli_group_id: "0"
 
 # network
-tautulli_hostname: "tautulli"
+tautulli_hostname: tautulli
 tautulli_port: "8185"
 
 # docker
-tautulli_container_name: "tautulli"
-tautulli_image_name: "linuxserver/tautulli"
-tautulli_image_version: "2.19.1"
+tautulli_container_name: tautulli
+tautulli_image_name: linuxserver/tautulli
+tautulli_image_version: 2.19.1
 
 # specs
-tautulli_memory: "1g"
+tautulli_memory: 1g
 
 # monitoring
 tautulli_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

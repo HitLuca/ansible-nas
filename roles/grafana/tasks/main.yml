@@ -4,7 +4,7 @@
     - name: Check Grafana admin password set
       ansible.builtin.assert:
         that: grafana_admin_password | length > 0
-        fail_msg: "grafana_admin_password is required. Set it in your inventory."
+        fail_msg: grafana_admin_password is required. Set it in your inventory.
 
     - name: Create Grafana Directories
       ansible.builtin.file:
@@ -61,17 +61,17 @@
         memory: "{{ grafana_memory }}"
         labels:
           traefik.enable: "{{ grafana_available_externally | string }}"
-          traefik.http.routers.grafana.rule: "Host(`{{ grafana_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.grafana.tls.certresolver: "letsencrypt"
+          traefik.http.routers.grafana.rule: Host(`{{ grafana_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.grafana.tls.certresolver: letsencrypt
           traefik.http.routers.grafana.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.grafana.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.grafana.loadbalancer.server.port: "3000"
           homepage.group: Monitoring
           homepage.name: Grafana
           homepage.icon: grafana
-          homepage.href: "http://{{ ansible_facts.default_ipv4.address }}:{{ grafana_port }}"
+          homepage.href: http://{{ ansible_facts.default_ipv4.address }}:{{ grafana_port }}
           homepage.description: Dashboards and centralized observability
-          kuma.grafana.http.name: "Grafana"
+          kuma.grafana.http.name: Grafana
           kuma.grafana.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ grafana_port if grafana_uptime_kuma_monitor else omit }}"
   when: grafana_enabled is true
 

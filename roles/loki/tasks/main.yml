@@ -27,11 +27,9 @@
         name: "{{ loki_container_name }}"
         image: "{{ loki_image_name }}:{{ loki_image_version }}"
         pull: true
-        command: "-config.file=/etc/loki/config.yml"
+        command: -config.file=/etc/loki/config.yml
         ports:
           - "{{ loki_http_port }}:3100"
-          - 7946
-          - 9095
         volumes:
           - "{{ loki_data_directory }}/config.yml:/etc/loki/config.yml"
           - "{{ loki_data_directory }}/data:/loki/data"
@@ -40,14 +38,14 @@
         restart: "{{ loki_config is changed }}"
         labels:
           traefik.enable: "{{ loki_available_externally | string }}"
-          traefik.http.routers.loki.rule: "Host(`{{ loki_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.loki.tls.certresolver: "letsencrypt"
+          traefik.http.routers.loki.rule: Host(`{{ loki_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.loki.tls.certresolver: letsencrypt
           traefik.http.routers.loki.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.loki.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.loki.loadbalancer.server.port: "3100"
           prometheus.io/scrape: "true"
           prometheus.io/port: "3100"
-          prometheus.io/path: "/metrics"
+          prometheus.io/path: /metrics
   when: loki_enabled is true
 
 - name: Stop loki

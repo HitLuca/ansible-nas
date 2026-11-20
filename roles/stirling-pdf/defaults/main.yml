@@ -7,7 +7,7 @@ stirling_pdf_data_directory: "{{ docker_home }}/stirling_pdf"
 
 # network
 stirling_pdf_port: "8060"
-stirling_pdf_hostname: "stirling-pdf"
+stirling_pdf_hostname: stirling-pdf
 
 # application
 # Login is off by default, matching Stirling's own demo compose, so no default
@@ -16,9 +16,9 @@ stirling_pdf_hostname: "stirling-pdf"
 stirling_pdf_enable_login: false
 
 # docker
-stirling_pdf_container_name: "stirling-pdf"
-stirling_pdf_image_name: "stirlingtools/stirling-pdf"
-stirling_pdf_image_version: "3.3.0"
+stirling_pdf_container_name: stirling-pdf
+stirling_pdf_image_name: stirlingtools/stirling-pdf
+stirling_pdf_image_version: 3.3.0
 
 # specs
 stirling_pdf_memory: 4g

@@ -4,7 +4,7 @@ provisioner:
     group_vars:
       all:
         mosquitto_enabled: true
-        mosquitto_data_directory: "/tmp/mosquitto"
+        mosquitto_data_directory: /tmp/mosquitto
 platforms:
   - name: instance
     image: geerlingguy/docker-ubuntu2204-ansible:latest

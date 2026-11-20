@@ -34,13 +34,13 @@
         name: "{{ openhab_container_name }}"
         image: "{{ openhab_image_name }}:{{ openhab_image_version }}"
         pull: true
-        network_mode: "host"
+        network_mode: host
         volumes:
           - "{{ openhab_data_directory }}/conf:/openhab/conf:rw"
           - "{{ openhab_data_directory }}/userdata:/openhab/userdata:rw"
           - "{{ openhab_data_directory }}/addons:/openhab/addons:rw"
-          - "/etc/localtime:/etc/localtime:ro"
-          - "/etc/timezone:/etc/timezone:ro"
+          - /etc/localtime:/etc/localtime:ro
+          - /etc/timezone:/etc/timezone:ro
         env:
           OPENHAB_HTTP_PORT: "{{ openhab_port_http | string }}"
           OPENHAB_HTTPS_PORT: "{{ openhab_port_https | string }}"
@@ -48,17 +48,17 @@
         memory: "{{ openhab_memory }}"
         labels:
           traefik.enable: "{{ openhab_available_externally | string }}"
-          traefik.http.routers.openhab.rule: "Host(`{{ openhab_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.openhab.tls.certresolver: "letsencrypt"
+          traefik.http.routers.openhab.rule: Host(`{{ openhab_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.openhab.tls.certresolver: letsencrypt
           traefik.http.routers.openhab.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.openhab.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.openhab.loadbalancer.server.port: "7777"
-          kuma.openhab.http.name: "openHAB"
+          kuma.openhab.http.name: openHAB
           kuma.openhab.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ openhab_port_http if openhab_uptime_kuma_monitor else omit }}"
           homepage.group: Home Automation
           homepage.name: openHAB
           homepage.icon: openhab.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ openhab_port_http }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ openhab_port_http }}
           homepage.description: Home automation
   when: openhab_enabled is true
 

@@ -4,18 +4,18 @@ glances_enabled: false
 glances_available_externally: false
 
 # network
-glances_hostname: "glances"
+glances_hostname: glances
 glances_port_one: "61208"
 glances_port_two: "61209"
 
 # security options
 glances_security_options:
-  - "apparmor=unconfined"
+  - apparmor=unconfined
 
 # docker
-glances_container_name: "glances"
-glances_image_name: "nicolargo/glances"
-glances_image_version: "4.5.9"
+glances_container_name: glances
+glances_image_name: nicolargo/glances
+glances_image_version: 4.5.9
 
 # specs
 glances_memory: 1g

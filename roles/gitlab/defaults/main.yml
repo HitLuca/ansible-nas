@@ -7,20 +7,20 @@ gitlab_available_externally: false
 gitlab_data_directory: "{{ docker_home }}/gitlab"
 
 # network
-gitlab_hostname: "gitlab"
+gitlab_hostname: gitlab
 gitlab_port_http: "4080"
 gitlab_port_https: "4443"
 gitlab_port_ssh: "422"
 
 # docker
-gitlab_container_name: "gitlab"
-gitlab_image_name: "gitlab/gitlab-ce"
-gitlab_image_version: "19.5.4-ce.0"
+gitlab_container_name: gitlab
+gitlab_image_name: gitlab/gitlab-ce
+gitlab_image_version: 19.5.4-ce.0
 gitlab_user_id: "1000"
 gitlab_group_id: "1000"
 
 # specs
-gitlab_memory: "4g"
+gitlab_memory: 4g
 
 # monitoring
 gitlab_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

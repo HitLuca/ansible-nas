@@ -7,12 +7,12 @@ uptime_kuma_data_directory: "{{ docker_home }}/uptime_kuma"
 
 # network
 uptime_kuma_port: "3003"
-uptime_kuma_hostname: "uptime-kuma"
+uptime_kuma_hostname: uptime-kuma
 
 # docker
-uptime_kuma_container_name: "uptime-kuma"
-uptime_kuma_image_name: "louislam/uptime-kuma"
-uptime_kuma_image_version: "2.5.11"
+uptime_kuma_container_name: uptime-kuma
+uptime_kuma_image_name: louislam/uptime-kuma
+uptime_kuma_image_version: 2.5.11
 
 # specs
 uptime_kuma_memory: 1g
@@ -30,13 +30,13 @@ uptime_kuma_discovery_enabled: false
 uptime_kuma_discovery_username: ""
 uptime_kuma_discovery_password: ""
 uptime_kuma_discovery_data_directory: "{{ docker_home }}/uptime_kuma_discovery"
-uptime_kuma_discovery_container_name: "uptime-kuma-discovery"
-uptime_kuma_discovery_image_name: "ghcr.io/bigboot/autokuma"
+uptime_kuma_discovery_container_name: uptime-kuma-discovery
+uptime_kuma_discovery_image_name: ghcr.io/bigboot/autokuma
 # 2.1.0-rc.1 is the first release that reconnects after the Uptime Kuma
 # websocket drops; 2.0.0 keeps the dead client cached and stops syncing, which
 # strands monitors for containers that no longer exist.
-uptime_kuma_discovery_image_version: "2.1.0-rc.2"
-uptime_kuma_discovery_memory: "256m"
+uptime_kuma_discovery_image_version: 2.1.0-rc.2
+uptime_kuma_discovery_memory: 256m
 # Uptime Kuma notification IDs AutoKuma attaches to every monitor it creates,
 # as { "<id>": true } — the numeric id of a notification made in the web UI
 # (e.g. your Telegram bot). Empty attaches none. A role's own

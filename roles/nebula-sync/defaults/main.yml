@@ -13,15 +13,15 @@ nebula_sync_replicas: []
 nebula_sync_full_sync: true
 nebula_sync_run_gravity: true
 # Empty runs a single sync and exits; set a cron expression to keep syncing.
-nebula_sync_cron: "0 0 * * *"
+nebula_sync_cron: 0 0 * * *
 nebula_sync_skip_tls_verification: true
 # Any other nebula-sync environment variable, e.g. SYNC_CONFIG_DNS: "true" or webhook settings.
 nebula_sync_extra_env: {}
 
 # docker
-nebula_sync_container_name: "nebula-sync"
-nebula_sync_image_name: "ghcr.io/lovelaze/nebula-sync"
-nebula_sync_image_version: "v0.11.3"
+nebula_sync_container_name: nebula-sync
+nebula_sync_image_name: ghcr.io/lovelaze/nebula-sync
+nebula_sync_image_version: v0.11.3
 
 # specs
-nebula_sync_memory: "128MB"
+nebula_sync_memory: 128MB

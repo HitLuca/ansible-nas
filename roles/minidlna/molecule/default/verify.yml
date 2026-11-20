@@ -7,7 +7,7 @@
         file: ../../defaults/main.yml
 
     - name: Get minidlna container state
-      community.docker.docker_container:
+      community.docker.docker_container_info:
         name: "{{ minidlna_container_name }}"
       register: result
 

@@ -8,6 +8,12 @@
       with_items:
         - "{{ silverbullet_data_directory }}"
 
+    - name: Check silverbullet_password is set
+      ansible.builtin.assert:
+        that: silverbullet_password | length >= 8
+        fail_msg: >
+          silverbullet_password is required. Silverbullet password
+
     - name: Silverbullet Docker Container
       community.docker.docker_container:
         name: "{{ silverbullet_container_name }}"
@@ -23,12 +29,12 @@
           SB_USER: "{{ silverbullet_username }}:{{ silverbullet_password }}"
         labels:
           traefik.enable: "{{ silverbullet_available_externally | string }}"
-          traefik.http.routers.silverbullet.rule: "Host(`{{ silverbullet_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.silverbullet.tls.certresolver: "letsencrypt"
+          traefik.http.routers.silverbullet.rule: Host(`{{ silverbullet_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.silverbullet.tls.certresolver: letsencrypt
           traefik.http.routers.silverbullet.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.silverbullet.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.silverbullet.loadbalancer.server.port: "3000"
-          kuma.silverbullet.http.name: "SilverBullet"
+          kuma.silverbullet.http.name: SilverBullet
           kuma.silverbullet.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ silverbullet_port if silverbullet_uptime_kuma_monitor else omit }}"
           homepage.group: Productivity
           homepage.name: Silverbullet

@@ -39,24 +39,24 @@
         memory: "{{ seerr_memory }}"
         # BusyBox wget: no --no-verbose/--tries here, those are GNU-only.
         healthcheck:
-          test: "wget -q --spider --timeout=3 http://localhost:5055/api/v1/settings/public || exit 1"
+          test: wget -q --spider --timeout=3 http://localhost:5055/api/v1/settings/public || exit 1
           start_period: 20s
           timeout: 3s
           interval: 15s
           retries: 3
         labels:
           traefik.enable: "{{ seerr_available_externally | string }}"
-          traefik.http.routers.seerr.rule: "Host(`{{ seerr_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.seerr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.seerr.rule: Host(`{{ seerr_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.seerr.tls.certresolver: letsencrypt
           traefik.http.routers.seerr.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.seerr.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.seerr.loadbalancer.server.port: "5055"
-          kuma.seerr.http.name: "Seerr"
+          kuma.seerr.http.name: Seerr
           kuma.seerr.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ seerr_webui_port if seerr_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Seerr
           homepage.icon: seerr
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ seerr_webui_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ seerr_webui_port }}
           homepage.description: Media requests
   when: seerr_enabled is true
 

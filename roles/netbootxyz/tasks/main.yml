@@ -29,17 +29,17 @@
         restart_policy: unless-stopped
         labels:
           traefik.enable: "{{ netbootxyz_available_externally | string }}"
-          traefik.http.routers.netbootxyz.rule: "Host(`{{ netbootxyz_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.netbootxyz.tls.certresolver: "letsencrypt"
+          traefik.http.routers.netbootxyz.rule: Host(`{{ netbootxyz_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.netbootxyz.tls.certresolver: letsencrypt
           traefik.http.routers.netbootxyz.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.netbootxyz.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.netbootxyz.loadbalancer.server.port: "3000"
-          kuma.netbootxyz.http.name: "netboot.xyz"
+          kuma.netbootxyz.http.name: netboot.xyz
           kuma.netbootxyz.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ netbootxyz_port_http if netbootxyz_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: netboot.xyz
           homepage.icon: netbootxyz.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ netbootxyz_port_http }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ netbootxyz_port_http }}
           homepage.description: Network boot server
   when: netbootxyz_enabled is true
 

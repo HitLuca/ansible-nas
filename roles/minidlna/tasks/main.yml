@@ -10,8 +10,8 @@
           - "{{ minidlna_media_directory1 }}:/media1:rw"
           - "{{ minidlna_media_directory2 }}:/media2:rw"
         env:
-          MINIDLNA_MEDIA_DIR1: "/media1"
-          MINIDLNA_MEDIA_DIR2: "/media2"
+          MINIDLNA_MEDIA_DIR1: /media1
+          MINIDLNA_MEDIA_DIR2: /media2
           MINIDLNA_FRIENDLY_NAME: "{{ minidlna_friendly_name }}"
           MINIDLNA_PORT: "{{ minidlna_port | string }}"
         restart_policy: unless-stopped

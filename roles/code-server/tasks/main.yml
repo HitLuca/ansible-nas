@@ -13,24 +13,24 @@
           - "{{ code_server_port }}:8443"
         env:
           TZ: "{{ ansible_nas_timezone }}"
-          DEFAULT_WORKSPACE: "/code"
+          DEFAULT_WORKSPACE: /code
           PUID: "{{ code_server_user_id | string }}"
           PGID: "{{ code_server_group_id | string }}"
         restart_policy: unless-stopped
         memory: "{{ code_server_memory }}"
         labels:
           traefik.enable: "{{ code_server_available_externally | string }}"
-          traefik.http.routers.code_server.rule: "Host(`{{ code_server_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.code_server.tls.certresolver: "letsencrypt"
+          traefik.http.routers.code_server.rule: Host(`{{ code_server_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.code_server.tls.certresolver: letsencrypt
           traefik.http.routers.code_server.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.code_server.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.code_server.loadbalancer.server.port: "8443"
-          kuma.code-server.http.name: "Code Server"
+          kuma.code-server.http.name: Code Server
           kuma.code-server.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ code_server_port if code_server_uptime_kuma_monitor else omit }}"
           homepage.group: Productivity
           homepage.name: Code Server
           homepage.icon: code-server.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ code_server_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ code_server_port }}
           homepage.description: VS Code in the browser
   when: code_server_enabled is true
 

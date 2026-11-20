@@ -10,6 +10,7 @@ Covers inline ``when: a_enabled is true``, compound conditions
 Jinja expressions. Skips attribute lookups (``item.x_enabled``), mapping keys
 (``loki_enabled: true`` as a module or include_role var) and comments.
 """
+
 from __future__ import annotations
 
 import re
@@ -21,7 +22,9 @@ import role_defaults
 
 # A whole identifier ending in _enabled: not part of a longer name or an
 # attribute lookup (item.x_enabled), and not a mapping key (x_enabled: true).
-REFERENCE = re.compile(r"(?<![\w.])([a-z0-9_]*[a-z0-9]_enabled)(?![\w.])(?!\s*:(?:\s|$))")
+REFERENCE = re.compile(
+    r"(?<![\w.])([a-z0-9_]*[a-z0-9]_enabled)(?![\w.])(?!\s*:(?:\s|$))"
+)
 COMMENT = re.compile(r"(?:^|\s)#.*$")
 
 
@@ -33,10 +36,14 @@ def references(text: str) -> Iterator[str]:
 
 def problems(roles: Sequence[role_defaults.Role]) -> list[str]:
     """One message per undefined flag reference."""
-    defined = {key for role in roles for key in role.defaults if key.endswith("_enabled")}
+    defined = {
+        key for role in roles for key in role.defaults if key.endswith("_enabled")
+    }
     messages: list[str] = []
     for role in roles:
-        used = {name for path in role.task_files() for name in references(path.read_text())}
+        used = {
+            name for path in role.task_files() for name in references(path.read_text())
+        }
         messages += [
             f"roles/{role.name}/tasks: '{name}' is not defined in any role's defaults/main.yml"
             for name in sorted(used - defined)
@@ -44,7 +51,9 @@ def problems(roles: Sequence[role_defaults.Role]) -> list[str]:
     return messages
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(
+    argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
+) -> int:
     """Entry point."""
     del argv  # no options; the signature matches the other checks
     messages = problems(role_defaults.discover(root))

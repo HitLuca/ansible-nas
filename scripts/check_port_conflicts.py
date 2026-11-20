@@ -9,6 +9,7 @@ allocated".
 Every ``*_port*`` default whose value is a plain number counts, quoted or not.
 Jinja values (``"{{ other_port }}"``) are skipped.
 """
+
 from __future__ import annotations
 
 import re
@@ -28,10 +29,14 @@ def conflicts(roles: Sequence[role_defaults.Role]) -> dict[int, list[str]]:
         for key, entry in role.defaults.items():
             if PORT_KEY.match(key) and entry.text.isdigit():
                 claims.setdefault(int(entry.text), set()).add(role.name)
-    return {port: sorted(names) for port, names in sorted(claims.items()) if len(names) > 1}
+    return {
+        port: sorted(names) for port, names in sorted(claims.items()) if len(names) > 1
+    }
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(
+    argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
+) -> int:
     """Entry point."""
     del argv
     found = conflicts(role_defaults.discover(root))

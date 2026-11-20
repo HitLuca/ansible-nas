@@ -30,6 +30,7 @@ Docker Hub credentials in ``DOCKERHUB_USERNAME``/``DOCKERHUB_TOKEN`` are used
 for docker.io images only, which lifts the anonymous pull limit. Set them in CI
 as repo secrets; locally, Trivy already reads ``docker login``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -52,7 +53,9 @@ SCAN_TIMEOUT = 600
 DB_TIMEOUT = 300
 # GitHub rejects an issue body above 65536 characters.
 BODY_LIMIT = 60000
-ERROR_PREFIX = re.compile(r"^\S+Z?\s+(?:FATAL|ERROR|WARN|INFO|DEBUG)\s+(?:Fatal error\s+)?")
+ERROR_PREFIX = re.compile(
+    r"^\S+Z?\s+(?:FATAL|ERROR|WARN|INFO|DEBUG)\s+(?:Fatal error\s+)?"
+)
 
 
 @dataclass
@@ -78,7 +81,9 @@ class Scan:
     @property
     def image(self) -> str:
         """The ``repo:tag`` reference that was handed to Trivy."""
-        return f"{self.ref.repo}:{self.ref.version}" if self.ref.version else self.ref.repo
+        return (
+            f"{self.ref.repo}:{self.ref.version}" if self.ref.version else self.ref.repo
+        )
 
     def count(self, severity: str) -> int:
         """Number of findings at exactly *severity*."""
@@ -123,7 +128,12 @@ def _run(
 ) -> subprocess.CompletedProcess[str]:
     """Run one Trivy command without raising on a non-zero exit."""
     return subprocess.run(
-        [binary, *args], capture_output=True, text=True, timeout=timeout, check=False, env=env
+        [binary, *args],
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+        check=False,
+        env=env,
     )
 
 
@@ -136,13 +146,19 @@ def _credentials(options: Options, ref: inventory.ImageRef) -> dict[str, str] | 
     """
     if not options.username or inventory.split_host(ref.repo)[0] != "docker.io":
         return None
-    return {**os.environ, "TRIVY_USERNAME": options.username, "TRIVY_PASSWORD": options.password}
+    return {
+        **os.environ,
+        "TRIVY_USERNAME": options.username,
+        "TRIVY_PASSWORD": options.password,
+    }
 
 
 def prepare_database(options: Options) -> str:
     """Download the database once; return an error message, or an empty string."""
     try:
-        result = _run(options.binary, ["image", "--download-db-only", "--quiet"], DB_TIMEOUT)
+        result = _run(
+            options.binary, ["image", "--download-db-only", "--quiet"], DB_TIMEOUT
+        )
     except (OSError, subprocess.TimeoutExpired) as error:
         return f"Could not run {options.binary}: {error}"
     if result.returncode != 0:
@@ -213,7 +229,9 @@ def scan(ref: inventory.ImageRef, options: Options) -> Scan:
         scan_result.error = f"{type(error).__name__}: {error}"
         return scan_result
     if result.returncode != 0:
-        scan_result.error = _last_error(result.stderr) or f"trivy exited {result.returncode}"
+        scan_result.error = (
+            _last_error(result.stderr) or f"trivy exited {result.returncode}"
+        )
         return scan_result
     try:
         scan_result.findings = _parse(json.loads(result.stdout or "{}"))
@@ -236,14 +254,18 @@ def scan_all(refs: Sequence[inventory.ImageRef], options: Options) -> list[Scan]
     for ref in refs:
         unique.setdefault(Scan(ref=ref).image, ref)
     with ThreadPoolExecutor(max_workers=options.jobs) as pool:
-        futures = {image: pool.submit(scan, ref, options) for image, ref in unique.items()}
+        futures = {
+            image: pool.submit(scan, ref, options) for image, ref in unique.items()
+        }
         by_image = {image: future.result() for image, future in futures.items()}
     return [replace(by_image[Scan(ref=ref).image], ref=ref) for ref in refs]
 
 
 def _totals(scans: Sequence[Scan], severities: Sequence[str]) -> dict[str, int]:
     """Count findings per severity across every scan."""
-    return {severity: sum(item.count(severity) for item in scans) for severity in severities}
+    return {
+        severity: sum(item.count(severity) for item in scans) for severity in severities
+    }
 
 
 def _summary(scans: Sequence[Scan], options: Options) -> str:
@@ -254,9 +276,13 @@ def _summary(scans: Sequence[Scan], options: Options) -> str:
     if not affected:
         line = f"No findings in {len(scans)} pinned images"
     else:
-        detail = ", ".join(f"{count} {severity.lower()}" for severity, count in totals.items())
+        detail = ", ".join(
+            f"{count} {severity.lower()}" for severity, count in totals.items()
+        )
         verb = "has" if len(affected) == 1 else "have"
-        line = f"{len(affected)} of {len(scans)} pinned images {verb} findings ({detail})"
+        line = (
+            f"{len(affected)} of {len(scans)} pinned images {verb} findings ({detail})"
+        )
     if errors:
         line += f"; {len(errors)} could not be scanned"
     return f"{line}."
@@ -264,6 +290,7 @@ def _summary(scans: Sequence[Scan], options: Options) -> str:
 
 def _sorted_affected(scans: Sequence[Scan], options: Options) -> list[Scan]:
     """Affected scans, worst first, then by role."""
+
     def key(item: Scan) -> tuple:
         totals = tuple(-item.count(severity) for severity in options.severities)
         return (*totals, item.ref.role)
@@ -344,7 +371,11 @@ def _markdown(scans: Sequence[Scan], options: Options, layout: Layout) -> list[s
     folded away and budgeted, because one image can carry hundreds of findings
     and GitHub caps an issue body at 65536 characters.
     """
-    mode = "fixable findings only" if options.ignore_unfixed else "including unfixed findings"
+    mode = (
+        "fixable findings only"
+        if options.ignore_unfixed
+        else "including unfixed findings"
+    )
     lines = [
         *([f"> {layout.stamp}", ""] if layout.stamp else []),
         "## Container image vulnerabilities",
@@ -356,7 +387,11 @@ def _markdown(scans: Sequence[Scan], options: Options, layout: Layout) -> list[s
     ]
     affected = _sorted_affected(scans, options)
     if affected:
-        headers = ("Role", "Image", *(severity.title() for severity in options.severities))
+        headers = (
+            "Role",
+            "Image",
+            *(severity.title() for severity in options.severities),
+        )
         lines += ["", "| " + " | ".join(headers) + " |"]
         lines.append("| " + " | ".join("---" for _ in headers) + " |")
         for item in affected:
@@ -412,7 +447,10 @@ def _table(scans: Sequence[Scan], options: Options) -> list[str]:
         for item in scans
     ]
     headers = ("Role", "Image", *(severity.title() for severity in options.severities))
-    widths = [max(len(row[index]) for row in (*rows, headers)) for index in range(len(headers))]
+    widths = [
+        max(len(row[index]) for row in (*rows, headers))
+        for index in range(len(headers))
+    ]
     lines = ["  ".join(header.ljust(width) for header, width in zip(headers, widths))]
     lines.append("  ".join("-" * width for width in widths))
     lines += [
@@ -447,7 +485,9 @@ def render(scans: Sequence[Scan], options: Options, output: str, layout: Layout)
         lines = _table(scans, options)
         lines += ["", _summary(scans, options)]
         lines += [
-            f"  {item.ref.role}: {item.error} ({item.image})" for item in scans if item.error
+            f"  {item.ref.role}: {item.error} ({item.image})"
+            for item in scans
+            if item.error
         ]
     return "\n".join(lines) + "\n"
 
@@ -480,9 +520,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--role", action="append", default=[], metavar="ROLE", help="limit to one role"
     )
-    parser.add_argument("--format", choices=("table", "markdown", "json"), default="table")
     parser.add_argument(
-        "--output", type=Path, metavar="PATH", help="write the report here instead of stdout"
+        "--format", choices=("table", "markdown", "json"), default="table"
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write the report here instead of stdout",
     )
     parser.add_argument(
         "--json-output",
@@ -491,11 +536,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="also write the full findings as JSON, every CVE included",
     )
     parser.add_argument(
-        "--jobs", type=_positive_int, default=4, metavar="N",
+        "--jobs",
+        type=_positive_int,
+        default=4,
+        metavar="N",
         help="images scanned in parallel (default 4)",
     )
     parser.add_argument(
-        "--timeout", type=int, default=SCAN_TIMEOUT, metavar="SECONDS",
+        "--timeout",
+        type=int,
+        default=SCAN_TIMEOUT,
+        metavar="SECONDS",
         help="timeout per image (default 600)",
     )
     parser.add_argument(
@@ -523,10 +574,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Markdown only: link each role to its image pin under this URL, "
         "normally the blob URL of the scanned commit",
     )
-    parser.add_argument("--trivy", default="trivy", help="Trivy binary (default: trivy)")
+    parser.add_argument(
+        "--trivy", default="trivy", help="Trivy binary (default: trivy)"
+    )
     args = parser.parse_args(argv)
 
-    severities = tuple(part.strip().upper() for part in args.severity.split(",") if part.strip())
+    severities = tuple(
+        part.strip().upper() for part in args.severity.split(",") if part.strip()
+    )
     if not severities:
         parser.error("--severity needs at least one value")
     unknown = [severity for severity in severities if severity not in RANK]
@@ -536,8 +591,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     username = os.environ.get("DOCKERHUB_USERNAME", "").strip()
     password = os.environ.get("DOCKERHUB_TOKEN", "").strip()
     if username and not password:
-        print("DOCKERHUB_USERNAME is set without DOCKERHUB_TOKEN; pulling anonymously.",
-              file=sys.stderr)
+        print(
+            "DOCKERHUB_USERNAME is set without DOCKERHUB_TOKEN; pulling anonymously.",
+            file=sys.stderr,
+        )
         username = ""
 
     options = Options(
@@ -554,7 +611,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("No image references found.", file=sys.stderr)
         return 2
     if shutil.which(options.binary) is None:
-        print(f"{options.binary} is not on PATH; install Trivy or pass --trivy.", file=sys.stderr)
+        print(
+            f"{options.binary} is not on PATH; install Trivy or pass --trivy.",
+            file=sys.stderr,
+        )
         return 2
 
     error = prepare_database(options)

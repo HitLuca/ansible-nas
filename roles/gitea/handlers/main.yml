@@ -3,4 +3,4 @@
   community.docker.docker_container:
     name: "{{ gitea_container_name }}"
     restart: true
-  listen: "restart gitea"
+  listen: restart gitea

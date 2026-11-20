@@ -10,16 +10,16 @@ youtubedlmaterial_dl_video_directory: "{{ downloads_root }}/youtube/video"
 youtubedlmaterial_dl_subscriptions_directory: "{{ downloads_root }}/youtube/subscriptions"
 
 # network
-youtubedlmaterial_hostname: "youtubedlmaterial"
+youtubedlmaterial_hostname: youtubedlmaterial
 youtubedlmaterial_port_http: "8998"
 
 # docker
-youtubedlmaterial_container_name: "youtubedlmaterial"
-youtubedlmaterial_image_name: "tzahi12345/youtubedl-material"
-youtubedlmaterial_image_version: "4.3.2"
+youtubedlmaterial_container_name: youtubedlmaterial
+youtubedlmaterial_image_name: tzahi12345/youtubedl-material
+youtubedlmaterial_image_version: 4.3.2
 
 # specs
-youtubedlmaterial_memory: "1g"
+youtubedlmaterial_memory: 1g
 
 # monitoring
 youtubedlmaterial_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

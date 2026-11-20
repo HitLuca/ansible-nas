@@ -9,12 +9,12 @@ audiobookshelf_podcasts_directory: "{{ podcasts_root }}"
 
 # network
 audiobookshelf_port: "8041"
-audiobookshelf_hostname: "audiobookshelf"
+audiobookshelf_hostname: audiobookshelf
 
 # docker
-audiobookshelf_container_name: "audiobookshelf"
-audiobookshelf_image_name: "ghcr.io/advplyr/audiobookshelf"
-audiobookshelf_image_version: "2.37.2"
+audiobookshelf_container_name: audiobookshelf
+audiobookshelf_image_name: ghcr.io/advplyr/audiobookshelf
+audiobookshelf_image_version: 2.37.2
 
 # specs
 audiobookshelf_memory: 1g

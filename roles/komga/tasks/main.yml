@@ -19,7 +19,7 @@
           - "{{ komga_books_directory }}:/books:ro"
           - "{{ komga_data_directory }}:/data:rw"
           - "{{ komga_data_directory }}/config:/config:rw"
-        network_mode: "bridge"
+        network_mode: bridge
         ports:
           - "{{ komga_port_http }}:25600"
         env:
@@ -30,17 +30,17 @@
         memory: "{{ komga_memory }}"
         labels:
           traefik.enable: "{{ komga_available_externally | string }}"
-          traefik.http.routers.komga.rule: "Host(`{{ komga_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.komga.tls.certresolver: "letsencrypt"
+          traefik.http.routers.komga.rule: Host(`{{ komga_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.komga.tls.certresolver: letsencrypt
           traefik.http.routers.komga.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.komga.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.komga.loadbalancer.server.port: "25600"
-          kuma.komga.http.name: "Komga"
+          kuma.komga.http.name: Komga
           kuma.komga.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ komga_port_http if komga_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Komga
           homepage.icon: komga.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ komga_port_http }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ komga_port_http }}
           homepage.description: Comic and manga server
   when: komga_enabled is true
 

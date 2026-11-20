@@ -7,12 +7,12 @@ changedetection_data_directory: "{{ docker_home }}/changedetection"
 
 # network
 changedetection_port: "5000"
-changedetection_hostname: "changedetection"
+changedetection_hostname: changedetection
 
 # docker
 changedetection_container_name: changedetection
-changedetection_image_name: "ghcr.io/dgtlmoon/changedetection.io"
-changedetection_image_version: "0.70.3"
+changedetection_image_name: ghcr.io/dgtlmoon/changedetection.io
+changedetection_image_version: 0.70.3
 
 # specs
 changedetection_memory: 1g

@@ -12,11 +12,11 @@ deluge_user_id: "0"
 deluge_group_id: "0"
 
 # error logging
-deluge_log_level: "error"
+deluge_log_level: error
 
 # network
 deluge_port: "8112"
-deluge_hostname: "deluge"
+deluge_hostname: deluge
 
 deluge_timezone: "{{ ansible_nas_timezone }}"
 
@@ -24,8 +24,8 @@ deluge_timezone: "{{ ansible_nas_timezone }}"
 deluge_memory: 1g
 
 deluge_container_name: deluge
-deluge_image_name: "linuxserver/deluge"
-deluge_image_version: "2.2.0"
+deluge_image_name: linuxserver/deluge
+deluge_image_version: 2.2.0
 
 # monitoring
 deluge_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

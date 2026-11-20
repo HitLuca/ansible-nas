@@ -20,11 +20,11 @@
         name: "{{ alloy_container_name }}"
         image: "{{ alloy_image_name }}:{{ alloy_image_version }}"
         pull: true
-        command: "run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy"
+        command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
         volumes:
           - "{{ alloy_data_directory }}/config.alloy:/etc/alloy/config.alloy:ro"
           - "{{ alloy_data_directory }}/data:/var/lib/alloy/data"
-          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          - /var/run/docker.sock:/var/run/docker.sock:ro
         restart_policy: unless-stopped
         memory: "{{ alloy_memory }}"
         restart: "{{ alloy_config is changed }}"

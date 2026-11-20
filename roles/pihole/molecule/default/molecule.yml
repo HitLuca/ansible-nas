@@ -8,4 +8,4 @@ provisioner:
         # mDNS), and Docker Desktop cannot publish on the instance's own bridge
         # address.
         pihole_dns_port: "15353"
-        pihole_dns_bind_address: "0.0.0.0"
+        pihole_dns_bind_address: 0.0.0.0

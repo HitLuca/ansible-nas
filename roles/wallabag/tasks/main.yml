@@ -23,20 +23,20 @@
         ports:
           - "{{ wallabag_port }}:80"
         env:
-          SYMFONY__ENV__DOMAIN_NAME: "https://{{ wallabag_hostname }}.{{ ansible_nas_domain }}"
+          SYMFONY__ENV__DOMAIN_NAME: https://{{ wallabag_hostname }}.{{ ansible_nas_domain }}
         restart_policy: unless-stopped
         memory: "{{ wallabag_memory }}"
         labels:
           traefik.enable: "{{ wallabag_available_externally | string }}"
-          traefik.http.routers.wallabag.rule: "Host(`{{ wallabag_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.wallabag.tls.certresolver: "letsencrypt"
+          traefik.http.routers.wallabag.rule: Host(`{{ wallabag_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.wallabag.tls.certresolver: letsencrypt
           traefik.http.routers.wallabag.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.wallabag.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.wallabag.loadbalancer.server.port: "80"
           homepage.group: Productivity
           homepage.name: Wallabag
           homepage.icon: wallabag.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ wallabag_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ wallabag_port }}
           homepage.description: Read-it-later
   when: wallabag_enabled is true
 

@@ -20,7 +20,7 @@
           - "{{ samba_shares_root }}:/source/shares:{{ duplicati_data_permissions }}"
           - "{{ docker_home }}:/source/docker:{{ duplicati_data_permissions }}"
           - "{{ duplicati_media_directory }}:/media"
-          - "/etc/timezone:/etc/timezone:ro"
+          - /etc/timezone:/etc/timezone:ro
         env:
           TZ: "{{ ansible_nas_timezone }}"
           PUID: "{{ duplicati_user_id | string }}"
@@ -31,17 +31,17 @@
         memory: "{{ duplicati_memory }}"
         labels:
           traefik.enable: "{{ duplicati_available_externally | string }}"
-          traefik.http.routers.duplicati.rule: "Host(`{{ duplicati_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.duplicati.tls.certresolver: "letsencrypt"
+          traefik.http.routers.duplicati.rule: Host(`{{ duplicati_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.duplicati.tls.certresolver: letsencrypt
           traefik.http.routers.duplicati.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.duplicati.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.duplicati.loadbalancer.server.port: "8200"
-          kuma.duplicati.http.name: "Duplicati"
+          kuma.duplicati.http.name: Duplicati
           kuma.duplicati.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ duplicati_port if duplicati_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: Duplicati
           homepage.icon: duplicati.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ duplicati_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ duplicati_port }}
           homepage.description: Backup
   when: duplicati_enabled is true
 

@@ -27,20 +27,20 @@
         memory: "{{ deluge_memory }}"
         labels:
           traefik.enable: "{{ deluge_available_externally | string }}"
-          traefik.http.routers.deluge.rule: "Host(`{{ deluge_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.deluge.tls.certresolver: "letsencrypt"
+          traefik.http.routers.deluge.rule: Host(`{{ deluge_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.deluge.tls.certresolver: letsencrypt
           traefik.http.routers.deluge.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.deluge.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.deluge.loadbalancer.server.port: "8112"
-          kuma.deluge.http.name: "Deluge"
+          kuma.deluge.http.name: Deluge
           kuma.deluge.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ deluge_port if deluge_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: Deluge
           homepage.icon: deluge.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ deluge_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ deluge_port }}
           homepage.description: BitTorrent client
           homepage.widget.type: deluge
-          homepage.widget.url: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ deluge_port }}"
+          homepage.widget.url: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ deluge_port }}
   when: deluge_enabled is true
 
 - name: Stop Deluge

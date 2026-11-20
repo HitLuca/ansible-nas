@@ -24,9 +24,9 @@ tailscale_extra_args: ""
 tailscale_enable_ip_forwarding: "{{ tailscale_routes | length > 0 or '--advertise-exit-node' in tailscale_extra_args }}"
 
 # docker
-tailscale_container_name: "tailscale"
-tailscale_image_name: "tailscale/tailscale"
-tailscale_image_version: "v1.104.7"
+tailscale_container_name: tailscale
+tailscale_image_name: tailscale/tailscale
+tailscale_image_version: v1.104.7
 
 # specs
-tailscale_memory: "256MB"
+tailscale_memory: 256MB

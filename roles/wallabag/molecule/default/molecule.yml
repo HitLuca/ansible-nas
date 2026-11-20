@@ -4,7 +4,7 @@ provisioner:
     group_vars:
       all:
         wallabag_enabled: true
-        wallabag_data_directory: "/tmp/wallabag"
+        wallabag_data_directory: /tmp/wallabag
 platforms:
   - name: instance
     image: geerlingguy/docker-ubuntu2204-ansible:latest

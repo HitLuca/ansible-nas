@@ -14,4 +14,4 @@
     - name: Nomad - assert that file is removed
       ansible.builtin.assert:
         that: not nomad_file.stat.exists
-        fail_msg: "The file /usr/bin/nomad still exists!"
+        fail_msg: The file /usr/bin/nomad still exists!

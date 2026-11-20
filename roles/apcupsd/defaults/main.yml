@@ -12,8 +12,8 @@ apcupsd_memory: 1g
 
 # docker
 apcupsd_container_name: apcupsd
-apcupsd_image_name: "gregewing/apcupsd"
-apcupsd_image_version: "latest"
+apcupsd_image_name: gregewing/apcupsd
+apcupsd_image_version: latest
 
 # ups config
 apcupsd_onbatterydelay: 6
@@ -22,6 +22,6 @@ apcupsd_minutes: 5
 apcupsd_timeout: 0
 apcupsd_annoy: 300
 apcupsd_annoydelay: 60
-apcupsd_nologon: "disable"
+apcupsd_nologon: disable
 apcupsd_killdelay: 0
-apcupsd_device: "/dev/null"
+apcupsd_device: /dev/null

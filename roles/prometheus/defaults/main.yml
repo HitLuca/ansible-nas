@@ -10,24 +10,24 @@ prometheus_telegraf_config_directory: "{{ docker_home }}/prometheus/telegraf/con
 
 # network
 prometheus_port: "9090"
-prometheus_hostname: "prometheus"
+prometheus_hostname: prometheus
 prometheus_telegraf_port: "9273"
 prometheus_smartctl_port: "9902"
 prometheus_speedtest_port: "9798"
 
 # docker
-prometheus_container_name: "prometheus"
-prometheus_image_name: "prom/prometheus"
-prometheus_image_version: "v3.16.0"
-prometheus_telegraf_container_name: "telegraf"
-prometheus_telegraf_image_name: "telegraf"
-prometheus_telegraf_image_version: "1.40.3"
-prometheus_smartctl_container_name: "smartctl-exporter"
-prometheus_smartctl_image_name: "prometheuscommunity/smartctl-exporter"
-prometheus_smartctl_image_version: "v0.15.0"
-prometheus_speedtest_container_name: "speedtest-exporter"
-prometheus_speedtest_image_name: "miguelndecarvalho/speedtest-exporter"
-prometheus_speedtest_image_version: "v3.5.4"
+prometheus_container_name: prometheus
+prometheus_image_name: prom/prometheus
+prometheus_image_version: v3.16.0
+prometheus_telegraf_container_name: telegraf
+prometheus_telegraf_image_name: telegraf
+prometheus_telegraf_image_version: 1.40.3
+prometheus_smartctl_container_name: smartctl-exporter
+prometheus_smartctl_image_name: prometheuscommunity/smartctl-exporter
+prometheus_smartctl_image_version: v0.15.0
+prometheus_speedtest_container_name: speedtest-exporter
+prometheus_speedtest_image_name: miguelndecarvalho/speedtest-exporter
+prometheus_speedtest_image_version: v3.5.4
 
 # specs
 prometheus_memory: 1g

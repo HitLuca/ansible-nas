@@ -3,6 +3,7 @@
 it in both directions: every role under roles/ is named in it, and no role
 that already exists is still offered in a candidate table row.
 """
+
 from __future__ import annotations
 
 import sys
@@ -46,7 +47,9 @@ def problems(root: Path, doc: Path) -> list[str]:
     return messages
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(
+    argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
+) -> int:
     """Entry point."""
     del argv  # no options; the signature matches the other checks
     doc = root / "ROLES.md"

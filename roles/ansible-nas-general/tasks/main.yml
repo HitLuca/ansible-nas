@@ -26,20 +26,20 @@
   register: result
   until: result is succeeded
 
-- name: "Set hostname to {{ ansible_nas_hostname }}"
+- name: Set hostname to {{ ansible_nas_hostname }}
   ansible.builtin.hostname:
     name: "{{ ansible_nas_hostname }}"
 
-- name: "Set timezone to {{ ansible_nas_timezone }}"
+- name: Set timezone to {{ ansible_nas_timezone }}
   community.general.timezone:
     name: "{{ ansible_nas_timezone }}"
 
-- name: "Permission share directories"
+- name: Permission share directories
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: ansible-nas
     group: ansible-nas
-    mode: "u=rwX,g=rwX,o=rX"
+    mode: u=rwX,g=rwX,o=rX
     recurse: false
   loop: "{{ samba_shares }}"

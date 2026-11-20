@@ -14,7 +14,7 @@
         image: "{{ jackett_image_name }}:{{ jackett_image_version }}"
         volumes:
           - "{{ jackett_data_directory }}:/config:rw"
-          - "/etc/localtime:/etc/localtime:ro"
+          - /etc/localtime:/etc/localtime:ro
           - "{{ jackett_torrents_root }}:/downloads"
         ports:
           - "{{ jackett_port }}:9117"
@@ -24,12 +24,12 @@
         memory: "{{ jackett_memory }}"
         labels:
           traefik.enable: "{{ jackett_available_externally | string }}"
-          traefik.http.routers.jackett.rule: "Host(`{{ jackett_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.jackett.tls.certresolver: "letsencrypt"
+          traefik.http.routers.jackett.rule: Host(`{{ jackett_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.jackett.tls.certresolver: letsencrypt
           traefik.http.routers.jackett.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.jackett.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.jackett.loadbalancer.server.port: "9117"
-          kuma.jackett.http.name: "Jackett"
+          kuma.jackett.http.name: Jackett
           kuma.jackett.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ jackett_port if jackett_uptime_kuma_monitor else omit }}"
           homepage.group: Download Tools
           homepage.name: Jackett

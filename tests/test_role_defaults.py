@@ -1,4 +1,5 @@
 """Unit tests for role_defaults.py, the defaults loader every check shares."""
+
 from pathlib import Path
 
 import pytest
@@ -77,12 +78,17 @@ def test_discover(tmp_path: Path) -> None:
 
 def test_conventional_flag_replaces_dots_and_dashes() -> None:
     """healthchecks.io and dashed names map to an identifier."""
-    assert rd.Role("healthchecks.io", Path("x")).conventional_flag == "healthchecks_io_enabled"
+    assert (
+        rd.Role("healthchecks.io", Path("x")).conventional_flag
+        == "healthchecks_io_enabled"
+    )
 
 
 def test_version_key_prefers_image_version() -> None:
     """_image_version wins over _image_tag; neither gives None."""
-    entries = rd.parse_defaults("a_image_tag: '1'\na_image_version: '2'\nb_image_name: x\n")
+    entries = rd.parse_defaults(
+        "a_image_tag: '1'\na_image_version: '2'\nb_image_name: x\n"
+    )
     assert rd.version_key(entries, "a") == "a_image_version"
     assert rd.version_key(entries, "b") is None
 

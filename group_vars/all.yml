@@ -86,7 +86,7 @@ samba_server_string: Ansible NAS
 # Shares you want published over Samba.
 samba_shares:
   - name: downloads
-    comment: "Stuff downloaded"
+    comment: Stuff downloaded
     guest_ok: yes
     public: yes
     writable: yes
@@ -94,7 +94,7 @@ samba_shares:
     path: "{{ downloads_root }}"
 
   - name: movies
-    comment: "Movies"
+    comment: Movies
     guest_ok: yes
     public: yes
     writable: yes
@@ -102,7 +102,7 @@ samba_shares:
     path: "{{ movies_root }}"
 
   - name: tv
-    comment: "TV Episodes"
+    comment: TV Episodes
     guest_ok: yes
     public: yes
     writable: yes
@@ -110,7 +110,7 @@ samba_shares:
     path: "{{ tv_root }}"
 
   - name: music
-    comment: "Music"
+    comment: Music
     guest_ok: yes
     public: yes
     writable: yes
@@ -118,7 +118,7 @@ samba_shares:
     path: "{{ music_root }}"
 
   - name: podcasts
-    comment: "Podcasts"
+    comment: Podcasts
     guest_ok: yes
     public: yes
     writable: yes
@@ -126,7 +126,7 @@ samba_shares:
     path: "{{ podcasts_root }}"
 
   - name: dump
-    comment: "File dump"
+    comment: File dump
     guest_ok: yes
     public: yes
     writable: yes
@@ -134,7 +134,7 @@ samba_shares:
     path: "{{ samba_shares_root }}/dump"
 
   - name: games
-    comment: "Games"
+    comment: Games
     guest_ok: yes
     public: yes
     writable: yes
@@ -142,7 +142,7 @@ samba_shares:
     path: "{{ samba_shares_root }}/games"
 
   - name: photos
-    comment: "Pictures"
+    comment: Pictures
     guest_ok: yes
     public: yes
     writable: yes
@@ -150,7 +150,7 @@ samba_shares:
     path: "{{ photos_root }}"
 
   - name: books
-    comment: "Books"
+    comment: Books
     guest_ok: yes
     public: yes
     writable: yes
@@ -158,7 +158,7 @@ samba_shares:
     path: "{{ books_root }}"
 
   - name: audiobooks
-    comment: "Audiobooks"
+    comment: Audiobooks
     guest_ok: yes
     public: yes
     writable: yes
@@ -166,7 +166,7 @@ samba_shares:
     path: "{{ audiobooks_root }}"
 
   - name: comics
-    comment: "Comics"
+    comment: Comics
     guest_ok: yes
     public: yes
     writable: yes
@@ -174,7 +174,7 @@ samba_shares:
     path: "{{ comics_root }}"
 
   - name: documents
-    comment: "Documents"
+    comment: Documents
     guest_ok: yes
     public: yes
     writable: yes
@@ -182,7 +182,7 @@ samba_shares:
     path: "{{ documents_root }}"
 
   - name: code
-    comment: "Code"
+    comment: Code
     guest_ok: yes
     public: yes
     writable: yes
@@ -190,7 +190,7 @@ samba_shares:
     path: "{{ code_root }}"
 
   - name: recordings
-    comment: "Recordings"
+    comment: Recordings
     guest_ok: yes
     public: yes
     writable: yes

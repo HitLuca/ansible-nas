@@ -13,15 +13,15 @@ bazarr_group_id: "0"
 
 # network
 bazarr_port: "6767"
-bazarr_hostname: "bazarr"
+bazarr_hostname: bazarr
 
 # specs
 bazarr_memory: 1g
 
 # docker
 bazarr_container_name: bazarr
-bazarr_image_name: "linuxserver/bazarr"
-bazarr_image_version: "1.6.2"
+bazarr_image_name: linuxserver/bazarr
+bazarr_image_version: 1.6.2
 
 # monitoring
 bazarr_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

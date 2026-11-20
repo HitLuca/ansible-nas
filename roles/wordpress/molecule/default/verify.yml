@@ -5,12 +5,12 @@
   tasks:
     - name: Get WordPress container state
       community.docker.docker_container_info:
-        name: "wordpress-test"
+        name: wordpress-test
       register: wordpress_app
 
     - name: Get WordPress database container state
       community.docker.docker_container_info:
-        name: "wordpress-test-db"
+        name: wordpress-test-db
       register: wordpress_db
 
     - name: Check if WordPress containers are running

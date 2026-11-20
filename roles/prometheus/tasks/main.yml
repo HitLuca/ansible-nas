@@ -29,22 +29,22 @@
         restart_policy: unless-stopped
         memory: "{{ prometheus_memory }}"
         restart: "{{ prometheus_config is changed }}"
-        command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.size={{ prometheus_retention_size }} --storage.tsdb.retention.time={{ prometheus_retention_time }}"
+        command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.size={{ prometheus_retention_size }} --storage.tsdb.retention.time={{ prometheus_retention_time }}
         labels:
           traefik.enable: "{{ prometheus_available_externally | string }}"
-          traefik.http.routers.prometheus.rule: "Host(`{{ prometheus_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.prometheus.tls.certresolver: "letsencrypt"
+          traefik.http.routers.prometheus.rule: Host(`{{ prometheus_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.prometheus.tls.certresolver: letsencrypt
           traefik.http.routers.prometheus.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.prometheus.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.prometheus.loadbalancer.server.port: "9090"
           homepage.group: Monitoring
           homepage.name: Prometheus
           homepage.icon: prometheus
-          homepage.href: "http://{{ ansible_facts.default_ipv4.address }}:{{ prometheus_port }}"
+          homepage.href: http://{{ ansible_facts.default_ipv4.address }}:{{ prometheus_port }}
           homepage.description: Metrics and alerting
           homepage.widget.type: prometheus
-          homepage.widget.url: "http://{{ ansible_facts.default_ipv4.address }}:{{ prometheus_port }}"
-          kuma.prometheus.http.name: "Prometheus"
+          homepage.widget.url: http://{{ ansible_facts.default_ipv4.address }}:{{ prometheus_port }}
+          kuma.prometheus.http.name: Prometheus
           kuma.prometheus.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ prometheus_port if prometheus_uptime_kuma_monitor else omit }}"
 
     - name: Create Telegraf Directory
@@ -72,23 +72,23 @@
         ipc_mode: host
         ports:
           - "{{ prometheus_telegraf_port }}:9273"
-        user: "telegraf:{{ prometheus_docker_gid.stdout }}"
+        user: telegraf:{{ prometheus_docker_gid.stdout }}
         volumes:
           - "{{ prometheus_telegraf_config_directory }}:/etc/telegraf/:ro"
-          - "/var/run/docker.sock:/var/run/docker.sock:ro"
-          - "/:/hostfs:ro"
-          - "/etc:/hostfs/etc:ro"
-          - "/proc:/hostfs/proc:ro"
-          - "/sys:/hostfs/sys:ro"
-          - "/var:/hostfs/var:ro"
-          - "/run:/hostfs/run:ro"
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /:/hostfs:ro
+          - /etc:/hostfs/etc:ro
+          - /proc:/hostfs/proc:ro
+          - /sys:/hostfs/sys:ro
+          - /var:/hostfs/var:ro
+          - /run:/hostfs/run:ro
         env:
-          HOST_ETC: "/hostfs/etc"
-          HOST_PROC: "/hostfs/proc"
-          HOST_SYS: "/hostfs/sys"
-          HOST_VAR: "/hostfs/var"
-          HOST_RUN: "/hostfs/run"
-          HOST_MOUNT_PREFIX: "/hostfs"
+          HOST_ETC: /hostfs/etc
+          HOST_PROC: /hostfs/proc
+          HOST_SYS: /hostfs/sys
+          HOST_VAR: /hostfs/var
+          HOST_RUN: /hostfs/run
+          HOST_MOUNT_PREFIX: /hostfs
         restart_policy: unless-stopped
         memory: "{{ prometheus_telegraf_memory }}"
         restart: "{{ prometheus_telegraf_config is changed }}"

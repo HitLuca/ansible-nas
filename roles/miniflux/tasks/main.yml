@@ -23,8 +23,8 @@
         volumes:
           - "{{ miniflux_data_directory }}/postgres:/var/lib/postgresql/data:rw"
         env:
-          POSTGRES_USER: "miniflux"
-          POSTGRES_PASSWORD: "supersecure"
+          POSTGRES_USER: miniflux
+          POSTGRES_PASSWORD: supersecure
         restart_policy: unless-stopped
         memory: "{{ miniflux_postgres_memory }}"
 
@@ -39,7 +39,7 @@
         ports:
           - "{{ miniflux_port }}:8080"
         env:
-          DATABASE_URL: "postgres://miniflux:supersecure@{{ miniflux_db_container_name }}/miniflux?sslmode=disable"
+          DATABASE_URL: postgres://miniflux:supersecure@{{ miniflux_db_container_name }}/miniflux?sslmode=disable
           RUN_MIGRATIONS: "1"
           CREATE_ADMIN: "1"
           ADMIN_USERNAME: "{{ miniflux_admin_username }}"
@@ -48,17 +48,17 @@
         memory: "{{ miniflux_memory }}"
         labels:
           traefik.enable: "{{ miniflux_available_externally | string }}"
-          traefik.http.routers.miniflux.rule: "Host(`{{ miniflux_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.miniflux.tls.certresolver: "letsencrypt"
+          traefik.http.routers.miniflux.rule: Host(`{{ miniflux_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.miniflux.tls.certresolver: letsencrypt
           traefik.http.routers.miniflux.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.miniflux.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.miniflux.loadbalancer.server.port: "8080"
-          kuma.miniflux.http.name: "Miniflux"
+          kuma.miniflux.http.name: Miniflux
           kuma.miniflux.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ miniflux_port if miniflux_uptime_kuma_monitor else omit }}"
           homepage.group: Media
           homepage.name: Miniflux
           homepage.icon: miniflux.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ miniflux_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ miniflux_port }}
           homepage.description: RSS reader
   when: miniflux_enabled is true
 

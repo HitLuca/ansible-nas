@@ -14,6 +14,7 @@ key, three things the checks need:
 ``ansible-nas`` defaults are always a flat mapping of ``<role>_*`` keys; only
 the top level is indexed.
 """
+
 from __future__ import annotations
 
 import re
@@ -26,7 +27,9 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Keys naming a container image, with or without an embedded ":tag".
-IMAGE_KEY = re.compile(r"^(?P<prefix>.+)_(?:image_name|docker_image_name|image|docker_image)$")
+IMAGE_KEY = re.compile(
+    r"^(?P<prefix>.+)_(?:image_name|docker_image_name|image|docker_image)$"
+)
 VERSION_SUFFIXES = ("_image_version", "_image_tag")
 
 
@@ -76,7 +79,9 @@ class Role:
         tasks = self.path / "tasks"
         if not tasks.is_dir():
             return []
-        return sorted(p for p in tasks.rglob("*") if p.suffix in (".yml", ".yaml") and p.is_file())
+        return sorted(
+            p for p in tasks.rglob("*") if p.suffix in (".yml", ".yaml") and p.is_file()
+        )
 
 
 class DefaultsError(Exception):
@@ -138,5 +143,6 @@ def split_repo_tag(value: str) -> tuple[str, str]:
 def version_key(defaults: dict[str, Entry], prefix: str) -> str | None:
     """The ``<prefix>_image_version`` or ``_image_tag`` key pinning an image."""
     return next(
-        (prefix + suffix for suffix in VERSION_SUFFIXES if prefix + suffix in defaults), None
+        (prefix + suffix for suffix in VERSION_SUFFIXES if prefix + suffix in defaults),
+        None,
     )

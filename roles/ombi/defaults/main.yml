@@ -7,12 +7,12 @@ ombi_config_directory: "{{ docker_home }}/ombi/config"
 
 # network
 ombi_port: "3579"
-ombi_hostname: "ombi"
+ombi_hostname: ombi
 
 # docker
-ombi_container_name: "ombi"
-ombi_image_name: "linuxserver/ombi"
-ombi_image_version: "4.53.10"
+ombi_container_name: ombi
+ombi_image_name: linuxserver/ombi
+ombi_image_version: 4.53.10
 ombi_user_id: "0"
 ombi_group_id: "0"
 

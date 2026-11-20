@@ -5,4 +5,4 @@ provisioner:
       all:
         speedtest_tracker_enabled: true
         # Test-only key, not secret.
-        speedtest_tracker_app_key: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        speedtest_tracker_app_key: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=

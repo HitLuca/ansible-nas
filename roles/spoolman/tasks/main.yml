@@ -25,17 +25,17 @@
         memory: "{{ spoolman_memory }}"
         labels:
           traefik.enable: "{{ spoolman_available_externally | string }}"
-          traefik.http.routers.spoolman.rule: "Host(`{{ spoolman_hostname }}.{{ ansible_nas_domain }}`)"
-          traefik.http.routers.spoolman.tls.certresolver: "letsencrypt"
+          traefik.http.routers.spoolman.rule: Host(`{{ spoolman_hostname }}.{{ ansible_nas_domain }}`)
+          traefik.http.routers.spoolman.tls.certresolver: letsencrypt
           traefik.http.routers.spoolman.tls.domains[0].main: "{{ ansible_nas_domain }}"
           traefik.http.routers.spoolman.tls.domains[0].sans: "*.{{ ansible_nas_domain }}"
           traefik.http.services.spoolman.loadbalancer.server.port: "8000"
-          kuma.spoolman.http.name: "Spoolman"
+          kuma.spoolman.http.name: Spoolman
           kuma.spoolman.http.url: "{{ 'http://' ~ ansible_facts.default_ipv4.address ~ ':' ~ spoolman_port if spoolman_uptime_kuma_monitor else omit }}"
           homepage.group: System Tools
           homepage.name: Spoolman
           homepage.icon: spoolman.png
-          homepage.href: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ spoolman_port }}"
+          homepage.href: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ spoolman_port }}
           homepage.description: Filament management
           # omit drops the label entirely, so a router never points at a
           # middleware that doesn't exist when Authelia isn't deployed.

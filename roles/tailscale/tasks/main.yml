@@ -28,12 +28,12 @@
         volumes:
           - "{{ tailscale_data_directory }}:/var/lib/tailscale:rw"
         devices:
-          - "/dev/net/tun:/dev/net/tun"
+          - /dev/net/tun:/dev/net/tun
         capabilities:
           - net_admin
           - sys_module
         env:
-          TS_STATE_DIR: "/var/lib/tailscale"
+          TS_STATE_DIR: /var/lib/tailscale
           # Use the kernel tun device, so the host itself can reach the tailnet
           TS_USERSPACE: "false"
           TS_HOSTNAME: "{{ tailscale_hostname }}"

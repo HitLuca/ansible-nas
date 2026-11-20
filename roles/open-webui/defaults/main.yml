@@ -7,7 +7,7 @@ open_webui_data_directory: "{{ docker_home }}/open_webui"
 
 # network
 open_webui_port: "8098"
-open_webui_hostname: "open-webui"
+open_webui_hostname: open-webui
 
 # application
 # Required. Signs sessions and encrypts stored data; generate once with
@@ -19,15 +19,15 @@ open_webui_secret_key: ""
 # ollama_port still lands here because inventory vars are visible to both.
 # Point it elsewhere (e.g. http://10.0.0.5:11434) to use an Ollama server on
 # another machine without enabling the ollama role.
-open_webui_ollama_base_url: "http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ ollama_port | default(11434) }}"
+open_webui_ollama_base_url: http://{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}:{{ ollama_port | default(11434) }}
 
 # docker
-open_webui_container_name: "open-webui"
-open_webui_image_name: "ghcr.io/open-webui/open-webui"
-open_webui_image_version: "v0.13.3"
+open_webui_container_name: open-webui
+open_webui_image_name: ghcr.io/open-webui/open-webui
+open_webui_image_version: v0.13.3
 
 # specs
-open_webui_memory: "2g"
+open_webui_memory: 2g
 
 # monitoring
 open_webui_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

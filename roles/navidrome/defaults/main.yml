@@ -8,20 +8,20 @@ navidrome_music_directory: "{{ music_root }}"
 
 # network
 navidrome_port: "4533"
-navidrome_hostname: "navidrome"
+navidrome_hostname: navidrome
 
 # docker
-navidrome_container_name: "navidrome"
-navidrome_image_name: "deluan/navidrome"
-navidrome_image_version: "0.64.2"
+navidrome_container_name: navidrome
+navidrome_image_name: deluan/navidrome
+navidrome_image_version: 0.64.2
 
 # specs
 navidrome_memory: 1g
 
 # default config
 navidrome_scan_schedule: "@every 1m" # Cron syntax (https://en.wikipedia.org/wiki/Cron)
-navidrome_log_level: "info"
-navidrome_session_timeout: "24h"
+navidrome_log_level: info
+navidrome_session_timeout: 24h
 
 # monitoring
 navidrome_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"

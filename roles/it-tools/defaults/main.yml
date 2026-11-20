@@ -4,12 +4,12 @@ it_tools_available_externally: false
 
 # network
 it_tools_port: "8114"
-it_tools_hostname: "it-tools"
+it_tools_hostname: it-tools
 
 # docker
-it_tools_container_name: "it-tools"
-it_tools_image_name: "sharevb/it-tools"
-it_tools_image_version: "2026.10.25"
+it_tools_container_name: it-tools
+it_tools_image_name: sharevb/it-tools
+it_tools_image_version: 2026.10.25
 
 # specs
 it_tools_memory: 1g
