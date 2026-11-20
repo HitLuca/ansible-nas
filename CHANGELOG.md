@@ -19,7 +19,7 @@ Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
 - `minecraft-bedrock-server` — renamed image variable from `minecraft_bedrock_server_image` to `minecraft_bedrock_server_image_name` + `minecraft_bedrock_server_image_version`; update inventory overrides accordingly.
 - `speedtest-tracker` — renamed variables from `speedtest_*` prefix to `speedtest_tracker_*` prefix (affects `speedtest_container_name`, `speedtest_data_directory`, `speedtest_image_name`, `speedtest_image_version`); update inventory overrides accordingly.
 - `bitwarden` — `bitwarden_admin_token` now defaults to empty string; must be set in inventory (generate with `openssl rand -base64 48`).
-- `cloudflare_ddns` — `cloudflare_token` now defaults to empty string; must be set in inventory (create at dash.cloudflare.com/profile/api-tokens).
+- `cloudflare_ddns` — `cloudflare_ddns_token` now defaults to empty string; must be set in inventory (create at dash.cloudflare.com/profile/api-tokens).
 - `drone-ci` — `drone_ci_agent_secret` and `drone_ci_gitea_client_secret` now default to empty string; must be set in inventory (generate with `openssl rand -hex 16`).
 - `couchdb` — `couchdb_admin_password` now defaults to empty string; must be set in inventory.
 - `immich` — `immich_db_password` and `immich_redis_password` now default to empty string; must be set in inventory.
