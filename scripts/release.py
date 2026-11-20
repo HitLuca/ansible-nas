@@ -6,6 +6,7 @@
 Never pushes. Afterwards push the commit and the tag yourself; the Release
 workflow then drafts the GitHub release from the new changelog section.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -62,10 +63,14 @@ def problem(root: Path, version: str) -> str:
 
 def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     """Run git in *root*."""
-    return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=False)
+    return subprocess.run(
+        ["git", *args], cwd=root, capture_output=True, text=True, check=False
+    )
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(
+    argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
+) -> int:
     """Entry point."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("version", help="new release tag, e.g. v2.0.0")
@@ -80,11 +85,16 @@ def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
     renamed = re.sub(
         r"^##[ \t]+Unreleased[ \t]*$",
         f"## Unreleased\n\nNothing yet.\n\n## {version} — {date.today().isoformat()}",
-        text, count=1, flags=re.MULTILINE,
+        text,
+        count=1,
+        flags=re.MULTILINE,
     )
     path.write_text(renamed)
-    for args in (("add", breaking.CHANGELOG), ("commit", "-m", f":bookmark: release {version}"),
-                 ("tag", version)):
+    for args in (
+        ("add", breaking.CHANGELOG),
+        ("commit", "-m", f":bookmark: release {version}"),
+        ("tag", version),
+    ):
         result = run_git(root, *args)
         if result.returncode != 0:
             print(result.stderr, file=sys.stderr)

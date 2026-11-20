@@ -10,6 +10,7 @@ The exemption lists are checked too: an exemption for a role that no longer
 exists, or that now follows the convention, fails, so the lists cannot rot into
 hiding a later regression.
 """
+
 from __future__ import annotations
 
 import re
@@ -57,7 +58,11 @@ def _tasks_main(role: Role) -> str:
 
 
 def _missing_molecule(role: Role) -> list[str]:
-    return [f for f in MOLECULE_FILES if not (role.path / "molecule" / "default" / f).is_file()]
+    return [
+        f
+        for f in MOLECULE_FILES
+        if not (role.path / "molecule" / "default" / f).is_file()
+    ]
 
 
 def _blocks(role: Role, flag: str) -> tuple[bool, bool]:
@@ -144,7 +149,10 @@ def _exemptions() -> dict[str, tuple[Sequence[str], Callable[[Role], bool]]]:
             NO_START_STOP_BLOCK,
             lambda r: r.flag is None or not all(_blocks(r, _flag_or_empty(r))),
         ),
-        "UNCONVENTIONAL_FLAG": (UNCONVENTIONAL_FLAG, lambda r: r.flag != r.conventional_flag),
+        "UNCONVENTIONAL_FLAG": (
+            UNCONVENTIONAL_FLAG,
+            lambda r: r.flag != r.conventional_flag,
+        ),
     }
 
 
@@ -156,13 +164,19 @@ def stale_exemptions(roles: Sequence[Role]) -> list[str]:
         for name in names:
             role = by_name.get(name)
             if role is None:
-                out.append(f"{list_name}: '{name}' is not a role any more; drop the exemption")
+                out.append(
+                    f"{list_name}: '{name}' is not a role any more; drop the exemption"
+                )
             elif not still_needed(role):
-                out.append(f"{list_name}: '{name}' now follows the convention; drop the exemption")
+                out.append(
+                    f"{list_name}: '{name}' now follows the convention; drop the exemption"
+                )
     return out
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(
+    argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
+) -> int:
     """Entry point."""
     del argv
     roles = role_defaults.discover(root)
@@ -171,7 +185,9 @@ def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
         for role in roles
         for problem in (*anatomy(role), *images(role))
     ]
-    messages += [f"scripts/check_role_structure.py {m}" for m in stale_exemptions(roles)]
+    messages += [
+        f"scripts/check_role_structure.py {m}" for m in stale_exemptions(roles)
+    ]
     for message in messages:
         print(message)
     if messages:

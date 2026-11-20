@@ -34,9 +34,12 @@ BASE_CONFIG = REPO / "tests" / "molecule" / "base.yml"
 # roles that bind a file. That is macOS-only; CI runs on native Linux, where
 # the full sequence (idempotence included) always runs. Set
 # ANSIBLE_NAS_SKIP_IDEMPOTENCE=0 to force the step locally.
-SKIP_IDEMPOTENCE = os.environ.get(
-    "ANSIBLE_NAS_SKIP_IDEMPOTENCE", "1" if sys.platform == "darwin" else "0"
-) == "1"
+SKIP_IDEMPOTENCE = (
+    os.environ.get(
+        "ANSIBLE_NAS_SKIP_IDEMPOTENCE", "1" if sys.platform == "darwin" else "0"
+    )
+    == "1"
+)
 
 
 def _base_config(tmpdir: Path) -> str:

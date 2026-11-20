@@ -32,9 +32,10 @@ lint-ansible: ## Lint the playbook only
 lint-docs: ## Lint Markdown docs only
 	uv run pre-commit run markdownlint --all-files
 
-lint-python: ## Lint Python only (pylint + mypy)
+lint-python: ## Lint Python only (pylint + mypy + black)
 	uv run pre-commit run pylint --all-files
 	uv run pre-commit run mypy --all-files
+	uv run pre-commit run black --all-files
 
 check-ports: ## Report host ports claimed by more than one role
 	uv run python scripts/check_port_conflicts.py

@@ -6,6 +6,7 @@ when something every scenario depends on changes: the shared molecule config,
 or requirements-dev.txt, which pins molecule and ansible-core. Scheduled and
 manual runs test all roles.
 """
+
 from __future__ import annotations
 
 import json
@@ -51,7 +52,9 @@ def matrix_for(root: Path, event_name: str | None, base_ref: str | None) -> list
         changed = changed_files(root, base_ref or "main")
         if any(SHARED.match(line) for line in changed):
             return all_roles(root)
-        touched = {match.group(1) for line in changed if (match := ROLE_DIR.match(line))}
+        touched = {
+            match.group(1) for line in changed if (match := ROLE_DIR.match(line))
+        }
         return sorted(role for role in touched if (root / role / "molecule").is_dir())
     return all_roles(root)
 
@@ -67,7 +70,9 @@ def main(argv: Sequence[str] | None = None, root: Path = REPO_ROOT) -> int:
     matrix = json.dumps(roles, separators=(",", ":"))
     print(f"Roles to test: {matrix}")
     # Outside Actions (a local dry run) there is no step output file.
-    with open(os.environ.get("GITHUB_OUTPUT", "/dev/null"), "a", encoding="utf-8") as output:
+    with open(
+        os.environ.get("GITHUB_OUTPUT", "/dev/null"), "a", encoding="utf-8"
+    ) as output:
         output.write(f"matrix={matrix}\n")
     return 0
 

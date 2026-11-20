@@ -4,6 +4,7 @@ Every tag in these tables is one the roles actually pin, or one a registry
 really publishes, so a parser change breaks a test instead of silently
 rewriting a role's defaults with ``--patch``.
 """
+
 # pylint: disable=protected-access  # the leading-underscore helpers are the units under test
 from pathlib import Path
 
@@ -53,7 +54,13 @@ def _ref(version: str) -> civ.ImageRef:
 def test_parse_tag(tag: str, expected: tuple) -> None:
     """A version tag splits into prefix, parts, revision, shape and build."""
     parsed = _tag(tag)
-    actual = (parsed.prefix, parsed.parts, parsed.revision, parsed.variant, parsed.build)
+    actual = (
+        parsed.prefix,
+        parsed.parts,
+        parsed.revision,
+        parsed.variant,
+        parsed.build,
+    )
     assert actual == expected
 
 
@@ -132,7 +139,9 @@ def test_hub_credentials_absent_when_incomplete(monkeypatch, environment: dict) 
 def test_best_match_picks_highest() -> None:
     """The newest rebuild wins, ignoring other channels and floating tags."""
     tags = ["2026-07-14c-ls332", "2026-07-14c-ls334", "2025-05-14b-ls308", "latest"]
-    assert civ._best_match(_tag("2026-07-14c-ls333"), tags, False) == "2026-07-14c-ls334"
+    assert (
+        civ._best_match(_tag("2026-07-14c-ls333"), tags, False) == "2026-07-14c-ls334"
+    )
 
 
 @pytest.mark.parametrize(
@@ -149,7 +158,9 @@ def test_best_match_picks_highest() -> None:
 def test_evaluate_uses_truncation(page: civ.TagPage, expected: str) -> None:
     """A newest-first page proves the pin current once the pin is on it."""
     ref = _ref("1.2.3")
-    assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == expected
+    assert (
+        civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == expected
+    )
 
 
 def test_evaluate_reports_next_major_without_counting_it_behind() -> None:
@@ -165,7 +176,11 @@ def test_evaluate_does_not_repeat_a_minor_update_as_major() -> None:
     ref = _ref("1.21.0")
     page = civ.TagPage(["1.22.0"], complete=True)
     result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
-    assert (result.status, result.major_latest, result.newest) == ("update", "", "1.22.0")
+    assert (result.status, result.major_latest, result.newest) == (
+        "update",
+        "",
+        "1.22.0",
+    )
 
 
 def test_evaluate_shows_major_next_to_a_minor_update() -> None:
@@ -193,19 +208,25 @@ def test_evaluate_lexical_page_does_not_prove_current() -> None:
     """On a truncated lexically sorted page (ghcr.io) finding the pin proves nothing."""
     ref = _ref("1.2.3")
     page = civ.TagPage(["1.0.0", "1.2.3"], complete=False, newest_first=False)
-    assert civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status == "truncated"
+    assert (
+        civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False).status
+        == "truncated"
+    )
 
 
 def test_evaluate_reports_publish_dates() -> None:
     """The Current and Latest columns carry the tags' publish dates."""
     ref = _ref("1.2.3")
     page = civ.TagPage(
-        ["1.2.3", "1.3.0"], complete=True,
+        ["1.2.3", "1.3.0"],
+        complete=True,
         dates={"1.2.3": "2020-01-01", "1.3.0": "2020-01-03"},
     )
     result = civ._evaluate(ref, {ref.repo: page}, {}, allow_major=False)
     assert (result.status, result.current_date, result.latest_date) == (
-        "update", "2020-01-01", "2020-01-03",
+        "update",
+        "2020-01-01",
+        "2020-01-03",
     )
 
 
@@ -271,9 +292,15 @@ def test_refs_in_role(tmp_path: Path) -> None:
     )
     refs = {ref.repo_key: ref for ref in civ._refs_in_role(role)}
     assert set(refs) == {"example_image_name", "example_db_image"}
-    assert (refs["example_image_name"].version, refs["example_image_name"].line) == ("1.2.3", 3)
+    assert (refs["example_image_name"].version, refs["example_image_name"].line) == (
+        "1.2.3",
+        3,
+    )
     assert refs["example_image_name"].version_key == "example_image_version"
-    assert (refs["example_db_image"].repo, refs["example_db_image"].version) == ("postgres", "16.4")
+    assert (refs["example_db_image"].repo, refs["example_db_image"].version) == (
+        "postgres",
+        "16.4",
+    )
 
 
 def test_patch_rewrites_pins_and_keeps_quotes(tmp_path: Path, monkeypatch) -> None:
@@ -298,8 +325,9 @@ def test_patch_rewrites_pins_and_keeps_quotes(tmp_path: Path, monkeypatch) -> No
     assert len(changes) == 2
 
 
-def test_patch_does_not_report_a_change_it_did_not_make(tmp_path: Path, monkeypatch,
-                                                        capsys) -> None:
+def test_patch_does_not_report_a_change_it_did_not_make(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
     """A pin edited since discovery is reported as unpatched, not as patched."""
     monkeypatch.setattr(civ, "REPO_ROOT", tmp_path)
     role = _write_role(
@@ -311,6 +339,59 @@ def test_patch_does_not_report_a_change_it_did_not_make(tmp_path: Path, monkeypa
     )
     assert not civ.patch([civ.Result(ref, "update", latest="1.3.0")])
     assert "could not patch" in capsys.readouterr().err
+
+
+def test_patch_rewrites_embedded_image(tmp_path: Path, monkeypatch) -> None:
+    """--patch rewrites an embedded image tag (version_key is None)."""
+    monkeypatch.setattr(civ, "REPO_ROOT", tmp_path)
+    role = _write_role(
+        tmp_path,
+        "---\nexample_image: vendor/app:1.2.3\n",
+    )
+    refs = {ref.repo_key: ref for ref in civ._refs_in_role(role)}
+    results = [civ.Result(refs["example_image"], "update", latest="1.3.0")]
+    changes = civ.patch(results)
+    text = role.defaults_path.read_text()
+    assert "example_image: vendor/app:1.3.0\n" in text
+    assert len(changes) == 1
+
+
+def test_patch_rewrites_embedded_image_with_registry_port(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """--patch correctly handles embedded images with a registry port.
+
+    The tag must be the *last* colon on the line; an earlier colon in the
+    registry host:port must not be replaced.
+    """
+    monkeypatch.setattr(civ, "REPO_ROOT", tmp_path)
+    role = _write_role(
+        tmp_path,
+        "---\nexample_image: registry.example.com:5000/app:1.0\n",
+    )
+    refs = {ref.repo_key: ref for ref in civ._refs_in_role(role)}
+    results = [civ.Result(refs["example_image"], "update", latest="1.1")]
+    changes = civ.patch(results)
+    text = role.defaults_path.read_text()
+    assert "example_image: registry.example.com:5000/app:1.1\n" in text
+    # The registry port (5000) must be preserved
+    assert "5000" in text
+    assert len(changes) == 1
+
+
+def test_patch_rewrites_embedded_image_quoted(tmp_path: Path, monkeypatch) -> None:
+    """--patch keeps quotes on embedded image lines."""
+    monkeypatch.setattr(civ, "REPO_ROOT", tmp_path)
+    role = _write_role(
+        tmp_path,
+        '---\nexample_image: "vendor/app:1.2.3"\n',
+    )
+    refs = {ref.repo_key: ref for ref in civ._refs_in_role(role)}
+    results = [civ.Result(refs["example_image"], "update", latest="1.3.0")]
+    changes = civ.patch(results)
+    text = role.defaults_path.read_text()
+    assert 'example_image: "vendor/app:1.3.0"\n' in text
+    assert len(changes) == 1
 
 
 class _Response:
@@ -333,14 +414,18 @@ class _Response:
 
 def test_fetch_non_json_is_a_registry_error(monkeypatch) -> None:
     """An HTML page answering 200 fails one repository, not the whole run."""
-    monkeypatch.setattr(civ.urllib.request, "urlopen",
-                        lambda *_args, **_kwargs: _Response(b"<html>login</html>"))
+    monkeypatch.setattr(
+        civ.urllib.request,
+        "urlopen",
+        lambda *_args, **_kwargs: _Response(b"<html>login</html>"),
+    )
     with pytest.raises(civ.RegistryError, match="non-JSON"):
         civ._fetch("https://registry.invalid/v2/tags")
 
 
 def test_fetch_all_reports_errors_per_repo(monkeypatch) -> None:
     """A failing repository lands in errors while the others still resolve."""
+
     def fake(repo: str, _pins=(), _allow_major=False) -> civ.TagPage:
         if repo == "bad/repo":
             raise civ.RegistryError("HTTP 404", 404)
@@ -356,13 +441,17 @@ def test_docker_hub_pages_past_a_fallen_off_pin(monkeypatch) -> None:
     """A pin off page one is followed until found, then proven current."""
     responses: list[tuple[dict, dict]] = [
         (
-            {"results": [{"name": "0.9.0", "last_updated": "2020-01-01T00:00:00Z"}],
-             "next": "page-2"},
+            {
+                "results": [{"name": "0.9.0", "last_updated": "2020-01-01T00:00:00Z"}],
+                "next": "page-2",
+            },
             {},
         ),
         (
-            {"results": [{"name": "1.2.3", "last_updated": "2020-01-02T00:00:00Z"}],
-             "next": None},
+            {
+                "results": [{"name": "1.2.3", "last_updated": "2020-01-02T00:00:00Z"}],
+                "next": None,
+            },
             {},
         ),
     ]
@@ -385,6 +474,7 @@ def test_docker_hub_pages_past_a_fallen_off_pin(monkeypatch) -> None:
 
 def test_docker_hub_stops_once_a_newer_tag_supersedes_the_pin(monkeypatch) -> None:
     """A newer tag on page one supersedes the pin; its date is backfilled."""
+
     def fake_fetch(url, **_kw):
         if url.endswith("/tags/1.2.3"):
             return {"name": "1.2.3", "last_updated": "2020-01-01T00:00:00Z"}, {}
@@ -407,8 +497,10 @@ def test_docker_hub_stops_once_a_newer_tag_supersedes_the_pin(monkeypatch) -> No
 def test_ghcr_walks_pages_until_complete(monkeypatch) -> None:
     """A lexical tag list is walked to the end so nothing newer hides."""
     pages: list[tuple[dict, dict]] = [
-        ({"tags": ["1.0.0", "1.1.0"]},
-         {"link": '</v2/vendor/app/tags/list?last=1.1.0&n=1000>; rel="next"'}),
+        (
+            {"tags": ["1.0.0", "1.1.0"]},
+            {"link": '</v2/vendor/app/tags/list?last=1.1.0&n=1000>; rel="next"'},
+        ),
         ({"tags": ["2.0.0"]}, {}),
     ]
     calls: list[str] = []

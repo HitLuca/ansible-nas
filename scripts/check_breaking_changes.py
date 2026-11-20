@@ -24,6 +24,7 @@ Pass a tag to compare against something other than the last release::
 
     scripts/check_breaking_changes.py v1.0.0
 """
+
 from __future__ import annotations
 
 import argparse
@@ -54,7 +55,9 @@ makes it a major release."""
 
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=False)
+    return subprocess.run(
+        ["git", *args], cwd=root, capture_output=True, text=True, check=False
+    )
 
 
 def last_tag(root: Path) -> str:
@@ -115,7 +118,9 @@ def compare(old: dict[str, Entry], new: dict[str, Entry]) -> Iterator[str]:
         if VERSION_KEY.search(key):
             old_version, new_version = before.text, after.text
         elif EMBEDDED_IMAGE_KEY.search(key):
-            old_version, new_version = _embedded_tag(before.text), _embedded_tag(after.text)
+            old_version, new_version = _embedded_tag(before.text), _embedded_tag(
+                after.text
+            )
         else:
             continue
         old_major, new_major = major(old_version), major(new_version)
@@ -146,7 +151,9 @@ def breaks(root: Path, base: str) -> list[tuple[str, str]]:
         shown = _git(root, "show", f"{base}:roles/{name}/defaults/main.yml")
         if shown.returncode != 0:
             continue
-        old = role_defaults.parse_defaults(shown.stdout, f"{base}:roles/{name}/defaults/main.yml")
+        old = role_defaults.parse_defaults(
+            shown.stdout, f"{base}:roles/{name}/defaults/main.yml"
+        )
         found += [(name, message) for message in compare(old, head[name].defaults)]
     return found
 
@@ -167,10 +174,14 @@ def unreleased(root: Path) -> str:
     return "\n".join(lines)
 
 
-def main(argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT) -> int:
+def main(
+    argv: Sequence[str] | None = None, root: Path = role_defaults.REPO_ROOT
+) -> int:
     """Entry point."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("tag", nargs="?", help="compare against this tag (default: the last one)")
+    parser.add_argument(
+        "tag", nargs="?", help="compare against this tag (default: the last one)"
+    )
     args = parser.parse_args(argv)
 
     base = args.tag or last_tag(root)

@@ -6,6 +6,7 @@ in-process through ``main(argv, root)``. The shell scripts cd to the repo root
 relative to their own location, so they are copied into
 ``<tmp>/scripts/<script>`` and run there.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -27,11 +28,16 @@ SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 
 GIT = [
     "git",
-    "-c", "user.name=test",
-    "-c", "user.email=test@example.invalid",
-    "-c", "commit.gpgsign=false",
-    "-c", "tag.gpgsign=false",
-    "-c", "core.hooksPath=/dev/null",
+    "-c",
+    "user.name=test",
+    "-c",
+    "user.email=test@example.invalid",
+    "-c",
+    "commit.gpgsign=false",
+    "-c",
+    "tag.gpgsign=false",
+    "-c",
+    "core.hooksPath=/dev/null",
 ]
 
 
@@ -50,8 +56,13 @@ class FakeRepo:
         path.write_text(textwrap.dedent(content).lstrip("\n"))
         return path
 
-    def role(self, name: str, defaults: str | None = None, tasks: str | None = None,
-             molecule: bool = True) -> None:
+    def role(
+        self,
+        name: str,
+        defaults: str | None = None,
+        tasks: str | None = None,
+        molecule: bool = True,
+    ) -> None:
         """Create a role that follows the standard anatomy unless overridden."""
         flag = name.replace("-", "_").replace(".", "_") + "_enabled"
         if defaults is None:
@@ -83,18 +94,26 @@ class FakeRepo:
         self.write(f"roles/{name}/defaults/main.yml", defaults)
         self.write(f"roles/{name}/tasks/main.yml", tasks)
         if molecule:
-            for file in ("molecule.yml", "side_effect.yml", "verify.yml", "verify_stopped.yml"):
+            for file in (
+                "molecule.yml",
+                "side_effect.yml",
+                "verify.yml",
+                "verify_stopped.yml",
+            ):
                 self.write(f"roles/{name}/molecule/default/{file}", "---\n")
 
-    def run(self, script: str, *args: str, env: dict[str, str] | None = None
-            ) -> subprocess.CompletedProcess[str]:
+    def run(
+        self, script: str, *args: str, env: dict[str, str] | None = None
+    ) -> subprocess.CompletedProcess[str]:
         """Run scripts/<script> against the fake repo."""
         if script.endswith(".py"):
             module = importlib.import_module(script.removesuffix(".py"))
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 code = module.main(list(args), root=self.root)
-            return subprocess.CompletedProcess([script, *args], code, out.getvalue(), "")
+            return subprocess.CompletedProcess(
+                [script, *args], code, out.getvalue(), ""
+            )
         target = self.root / "scripts" / script
         shutil.copy2(SCRIPTS_DIR / script, target)
         return subprocess.run(
@@ -114,8 +133,13 @@ class FakeRepo:
 @pytest.fixture(name="repo")
 def fixture_repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> FakeRepo:
     """An empty fake repository, with no structure exemptions."""
-    for name in ("NO_MOLECULE", "NO_DEFAULTS", "NO_ENABLED_FLAG", "NO_START_STOP_BLOCK",
-                 "UNCONVENTIONAL_FLAG"):
+    for name in (
+        "NO_MOLECULE",
+        "NO_DEFAULTS",
+        "NO_ENABLED_FLAG",
+        "NO_START_STOP_BLOCK",
+        "UNCONVENTIONAL_FLAG",
+    ):
         monkeypatch.setattr(check_role_structure, name, ())
     return FakeRepo(tmp_path)
 
@@ -314,8 +338,13 @@ def test_roles_md_out_of_sync(repo: FakeRepo) -> None:
 # --- github_test_matrix.py --------------------------------------------------
 
 
-def _matrix(repo: FakeRepo, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-            event: str | None, base_ref: str | None = None) -> tuple[int, str, str]:
+def _matrix(
+    repo: FakeRepo,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    event: str | None,
+    base_ref: str | None = None,
+) -> tuple[int, str, str]:
     """Run the matrix generator in-process with the given GitHub event env."""
     output = tmp_path / "github_output"
     monkeypatch.setenv("GITHUB_OUTPUT", str(output))
@@ -333,8 +362,9 @@ def _matrix(repo: FakeRepo, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     return code, stdout.getvalue(), output.read_text()
 
 
-def test_matrix_lists_roles_with_molecule(repo: FakeRepo, tmp_path: Path,
-                                          monkeypatch: pytest.MonkeyPatch) -> None:
+def test_matrix_lists_roles_with_molecule(
+    repo: FakeRepo, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Outside a PR every role with a molecule scenario is tested."""
     repo.role("alpha")
     repo.role("beta", molecule=False)
@@ -343,8 +373,9 @@ def test_matrix_lists_roles_with_molecule(repo: FakeRepo, tmp_path: Path,
     assert output == 'matrix=["roles/alpha"]\n'
 
 
-def test_matrix_runs_without_github_output(repo: FakeRepo,
-                                           monkeypatch: pytest.MonkeyPatch) -> None:
+def test_matrix_runs_without_github_output(
+    repo: FakeRepo, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """A local dry run without GITHUB_OUTPUT prints the matrix instead of failing."""
     repo.role("alpha")
     monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
@@ -376,7 +407,9 @@ def fixture_released(repo: FakeRepo) -> FakeRepo:
     """A repo with roles alpha and beta, tagged v1.0.0."""
     repo.role("alpha", defaults=BASE_DEFAULTS)
     repo.role("beta")
-    repo.write("CHANGELOG.md", "# Changelog\n\n## Unreleased\n\n## v1.0.0\n\n- `alpha` — old\n")
+    repo.write(
+        "CHANGELOG.md", "# Changelog\n\n## Unreleased\n\n## v1.0.0\n\n- `alpha` — old\n"
+    )
     repo.git("init", "-q")
     repo.git("add", "-A")
     repo.git("commit", "-q", "-m", "init")
@@ -410,8 +443,14 @@ def test_breaking_no_tag(repo: FakeRepo) -> None:
         ('"vendor/side:2.0.0"', '"vendor/side:2.3.1"'),
         ('alpha_image_version: "1.4.2"', 'alpha_image_version: "2026.01.01"'),
     ],
-    ids=["requoted", "single-quoted-comment", "memory", "minor-bump", "embedded-minor",
-         "date-pin"],
+    ids=[
+        "requoted",
+        "single-quoted-comment",
+        "memory",
+        "minor-bump",
+        "embedded-minor",
+        "date-pin",
+    ],
 )
 def test_breaking_ignores_safe_changes(released: FakeRepo, old: str, new: str) -> None:
     """Quoting, non-location settings and same-major bumps are not breaking."""
@@ -425,27 +464,52 @@ def test_breaking_ignores_safe_changes(released: FakeRepo, old: str, new: str) -
     ("old", "new", "expected"),
     [
         ('alpha_port: "8080"', 'alpha_port: "8081"', "'alpha_port' default changed"),
-        ('alpha_data_directory: "{{ docker_home }}/alpha"',
-         'alpha_data_directory: "{{ docker_home }}/alpha2"',
-         "'alpha_data_directory' default changed"),
-        ('alpha_config_directory: "{{ docker_home }}/alpha/config"',
-         'alpha_config_directory: "{{ docker_home }}/alpha/cfg"',
-         "'alpha_config_directory' default changed"),
+        (
+            'alpha_data_directory: "{{ docker_home }}/alpha"',
+            'alpha_data_directory: "{{ docker_home }}/alpha2"',
+            "'alpha_data_directory' default changed",
+        ),
+        (
+            'alpha_config_directory: "{{ docker_home }}/alpha/config"',
+            'alpha_config_directory: "{{ docker_home }}/alpha/cfg"',
+            "'alpha_config_directory' default changed",
+        ),
         ("alpha_memory: 1g\n", "", "'alpha_memory' deleted"),
-        ('alpha_image_version: "1.4.2"', 'alpha_image_version: "v2.0.0"',
-         "'alpha_image_version' major image bump 1.4.2 -> v2.0.0"),
-        ('"vendor/side:2.0.0"', '"vendor/side:3.0.0"',
-         "'alpha_side_image' major image bump 2.0.0 -> 3.0.0"),
-        ('alpha_image_name: "vendor/alpha"', 'alpha_image_name: "fork/alpha"',
-         "'alpha_image_name' image repository changed (vendor/alpha -> fork/alpha)"),
-        ('"vendor/side:2.0.0"', '"fork/side:2.0.0"',
-         "'alpha_side_image' image repository changed (vendor/side -> fork/side)"),
+        (
+            'alpha_image_version: "1.4.2"',
+            'alpha_image_version: "v2.0.0"',
+            "'alpha_image_version' major image bump 1.4.2 -> v2.0.0",
+        ),
+        (
+            '"vendor/side:2.0.0"',
+            '"vendor/side:3.0.0"',
+            "'alpha_side_image' major image bump 2.0.0 -> 3.0.0",
+        ),
+        (
+            'alpha_image_name: "vendor/alpha"',
+            'alpha_image_name: "fork/alpha"',
+            "'alpha_image_name' image repository changed (vendor/alpha -> fork/alpha)",
+        ),
+        (
+            '"vendor/side:2.0.0"',
+            '"fork/side:2.0.0"',
+            "'alpha_side_image' image repository changed (vendor/side -> fork/side)",
+        ),
     ],
-    ids=["port", "data-dir", "config-dir", "deleted-key", "major-bump", "embedded-major",
-         "image-name", "embedded-repo"],
+    ids=[
+        "port",
+        "data-dir",
+        "config-dir",
+        "deleted-key",
+        "major-bump",
+        "embedded-major",
+        "image-name",
+        "embedded-repo",
+    ],
 )
-def test_breaking_reports_unrecorded(released: FakeRepo, old: str, new: str,
-                                     expected: str) -> None:
+def test_breaking_reports_unrecorded(
+    released: FakeRepo, old: str, new: str, expected: str
+) -> None:
     """A breaking change with no Unreleased changelog entry fails the check."""
     _edit_defaults(released, old, new)
     result = released.run("check_breaking_changes.py")
@@ -500,8 +564,9 @@ def test_breaking_explicit_base(released: FakeRepo) -> None:
 # --- check_role_structure.py exemptions -------------------------------------
 
 
-def test_structure_reports_exemption_for_missing_role(repo: FakeRepo,
-                                                      monkeypatch: pytest.MonkeyPatch) -> None:
+def test_structure_reports_exemption_for_missing_role(
+    repo: FakeRepo, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """An exemption naming a role that no longer exists fails."""
     repo.role("alpha")
     monkeypatch.setattr(check_role_structure, "NO_MOLECULE", ("gone",))
@@ -510,8 +575,9 @@ def test_structure_reports_exemption_for_missing_role(repo: FakeRepo,
     assert "NO_MOLECULE: 'gone' is not a role any more" in result.stdout
 
 
-def test_structure_reports_exemption_no_longer_needed(repo: FakeRepo,
-                                                      monkeypatch: pytest.MonkeyPatch) -> None:
+def test_structure_reports_exemption_no_longer_needed(
+    repo: FakeRepo, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """An exemption for a role that now follows the convention fails."""
     repo.role("alpha")
     monkeypatch.setattr(check_role_structure, "NO_MOLECULE", ("alpha",))
@@ -522,8 +588,9 @@ def test_structure_reports_exemption_no_longer_needed(repo: FakeRepo,
     assert "NO_START_STOP_BLOCK: 'alpha' now follows the convention" in result.stdout
 
 
-def test_structure_exemption_still_needed(repo: FakeRepo,
-                                          monkeypatch: pytest.MonkeyPatch) -> None:
+def test_structure_exemption_still_needed(
+    repo: FakeRepo, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """A role that still deviates keeps its exemption without complaint."""
     repo.role("alpha", molecule=False)
     monkeypatch.setattr(check_role_structure, "NO_MOLECULE", ("alpha",))
@@ -550,10 +617,21 @@ def test_real_repo_structure_passes() -> None:
         ("requirements-dev.txt", '["roles/alpha","roles/gamma"]'),
         ("README.md", "[]"),
     ],
-    ids=["one-role", "role-without-molecule", "shared-config", "requirements", "unrelated"],
+    ids=[
+        "one-role",
+        "role-without-molecule",
+        "shared-config",
+        "requirements",
+        "unrelated",
+    ],
 )
-def test_matrix_on_pull_request(repo: FakeRepo, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-                                changed: str, expected: str) -> None:
+def test_matrix_on_pull_request(
+    repo: FakeRepo,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    changed: str,
+    expected: str,
+) -> None:
     """A PR tests the roles it touches, or all of them when shared pins change."""
     repo.role("alpha")
     repo.role("beta", molecule=False)
@@ -614,7 +692,9 @@ def test_release_notes_section_and_footer(notes: FakeRepo) -> None:
 
 
 @pytest.mark.parametrize("tag", ["v3.0.0", "v2.0", "Unreleased"])
-def test_release_notes_missing_or_empty_section_fails(notes: FakeRepo, tag: str) -> None:
+def test_release_notes_missing_or_empty_section_fails(
+    notes: FakeRepo, tag: str
+) -> None:
     """An unknown tag, a prefix of one, and a heading with no body all fail."""
     if tag == "Unreleased":
         notes.write("CHANGELOG.md", "## Unreleased\n\n## v1.0.0\n\nOld.\n")
@@ -631,8 +711,10 @@ def _commit(repo: FakeRepo) -> None:
 
 
 def _changelog(repo: FakeRepo, unreleased: str) -> None:
-    repo.write("CHANGELOG.md",
-               f"# Changelog\n\n## Unreleased\n\n{unreleased}\n\n## v1.0.0\n\nOld.\n")
+    repo.write(
+        "CHANGELOG.md",
+        f"# Changelog\n\n## Unreleased\n\n{unreleased}\n\n## v1.0.0\n\nOld.\n",
+    )
     _commit(repo)
 
 
@@ -640,8 +722,9 @@ def _on_main(repo: FakeRepo) -> None:
     repo.git("branch", "-M", "main")
 
 
-def test_release_renames_commits_and_tags(released: FakeRepo,
-                                          monkeypatch: pytest.MonkeyPatch) -> None:
+def test_release_renames_commits_and_tags(
+    released: FakeRepo, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """A valid release moves the entries under the new version and tags HEAD."""
     for who in ("AUTHOR", "COMMITTER"):
         monkeypatch.setenv(f"GIT_{who}_NAME", "test")
@@ -653,8 +736,13 @@ def test_release_renames_commits_and_tags(released: FakeRepo,
     text = (released.root / "CHANGELOG.md").read_text()
     assert "## Unreleased\n\nNothing yet.\n\n## v1.1.0 — " in text
     assert text.index("## v1.1.0") < text.index("- `alpha`") < text.index("## v1.0.0")
-    tags = subprocess.run(["git", "tag", "--points-at", "HEAD"], cwd=released.root,
-                          capture_output=True, text=True, check=True).stdout
+    tags = subprocess.run(
+        ["git", "tag", "--points-at", "HEAD"],
+        cwd=released.root,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
     assert tags.strip() == "v1.1.0"
 
 
@@ -669,7 +757,9 @@ def test_release_renames_commits_and_tags(released: FakeRepo,
     ],
     ids=["same", "older", "malformed", "empty", "dirty-tree"],
 )
-def test_release_refuses(released: FakeRepo, version: str, unreleased: str, dirty: bool) -> None:
+def test_release_refuses(
+    released: FakeRepo, version: str, unreleased: str, dirty: bool
+) -> None:
     """Bad versions, an empty section and a dirty tree change nothing."""
     _on_main(released)
     _changelog(released, unreleased)
@@ -680,8 +770,9 @@ def test_release_refuses(released: FakeRepo, version: str, unreleased: str, dirt
     assert (released.root / "CHANGELOG.md").read_text() == before
 
 
-def test_release_breaking_needs_major(released: FakeRepo,
-                                      monkeypatch: pytest.MonkeyPatch) -> None:
+def test_release_breaking_needs_major(
+    released: FakeRepo, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """With a breaking change since the tag, a minor release is refused, a major goes."""
     for who in ("AUTHOR", "COMMITTER"):
         monkeypatch.setenv(f"GIT_{who}_NAME", "test")
@@ -702,8 +793,14 @@ def test_release_refuses_off_main(released: FakeRepo) -> None:
 
 def test_release_notes_needs_only_the_stdlib() -> None:
     """The release workflow has no PyYAML, so the script must not import it."""
-    code = ("import sys; sys.modules['yaml'] = None; sys.path.insert(0, sys.argv[1]);"
-            " import release_notes")
-    result = subprocess.run([sys.executable, "-c", code, str(SCRIPTS_DIR)],
-                            capture_output=True, text=True, check=False)
+    code = (
+        "import sys; sys.modules['yaml'] = None; sys.path.insert(0, sys.argv[1]);"
+        " import release_notes"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(SCRIPTS_DIR)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     assert result.returncode == 0, result.stderr

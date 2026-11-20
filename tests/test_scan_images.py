@@ -4,6 +4,7 @@ Trivy itself is never run: these cover parsing its JSON, the Docker Hub
 credential scoping, and the Markdown budget that keeps the report under
 GitHub's issue body limit.
 """
+
 # pylint: disable=protected-access  # the leading-underscore helpers are the units under test
 from pathlib import Path
 
@@ -13,8 +14,9 @@ import check_image_versions as inventory
 import scan_images as si
 
 
-def _ref(role: str = "example", repo: str = "vendor/app", version: str = "1.2.3"
-         ) -> inventory.ImageRef:
+def _ref(
+    role: str = "example", repo: str = "vendor/app", version: str = "1.2.3"
+) -> inventory.ImageRef:
     return inventory.ImageRef(
         role=role,
         path=inventory.REPO_ROOT / "roles" / role / "defaults" / "main.yml",
@@ -26,8 +28,9 @@ def _ref(role: str = "example", repo: str = "vendor/app", version: str = "1.2.3"
     )
 
 
-def _finding(vuln_id: str = "CVE-2026-0001", severity: str = "HIGH",
-             title: str = "bad thing") -> si.Finding:
+def _finding(
+    vuln_id: str = "CVE-2026-0001", severity: str = "HIGH", title: str = "bad thing"
+) -> si.Finding:
     return si.Finding(vuln_id, "openssl", "3.0.0", "3.0.1", severity, title)
 
 
@@ -35,17 +38,27 @@ def test_parse_trivy_report() -> None:
     """Every vulnerability of every result becomes a finding; nulls are tolerated."""
     payload = {
         "Results": [
-            {"Vulnerabilities": [
-                {"VulnerabilityID": "CVE-1", "PkgName": "zlib", "InstalledVersion": "1",
-                 "FixedVersion": "2", "Severity": "critical", "Title": "t"},
-            ]},
+            {
+                "Vulnerabilities": [
+                    {
+                        "VulnerabilityID": "CVE-1",
+                        "PkgName": "zlib",
+                        "InstalledVersion": "1",
+                        "FixedVersion": "2",
+                        "Severity": "critical",
+                        "Title": "t",
+                    },
+                ]
+            },
             {"Vulnerabilities": None},
             {"Vulnerabilities": [{"VulnerabilityID": "CVE-2"}]},
         ]
     }
     findings = si._parse(payload)
-    assert [(f.vuln_id, f.severity) for f in findings] == [("CVE-1", "CRITICAL"),
-                                                           ("CVE-2", "UNKNOWN")]
+    assert [(f.vuln_id, f.severity) for f in findings] == [
+        ("CVE-1", "CRITICAL"),
+        ("CVE-2", "UNKNOWN"),
+    ]
     assert not si._parse({"Results": None})
 
 
@@ -61,8 +74,12 @@ def test_last_error_strips_the_log_prefix() -> None:
 
 @pytest.mark.parametrize(
     ("repo", "scoped"),
-    [("vendor/app", True), ("postgres", True), ("ghcr.io/vendor/app", False),
-     ("lscr.io/linuxserver/app", False)],
+    [
+        ("vendor/app", True),
+        ("postgres", True),
+        ("ghcr.io/vendor/app", False),
+        ("lscr.io/linuxserver/app", False),
+    ],
 )
 def test_credentials_only_for_docker_hub(repo: str, scoped: bool) -> None:
     """The Docker Hub token is never sent to another registry."""
@@ -111,7 +128,9 @@ def test_summary_counts() -> None:
     assert si._summary(scans, options) == (
         "1 of 3 pinned images has findings (1 critical, 1 high); 1 could not be scanned."
     )
-    assert si._summary([si.Scan(ref=_ref())], options) == "No findings in 1 pinned images."
+    assert (
+        si._summary([si.Scan(ref=_ref())], options) == "No findings in 1 pinned images."
+    )
 
 
 def test_markdown_orders_worst_first_and_stamps() -> None:
@@ -130,15 +149,20 @@ def test_markdown_stays_under_the_body_limit_with_errors() -> None:
     """Per-image blocks yield to the error list instead of overflowing the limit."""
     long_title = "x" * 400
     affected = [
-        si.Scan(ref=_ref(f"role{i}"), findings=[_finding(f"CVE-{i}-{j}", title=long_title)
-                                                for j in range(10)])
+        si.Scan(
+            ref=_ref(f"role{i}"),
+            findings=[_finding(f"CVE-{i}-{j}", title=long_title) for j in range(10)],
+        )
         for i in range(20)
     ]
-    failed = [si.Scan(ref=_ref(f"broken{i}"), error=f"error {i} " + "y" * 80)
-              for i in range(40)]
+    failed = [
+        si.Scan(ref=_ref(f"broken{i}"), error=f"error {i} " + "y" * 80)
+        for i in range(40)
+    ]
     limit = 20000
-    text = "\n".join(si._markdown([*affected, *failed], si.Options(),
-                                  si.Layout(body_limit=limit)))
+    text = "\n".join(
+        si._markdown([*affected, *failed], si.Options(), si.Layout(body_limit=limit))
+    )
     assert len(text) <= limit
     assert "images could not be scanned" in text
     assert "more images are in the full report" in text
@@ -169,7 +193,11 @@ def test_scan_all_scans_a_shared_image_once(monkeypatch) -> None:
         return si.Scan(ref=ref, findings=[_finding()])
 
     monkeypatch.setattr(si, "scan", fake_scan)
-    refs = [_ref("a", "postgres", "16"), _ref("b", "postgres", "16"), _ref("c", "redis", "7")]
+    refs = [
+        _ref("a", "postgres", "16"),
+        _ref("b", "postgres", "16"),
+        _ref("c", "redis", "7"),
+    ]
     scans = si.scan_all(refs, si.Options(jobs=2))
     assert sorted(calls) == ["postgres:16", "redis:7"]
     assert [item.ref.role for item in scans] == ["a", "b", "c"]

@@ -552,15 +552,22 @@ def _evaluate(
     latest_date = page.dates.get(latest or major, "")
     if latest is not None:
         return Result(
-            ref, "update", latest=latest, major_latest=major,
-            current_date=current_date, latest_date=latest_date,
+            ref,
+            "update",
+            latest=latest,
+            major_latest=major,
+            current_date=current_date,
+            latest_date=latest_date,
         )
     # A newest-first page proves the pin current when the pin is on it: every
     # newer tag was scanned above. Otherwise the list may hide a newer tag.
     if page.complete or (page.newest_first and ref.version in page.names):
         return Result(
-            ref, "ok", major_latest=major,
-            current_date=current_date, latest_date=latest_date,
+            ref,
+            "ok",
+            major_latest=major,
+            current_date=current_date,
+            latest_date=latest_date,
         )
     return Result(ref, "truncated", detail="pinned tag not in the fetched page")
 
@@ -617,7 +624,9 @@ def evaluate(refs: Sequence[ImageRef], allow_major: bool, jobs: int) -> list[Res
             and isinstance(_parse_tag(ref.version), Tag)
         ):
             pins_by_repo.setdefault(ref.repo, []).append(ref.version)
-    tags_by_repo, errors = _fetch_all(sorted(pins_by_repo), jobs, pins_by_repo, allow_major)
+    tags_by_repo, errors = _fetch_all(
+        sorted(pins_by_repo), jobs, pins_by_repo, allow_major
+    )
     return [_evaluate(ref, tags_by_repo, errors, allow_major) for ref in refs]
 
 
@@ -635,7 +644,9 @@ def patch(results: Iterable[Result]) -> list[str]:
             index = item.ref.line - 1
             before = lines[index]
             if item.ref.version_key is None:
-                lines[index] = lines[index].replace(f":{old}", f":{new}", 1)
+                # Replace the last occurrence of :old (the tag), not the first,
+                # so a registry port like registry:1000/image:1 isn't corrupted.
+                lines[index] = f":{new}".join(lines[index].rsplit(f":{old}", 1))
             else:
                 match = re.search(
                     rf"(?P<key>{re.escape(item.ref.version_key)}\s*:\s*)"
