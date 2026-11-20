@@ -4,3 +4,4 @@ provisioner:
     group_vars:
       all:
         immich_enabled: true
+        immich_db_password: "test-password-123"

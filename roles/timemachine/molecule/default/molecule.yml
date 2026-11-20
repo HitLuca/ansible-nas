@@ -4,6 +4,7 @@ provisioner:
     group_vars:
       all:
         timemachine_enabled: true
+        timemachine_password: "test-password-123"
 platforms:
   - name: instance
     image: geerlingguy/docker-ubuntu2204-ansible:latest

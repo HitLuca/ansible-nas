@@ -4,7 +4,7 @@ provisioner:
     group_vars:
       all:
         paperless_ngx_enabled: true
-        # Test-only key and password, not secrets.
-        paperless_ngx_secret_key: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-        paperless_ngx_admin_user: "admin"
-        paperless_ngx_admin_password: "admin"
+        paperless_ngx_db_password: test-password-123
+        paperless_ngx_secret_key: test-secret-key-1234567890
+        paperless_ngx_admin_password: test-password-123
+        paperless_ngx_admin_user: admin

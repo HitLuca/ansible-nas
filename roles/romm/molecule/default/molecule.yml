@@ -4,3 +4,8 @@ provisioner:
     group_vars:
       all:
         romm_enabled: true
+        romm_database_password: "test-password-123"
+        romm_database_root_password: "test-password-123"
+        romm_igdb_client_secret: "test-igdb-secret-123"
+        romm_auth_secret_key: "test-auth-secret-key-123456"
+        romm_auth_password: "test-password-123"

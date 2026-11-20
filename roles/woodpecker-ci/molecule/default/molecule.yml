@@ -4,6 +4,8 @@ provisioner:
     group_vars:
       all:
         woodpecker_ci_enabled: true
+        woodpecker_ci_agent_secret: "test-agent-secret-1234567890"
+        woodpecker_ci_gitea_secret: "test-gitea-secret-1234567890"
         gitea_enabled: true
         woodpecker_ci_gitea_client: "test"
         gitea_port_http: "8080"

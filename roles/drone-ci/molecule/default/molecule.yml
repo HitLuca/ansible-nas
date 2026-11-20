@@ -4,6 +4,7 @@ provisioner:
     group_vars:
       all:
         drone_ci_enabled: true
+        drone_ci_agent_secret: "test-agent-secret-1234567890"
         drone_ci_gitea_client_id: asdfasdf12341234
         drone_ci_gitea_client_secret: asdfasd12341234
         gitea_enabled: true

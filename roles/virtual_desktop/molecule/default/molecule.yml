@@ -4,4 +4,8 @@ provisioner:
     group_vars:
       all:
         virtual_desktop_enabled: true
+        virtual_desktop_users:
+          - username: "{{ ansible_nas_user }}"
+            password: "test-password-123"
+            sudo: Y
         ansible_nas_user: ansible-nas

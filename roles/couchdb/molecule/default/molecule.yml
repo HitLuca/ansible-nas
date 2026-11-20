@@ -4,3 +4,4 @@ provisioner:
     group_vars:
       all:
         couchdb_enabled: true
+        couchdb_admin_password: "test-password-123"

@@ -4,3 +4,4 @@ provisioner:
     group_vars:
       all:
         bitwarden_enabled: true
+        bitwarden_admin_token: "test-admin-token-1234567890"

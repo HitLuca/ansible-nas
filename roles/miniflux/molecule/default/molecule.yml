@@ -4,3 +4,4 @@ provisioner:
     group_vars:
       all:
         miniflux_enabled: true
+        miniflux_admin_password: "test-password-123"

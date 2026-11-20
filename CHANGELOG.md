@@ -39,6 +39,8 @@ Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
 - `virtual_desktop` — `virtual_desktop_users[0].password` now defaults to empty string; must be set in inventory.
 - `woodpecker-ci` — `woodpecker_ci_agent_secret` and `woodpecker_ci_gitea_secret` now default to empty string; must be set in inventory (generate with `openssl rand -hex 32`).
 - `znc` — `znc_user_password` now defaults to empty string; must be set in inventory.
+- `route53_ddns` — fixed role variable names in defaults.yml
+- `cloudflare_ddns`  — fixed role variable names in defaults.yml
 
 ## v2.0.0 — 2026-11-17
 
