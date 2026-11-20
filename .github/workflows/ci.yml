@@ -30,7 +30,8 @@ jobs:
       # Tool versions come from uv.lock and .pre-commit-config.yaml, the same
       # ones `make lint` uses locally, so CI and local runs cannot drift.
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10
+        # setup-uv publishes no floating major tag, only full versions.
+        uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.13"
 
