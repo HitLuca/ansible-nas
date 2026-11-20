@@ -12,7 +12,7 @@ changedetection_hostname: changedetection
 # docker
 changedetection_container_name: changedetection
 changedetection_image_name: ghcr.io/dgtlmoon/changedetection.io
-changedetection_image_version: 0.70.3
+changedetection_image_version: 0.70.4
 
 # specs
 changedetection_memory: 1g
