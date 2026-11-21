@@ -24,7 +24,7 @@ open_webui_ollama_base_url: http://{{ hostvars[inventory_hostname]['ansible_fact
 # docker
 open_webui_container_name: open-webui
 open_webui_image_name: ghcr.io/open-webui/open-webui
-open_webui_image_version: v0.13.3
+open_webui_image_version: v0.13.4
 
 # specs
 open_webui_memory: 2g
