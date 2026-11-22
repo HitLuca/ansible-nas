@@ -10,15 +10,17 @@ SHELL := /bin/bash
 # Roles that have a molecule scenario.
 ROLES := $(notdir $(patsubst %/molecule,%,$(wildcard roles/*/molecule)))
 
-.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-ports check-images check-yaml-unchanged update-images scan-images check-breaking release test test-unit test-all guard-role
+.PHONY: help lint lint-yaml lint-ansible lint-docs lint-python check-repo check-ports check-images check-yaml-unchanged update-images scan-images check-breaking release test test-unit test-all guard-role
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}'
 
-lint: ## Run every linter plus the enabled-flag, role-structure and changelog checks
+lint: check-repo ## Run every linter plus the repo checks
 	uv run pre-commit run --all-files
+
+check-repo: ## Run the repo's own checks: enabled flags, role structure, changelog
 	uv run python scripts/check_enabled_vars.py
 	uv run python scripts/check_role_structure.py
 	uv run python scripts/check_breaking_changes.py

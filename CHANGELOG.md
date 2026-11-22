@@ -6,7 +6,7 @@ A release that contains any breaking change is a major release, so a new major v
 
 ## Unreleased
 
-Added applications: Alloy, Audiobookshelf, Grafana, Prometheus.
+Added applications: Alloy, Audiobookshelf, Grafana, Prometheus, qBittorrent.
 
 ### Breaking
 
