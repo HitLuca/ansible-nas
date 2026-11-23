@@ -381,6 +381,10 @@
       tags:
         - pyload
 
+    - role: qbittorrent
+      tags:
+        - qbittorrent
+
     - role: radarr
       tags:
         - radarr
