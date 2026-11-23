@@ -16,6 +16,8 @@ on:
 # Read-only by default; only the deploy job may push to the gh-pages branch.
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   lint:
@@ -23,14 +25,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Lint docs
-        run: npx --yes markdownlint-cli@0.49.1 .
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.13"
+      - name: Lint docs (pre-commit)
+        run: uv run pre-commit run markdownlint --all-files
 
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     defaults:
       run:
         working-directory: website
@@ -49,9 +59,14 @@ jobs:
       - name: Build website
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Build output to publish to the `gh-pages` branch:
-          publish_dir: ./website/build
+          path: ./website/build
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

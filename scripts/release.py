@@ -61,6 +61,20 @@ def problem(root: Path, version: str) -> str:
     return version_problem(version, base) or state_problem(root, version, base)
 
 
+def suggest_version(root: Path) -> str:
+    """Suggest the next version based on breaking changes since last tag."""
+    base = breaking.last_tag(root)
+    if not base:
+        return "v1.0.0"
+    base_major, base_minor, base_patch = parse(base)
+    if breaking.breaks(root, base):
+        return f"v{base_major + 1}.0.0"
+    # Check if there are any changes at all
+    if run_git(root, "diff", "--quiet", base, "--", "roles/").returncode != 0:
+        return f"v{base_major}.{base_minor + 1}.0"
+    return f"v{base_major}.{base_minor}.{base_patch + 1}"
+
+
 def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     """Run git in *root*."""
     return subprocess.run(
@@ -73,8 +87,26 @@ def main(
 ) -> int:
     """Entry point."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("version", help="new release tag, e.g. v2.0.0")
-    version = parser.parse_args(argv).version
+    parser.add_argument("version", nargs="?", help="new release tag, e.g. v2.0.0")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show what would be done without making changes",
+    )
+    parser.add_argument(
+        "--suggest", action="store_true", help="suggest the next version and exit"
+    )
+    args = parser.parse_args(argv)
+
+    if args.suggest:
+        print(suggest_version(root))
+        return 0
+
+    if not args.version:
+        parser.error("version is required unless --suggest is used")
+
+    version = args.version
+    dry_run = args.dry_run
 
     if reason := problem(root, version):
         print(f"Not releasing: {reason}", file=sys.stderr)
@@ -89,13 +121,23 @@ def main(
         count=1,
         flags=re.MULTILINE,
     )
+
+    if dry_run:
+        print("Would write to CHANGELOG.md:")
+        print(renamed)
+        print("\nWould run:")
+        print(f"  git add {breaking.CHANGELOG}")
+        print(f'  git commit -m ":bookmark: release {version}"')
+        print(f"  git tag {version}")
+        return 0
+
     path.write_text(renamed)
-    for args in (
+    for args_git in (
         ("add", breaking.CHANGELOG),
         ("commit", "-m", f":bookmark: release {version}"),
         ("tag", version),
     ):
-        result = run_git(root, *args)
+        result = run_git(root, *args_git)
         if result.returncode != 0:
             print(result.stderr, file=sys.stderr)
             return 1

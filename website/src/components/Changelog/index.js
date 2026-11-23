@@ -10,7 +10,15 @@ import styles from './styles.module.css';
 function Inline({text}) {
   return text.split(/(`[^`]+`|\[[^\]]+\]\([^)]+\))/).map((part, i) => {
     const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
-    if (link) return <a key={i} href={link[2]}>{link[1]}</a>;
+    if (link) {
+      let href = link[2];
+      // Resolve .md links to docs-site routes
+      if (href.endsWith('.md')) {
+        const base = href.startsWith('website/docs/') ? '' : 'website/docs/';
+        href = `/${base}${href.slice(0, -3).replace('website/docs/', '')}`;
+      }
+      return <a key={i} href={href}>{link[1]}</a>;
+    }
     if (part.startsWith('`')) return <code key={i}>{part.slice(1, -1)}</code>;
     return part;
   });
@@ -50,6 +58,11 @@ function Release({release, apps, latest}) {
             <ul className={styles.chips}>
               {release.added.map((name) => {
                 const app = apps.find((a) => a.title.toLowerCase() === name.toLowerCase());
+                if (!app) {
+                  console.warn(
+                    `[changelog] New application "${name}" has no matching docs page — chip will render as plain text`
+                  );
+                }
                 return (
                   <li key={name}>
                     {app ? <Link to={app.permalink}>{name}</Link> : <span>{name}</span>}

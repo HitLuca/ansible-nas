@@ -22,8 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Lint docs
-        run: npx --yes markdownlint-cli@0.49.1 .
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.13"
+      - name: Lint docs (pre-commit)
+        run: uv run pre-commit run markdownlint --all-files
 
   test-deploy:
     name: Test deployment
