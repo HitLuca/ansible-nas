@@ -94,7 +94,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 </details>
 
 <details>
-<summary><b>Download Tools</b> (17)</summary>
+<summary><b>Download Tools</b> (18)</summary>
 
 | Application | Description |
 | --- | --- |
@@ -108,6 +108,7 @@ Ansible-NAS deploys any (or all) of the applications below. They are grouped the
 | [Ombi](https://ombi.io/) | Gives your users the ability to request content automatically |
 | [Prowlarr](https://github.com/Prowlarr/Prowlarr) | Indexer aggregator for Sonarr, Radarr, Lidarr and friends |
 | [pyLoad](https://pyload.net/) | Download manager with a friendly web interface |
+| [qBittorrent](https://www.qbittorrent.org/) | Feature-rich BitTorrent client, the most popular for *arr stacks |
 | [Radarr](https://radarr.video/) | For organising and downloading movies |
 | [Sabnzbd](https://sabnzbd.org/) | Powerful usenet downloader |
 | [Seerr](https://docs.seerr.dev) | Manages requests for your media library (successor of Overseerr) |
