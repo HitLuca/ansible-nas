@@ -26,6 +26,8 @@ function parse(text) {
         release.added = added[1].split(',').map((name) => name.trim());
       } else if (current && line.startsWith('- ')) {
         current.items.push(line.slice(2).trim());
+      } else if (current && line.startsWith('  - ')) {
+        current.items[current.items.length - 1] += ' ' + line.trim();
       } else if (!current && line.trim() && line.trim() !== 'Nothing yet.') {
         release.intro.push(line.trim());
       }
@@ -55,3 +57,5 @@ module.exports = function changelogPlugin(context) {
     },
   };
 };
+
+module.exports.parse = parse;

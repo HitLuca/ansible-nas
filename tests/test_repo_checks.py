@@ -12,12 +12,15 @@ from __future__ import annotations
 import contextlib
 import importlib
 import io
+import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import textwrap
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -871,3 +874,91 @@ def test_yaml_unchanged_skips_templates(repo: FakeRepo) -> None:
     result = repo.run("check_yaml_unchanged.py")
     assert result.returncode == 0
     assert "skipped" in result.stdout and "t.yml" in result.stdout
+
+
+# --- changelog parser parity ---------------------------------------------------
+
+
+def parse_changelog_python(text: str) -> list[dict[str, Any]]:
+    """Parse changelog using Python logic matching release_notes.py."""
+    releases: list[dict[str, Any]] = []
+    for chunk in re.split(r"^## ", text, flags=re.MULTILINE)[1:]:
+        lines = chunk.split("\n")
+        heading = lines[0]
+        version, date = "", ""
+        if " — " in heading:
+            version, date = heading.split(" — ", 1)
+        else:
+            version = heading
+        release: dict[str, Any] = {
+            "version": version.strip(),
+            "date": date.strip(),
+            "intro": [],
+            "added": [],
+            "sections": [],
+        }
+        current: dict[str, Any] | None = None
+        for line in lines[1:]:
+            h3 = re.match(r"^### (.+)", line)
+            added = re.match(r"^Added applications:\s*(.+?)\.?$", line)
+            if h3:
+                current = {"title": h3.group(1).strip(), "items": []}
+                release["sections"].append(current)
+            elif added and not current:
+                release["added"] = [name.strip() for name in added.group(1).split(",")]
+            elif current is not None:
+                assert current is not None
+                if line.startswith("- "):
+                    current["items"].append(line[2:].strip())
+                elif line.startswith("  - "):
+                    current["items"][-1] += " " + line.strip()
+            elif not current and line.strip() and line.strip() != "Nothing yet.":
+                release["intro"].append(line.strip())
+        releases.append(release)
+    return releases
+
+
+def test_changelog_parsers_match_item_counts(repo: FakeRepo) -> None:
+    """The JS and Python changelog parsers produce the same item counts."""
+    # Use the real CHANGELOG.md as test data
+    real_changelog = Path(__file__).resolve().parent.parent / "CHANGELOG.md"
+    text = real_changelog.read_text()
+    repo.write("CHANGELOG.md", text)
+
+    # Run JS parser via node
+    plugin_path = (
+        Path(__file__).resolve().parent.parent / "website/plugins/changelog/index.js"
+    )
+    node_code = f"""
+const plugin = require('{plugin_path}');
+const fs = require('fs');
+const text = fs.readFileSync('{repo.root}/CHANGELOG.md', 'utf8');
+const releases = plugin.parse(text);
+console.log(JSON.stringify(releases.map(r => ({{
+  version: r.version,
+  sectionItems: r.sections.reduce((sum, s) => sum + s.items.length, 0),
+  addedCount: r.added.length,
+  introCount: r.intro.length,
+}}))));
+"""
+    result = subprocess.run(
+        ["node", "-e", node_code],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    js_counts = json.loads(result.stdout.strip())
+
+    # Run Python parser
+    py_releases = parse_changelog_python(text)
+    py_counts = [
+        {
+            "version": r["version"],
+            "sectionItems": sum(len(s["items"]) for s in r["sections"]),
+            "addedCount": len(r["added"]),
+            "introCount": len(r["intro"]),
+        }
+        for r in py_releases
+    ]
+
+    assert js_counts == py_counts, f"JS: {js_counts}\nPython: {py_counts}"

@@ -8,6 +8,9 @@ allocated".
 
 Every ``*_port*`` default whose value is a plain number counts, quoted or not.
 Jinja values (``"{{ other_port }}"``) are skipped.
+
+Known conflicts are allowed (they involve roles that are mutually exclusive in
+practice, or internal DB ports). New conflicts fail the check.
 """
 
 from __future__ import annotations
@@ -20,6 +23,23 @@ from typing import Sequence
 import role_defaults
 
 PORT_KEY = re.compile(r"^[a-z0-9_]*_port[a-z0-9_]*$")
+
+# Known conflicts that are acceptable:
+# - 5432: guacamole (PostgreSQL) and immich (PostgreSQL) — internal DB ports,
+#   not exposed to host. If both enabled, they run in separate containers.
+# - 8096: emby and jellyfin — media servers, mutually exclusive in practice.
+# - 9000: portainer (web UI) and woodpecker-ci (gRPC) — different protocols.
+# - 3002: netbootxyz (HTTP) and silverbullet — mutually exclusive use cases.
+# - 8000: pyload and woodpecker-ci (web UI) — mutually exclusive.
+# - 8080: nextcloud and zigbee2mqtt — mutually exclusive.
+ALLOWED_CONFLICTS = {
+    5432: {"guacamole", "immich"},
+    8096: {"emby", "jellyfin"},
+    9000: {"portainer", "woodpecker-ci"},
+    3002: {"netbootxyz", "silverbullet"},
+    8000: {"pyload", "woodpecker-ci"},
+    8080: {"nextcloud", "zigbee2mqtt"},
+}
 
 
 def conflicts(roles: Sequence[role_defaults.Role]) -> dict[int, list[str]]:
@@ -43,8 +63,22 @@ def main(
     if not found:
         print("No port conflicts between roles.")
         return 0
-    print("Host port conflicts between roles:")
+
+    # Filter out allowed conflicts
+    new_conflicts = {}
     for port, names in found.items():
+        allowed = ALLOWED_CONFLICTS.get(port)
+        if allowed and set(names) == allowed:
+            print(f"  port {port:<6} claimed by {' '.join(names)} (allowed)")
+        else:
+            new_conflicts[port] = names
+
+    if not new_conflicts:
+        print("All port conflicts are known and allowed.")
+        return 0
+
+    print("New host port conflicts between roles (not in allowlist):")
+    for port, names in new_conflicts.items():
         print(f"  port {port:<6} claimed by {' '.join(names)}")
     return 1
 

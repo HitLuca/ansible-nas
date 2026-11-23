@@ -19,9 +19,12 @@ help: ## Show this help
 
 lint: ## Run every linter plus the enabled-flag, role-structure and changelog checks
 	uv run pre-commit run --all-files
+
+check-repo: ## Run the repo's own checks: enabled flags, role structure, changelog, ports
 	uv run python scripts/check_enabled_vars.py
 	uv run python scripts/check_role_structure.py
 	uv run python scripts/check_breaking_changes.py
+	uv run python scripts/check_port_conflicts.py
 
 lint-yaml: ## Lint YAML only
 	uv run pre-commit run yamllint --all-files
