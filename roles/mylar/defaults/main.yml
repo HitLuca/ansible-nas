@@ -18,8 +18,8 @@ mylar_port_http: "8585"
 
 # docker
 mylar_container_name: mylar
-mylar_image_name: linuxserver/mylar
-mylar_image_version: version-94dcfd13
+mylar_image_name: linuxserver/mylar3
+mylar_image_version: 0.11.0
 
 # specs
 mylar_memory: 1g

@@ -2,7 +2,7 @@
 title: "Cloudflare DDNS"
 ---
 
-Homepage: [https://github.com/joshuaavalon/docker-cloudflare](https://github.com/joshuaavalon/docker-cloudflare)
+Homepage: [https://github.com/favonia/cloudflare-ddns](https://github.com/favonia/cloudflare-ddns)
 
 Cloudflare: [https://www.cloudflare.com](https://www.cloudflare.com)
 

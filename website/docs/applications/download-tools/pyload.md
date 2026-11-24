@@ -6,6 +6,15 @@ Homepage: [https://pyload.net/](https://pyload.net/)
 
 Free and Open Source download manager written in Python and designed to be extremely lightweight, easily extensible and fully manageable via web.
 
+## Migration from pyLoad 0.4 (writl/pyload)
+
+This role now uses the `linuxserver/pyload-ng` image (pyLoad NG 0.5+), which is a complete rewrite with a different configuration format. If you are upgrading from the old `writl/pyload:0.4.20` image:
+
+- Configuration directory changed from `/config` to `/opt/pyload/pyload-config`
+- The setup wizard runs with `python pyLoadCore.py -u` inside `/opt/pyload`
+- Default username/password remains `pyload`/`pyload`
+- See [pyLoad NG docs](https://github.com/pyload/pyload-ng) for configuration details
+
 ## Usage
 
 Set `pyload_enabled: true` in your `inventories/<your_inventory>/group_vars/nas.yml` file.
