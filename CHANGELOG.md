@@ -43,6 +43,12 @@ Added applications: Alloy, Audiobookshelf, Grafana, Prometheus, qBittorrent.
 - `route53_ddns` — fixed role variable names in defaults.yml
 - `cloudflare_ddns`  — fixed role variable names in defaults.yml
 - `prowlarr` — moved to the official `linuxserver/prowlarr` dockerhub image, and bumped to the latest release
+- `mylar` — moved from archived `linuxserver/mylar` to `linuxserver/mylar3`; the new image uses a different data layout — back up `/config` and expect to re-scan libraries
+- `netbootxyz` — moved from archived `linuxserver/netbootxyz` to upstream `netbootxyz/netbootxyz`; config persists but verify menu entries after upgrade
+- `pyload` — moved from `writl/pyload` (pyLoad 0.4) to `linuxserver/pyload-ng` (pyLoad NG 0.5+); config format changed completely — export settings, recreate container, re-import. See [pyLoad migration notes](website/docs/applications/download-tools/pyload.md).
+- `sickchill` — moved from archived `linuxserver/sickchill` to upstream `sickchill/sickchill`; database should migrate automatically, back up `/config` first
+- `tiddlywiki` — moved from stale `wmudge/tiddlywiki` to `elasticdog/tiddlywiki`; data in `/var/lib/tiddlywiki` is compatible but back up before upgrading
+- `watchtower` — moved from archived `containrrr/watchtower` to community fork `nickfedor/watchtower`; config file at `/config` is compatible, no action needed
 
 ## v2.0.0 — 2026-11-17
 

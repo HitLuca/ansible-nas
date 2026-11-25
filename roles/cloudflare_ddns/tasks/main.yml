@@ -11,12 +11,6 @@
         path: "{{ cloudflare_ddns_data_directory }}"
         state: directory
 
-    - name: Template Cloudflare Dynamic DNS config.yml with scoped token
-      ansible.builtin.template:
-        src: config.yml
-        dest: "{{ cloudflare_ddns_data_directory }}/config.yml"
-      register: cloudflare_ddns_template_files_result
-
     - name: Check cloudflare_ddns_token is set
       ansible.builtin.assert:
         that: cloudflare_ddns_token | length >= 10
@@ -28,11 +22,13 @@
         name: "{{ cloudflare_ddns_container_name }}"
         image: "{{ cloudflare_ddns_image_name }}:{{ cloudflare_ddns_image_version }}"
         pull: true
-        volumes:
-          - "{{ cloudflare_ddns_data_directory }}/config.yml:/app/config.yaml"
+        env:
+          CLOUDFLARE_API_TOKEN: "{{ cloudflare_ddns_token }}"
+          DOMAINS: "{{ cloudflare_ddns_host }}"
+          PROXIED: "{{ cloudflare_ddns_proxy | string }}"
+          UPDATE_CRON: "{{ cloudflare_ddns_cron_schedule }}"
         restart_policy: unless-stopped
         memory: "{{ cloudflare_ddns_memory }}"
-        recreate: "{{ cloudflare_ddns_template_files_result is changed }}"
   when: cloudflare_ddns_enabled is true
 
 - name: Stop Cloudflare DDNS

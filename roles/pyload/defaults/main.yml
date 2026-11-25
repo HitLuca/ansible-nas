@@ -16,8 +16,8 @@ pyload_port: "8000"
 
 # docker
 pyload_container_name: pyload
-pyload_image_name: writl/pyload
-pyload_image_version: 0.4.20
+pyload_image_name: linuxserver/pyload-ng
+pyload_image_version: 0.5.0
 
 # specs
 pyload_memory: 1g

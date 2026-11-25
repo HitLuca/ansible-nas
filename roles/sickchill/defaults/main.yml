@@ -17,8 +17,8 @@ sickchill_hostname: sickchill
 
 # docker
 sickchill_container_name: sickchill
-sickchill_image_name: linuxserver/sickchill
-sickchill_image_version: 2024.3.1
+sickchill_image_name: sickchill/sickchill
+sickchill_image_version: 2026.11.23
 
 # specs
 sickchill_memory: 1g

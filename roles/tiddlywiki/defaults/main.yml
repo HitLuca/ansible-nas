@@ -2,18 +2,8 @@
 tiddlywiki_enabled: false
 tiddlywiki_available_externally: false
 
-# Data directory for config file
+# Data directory for wiki files
 tiddlywiki_data_directory: "{{ docker_home }}/tiddlywiki"
-
-# Basic auth
-# tiddlywiki_username:
-# tiddlywiki_password:
-
-# Node low memory
-# tiddlywiki_node_memory:
-
-# Server debugging
-# tiddlywiki_debug_level: none # full
 
 # Networking
 tiddlywiki_port: 8092
@@ -22,8 +12,8 @@ tiddlywiki_hostname: tiddlywiki
 # Container
 tiddlywiki_memory: 512MB
 tiddlywiki_container_name: tiddlywiki
-tiddlywiki_image_name: wmudge/tiddlywiki
-tiddlywiki_image_version: 5.2.2
+tiddlywiki_image_name: elasticdog/tiddlywiki
+tiddlywiki_image_version: "20260401.484"
 
 # monitoring
 tiddlywiki_uptime_kuma_monitor: "{{ uptime_kuma_monitor_all_services | default(false) }}"
