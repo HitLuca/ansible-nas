@@ -6,6 +6,10 @@ A release that contains any breaking change is a major release, so a new major v
 
 ## Unreleased
 
+Nothing yet.
+
+## v3.0.0 — 2026-11-25
+
 Added applications: Alloy, Audiobookshelf, Grafana, Prometheus, qBittorrent.
 
 ### Breaking
