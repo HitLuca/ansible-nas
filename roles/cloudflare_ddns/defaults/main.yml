@@ -10,3 +10,6 @@ cloudflare_ddns_memory: 512MB
 cloudflare_ddns_container_name: cloudflare-ddns
 cloudflare_ddns_image_name: favonia/cloudflare-ddns
 cloudflare_ddns_image_version: 1.18.0
+
+# cron schedule for the one-shot updater (runs at 5am daily, like watchtower)
+cloudflare_ddns_cron_schedule: 0 5 * * *

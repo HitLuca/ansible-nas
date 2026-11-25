@@ -13,12 +13,8 @@
         ports:
           - "{{ tiddlywiki_port }}:8080"
         volumes:
-          - "{{ tiddlywiki_data_directory }}:/var/lib/tiddlywiki"
-        env:
-          NODE_MEM: "{{ tiddlywiki_node_memory | default(omit) }}"
-          USERNAME: "{{ tiddlywiki_username | default(omit) }}"
-          PASSWORD: "{{ tiddlywiki_password | default(omit) }}"
-          DEBUG: "{{ tiddlywiki_debug_level | default(omit) }}"
+          - "{{ tiddlywiki_data_directory }}:/tiddlywiki"
+        command: wiki --listen host=0.0.0.0
         pull: true
         restart_policy: unless-stopped
         memory: "{{ tiddlywiki_memory }}"

@@ -2,18 +2,8 @@
 tiddlywiki_enabled: false
 tiddlywiki_available_externally: false
 
-# Data directory for config file
+# Data directory for wiki files
 tiddlywiki_data_directory: "{{ docker_home }}/tiddlywiki"
-
-# Basic auth
-# tiddlywiki_username:
-# tiddlywiki_password:
-
-# Node low memory
-# tiddlywiki_node_memory:
-
-# Server debugging
-# tiddlywiki_debug_level: none # full
 
 # Networking
 tiddlywiki_port: 8092
