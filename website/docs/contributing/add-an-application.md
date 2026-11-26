@@ -19,7 +19,7 @@ A new application touches the following files:
 | `roles/<name>/molecule/default/` | `molecule.yml`, `side_effect.yml`, `verify.yml` and `verify_stopped.yml`, following `hello_world` or any neighbouring role. |
 | `nas.yml` | A `- role: <name>` entry with a matching tag, in alphabetical order. |
 | `README.md` | The application in the "Available Applications" list, in alphabetical order. |
-| `website/docs/applications/<category>/<name>.md` | This documentation page. Pick the category folder that fits and start the file with a `title:` frontmatter key. |
+| `website/docs/applications/<category>/<name>.md` | This documentation page. Pick the category folder that fits and follow the template in the `write-role-docs` skill (title frontmatter, Homepage link, Usage, Specific Configuration table with all `<name>_*` variables from `defaults/main.yml`). |
 | `CHANGELOG.md` | Add the application to the `## Unreleased` "Added applications" line. |
 | `.ansible-lint-ignore` | Only if the application's public variables genuinely cannot carry the role prefix. |
 
