@@ -99,7 +99,7 @@ export default function Changelog({releases}) {
   const latest = releases.find((r) => r.version !== 'Unreleased')?.version;
   return (
     <Layout title="Changelog" description="What changed between Ansible-NAS releases">
-      <header className={clsx('hero hero--primary', styles.hero)}>
+      <header className={clsx('hero', styles.hero)}>
         <div className="container">
           <h1 className="hero__title">Changelog</h1>
           <p className="hero__subtitle">What changed between releases</p>
