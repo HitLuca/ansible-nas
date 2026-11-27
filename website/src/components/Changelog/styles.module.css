@@ -1,4 +1,4 @@
-.hero { padding: 3rem 0; text-align: center; }
+.hero { padding: 3rem 0; text-align: center; background: var(--hero-gradient); }
 .main { max-width: 52rem; padding-block: 2rem 4rem; }
 .lede { color: var(--ifm-color-emphasis-700); margin-bottom: 2rem; }
 .timeline { position: relative; }

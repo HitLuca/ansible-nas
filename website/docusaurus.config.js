@@ -4,12 +4,14 @@
 const lightCodeTheme = require('prism-react-renderer').themes.github;
 const darkCodeTheme = require('prism-react-renderer').themes.dracula;
 
+const baseUrl = '/ansible-nas/';
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Ansible-NAS',
   tagline: 'Easily build a homelab or NAS replacement with an Ubuntu server and some basic hardware',
   url: 'https://hitluca.github.io',
-  baseUrl: '/ansible-nas/',
+  baseUrl,
   onBrokenLinks: 'throw',
   markdown: {
     hooks: {
@@ -17,6 +19,17 @@ const config = {
     },
   },
   favicon: 'img/favicon.ico',
+
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {rel: 'icon', type: 'image/png', href: `${baseUrl}img/favicon.png`},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'apple-touch-icon', href: `${baseUrl}img/apple-touch-icon.png`},
+    },
+  ],
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -49,9 +62,6 @@ const config = {
           editUrl:
             'https://github.com/HitLuca/ansible-nas/tree/main/website',
         },
-        blog: {
-          showReadingTime: true,
-        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -62,8 +72,16 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      colorMode: {
+        defaultMode: 'light',
+        respectPrefersColorScheme: true,
+      },
       navbar: {
         title: 'Ansible-NAS',
+        logo: {
+          src: 'img/logo.png',
+          alt: 'Ansible-NAS',
+        },
         items: [
           {
             type: 'doc',
@@ -84,11 +102,6 @@ const config = {
             label: 'Applications',
           },
           {to: '/changelog', label: 'Changelog', position: 'left'},
-          {to: '/blog', label: 'Blog', position: 'left'},
-          {
-            type: 'search',
-            position: 'right',
-          },
           {
             href: 'https://github.com/HitLuca/ansible-nas',
             label: 'GitHub',
@@ -116,18 +129,15 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
-              },
-              {
                 label: 'GitHub',
                 href: 'https://github.com/HitLuca/ansible-nas',
               },
             ],
           },
         ],
-        copyright: `Copyright © 2017-2025 David Stephens, © ${new Date().getFullYear()} Luca Simonetto. Site built with Docusaurus.`,
+        copyright: `Copyright © 2017-${new Date().getFullYear()} David Stephens, © ${new Date().getFullYear()} Luca Simonetto. Site built with Docusaurus.`,
       },
+      image: 'img/logo.png',
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
